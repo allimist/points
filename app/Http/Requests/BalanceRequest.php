@@ -25,8 +25,9 @@ class BalanceRequest extends FormRequest
     public function rules()
     {
         return [
-            'currency' => 'required|integer|exists:currencies,id',
-            'user' => 'required|integer|exists:users,id',
+//            'currency' => 'required|integer|exists:currencies,id',
+            'currency_id' => 'required|integer|exists:currencies,id',
+            'user_id' => 'required|integer|exists:users,id',
             'value' => 'required|integer|gt:0',
         ];
     }

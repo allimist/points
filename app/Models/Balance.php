@@ -32,7 +32,7 @@ class Balance extends Model
         'id' => 'integer',
         'currency_id' => 'integer',
         'user_id' => 'integer',
-        'value' => 'integer',
+        'value' => 'decimal:2',
     ];
 
     public function currency(): BelongsTo
@@ -40,8 +40,8 @@ class Balance extends Model
         return $this->belongsTo(Currency::class);
     }
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+//    public function user(): BelongsTo
+//    {
+//        return $this->belongsTo(User::class);
+//    }
 }
