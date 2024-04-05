@@ -3,7 +3,7 @@ let mapBackground;
 let heroPos;
 let speed = 2;
 let heroSize = 50;
-let mapWidth = 900;
+let mapWidth = 1300;
 let mapHeight = 700;
 // let clickableObjectPos;
 // let clickableObject;
@@ -22,21 +22,18 @@ let startTime;
 let isCooldownActive = [];
 let timeRemaining = [];
 
-
-// let farmObjectPos;
-// let farmObject;
-
-
 let updateHeroPositionLoop = 0;
 let updateHeroPositionInterval = 200;
 
-// farmsArray = JSON.parse(farmsArray);
-
 farmsArrayLen = Object.values(farmsArray).length;
+usersArrayLen = Object.values(usersArray).length;
+let heros = [];
+let herosPos = [];
+
 // farmsServiceArray = Object.values(farmsServiceArray);
 
-console.log('farmsArray', farmsArray);
-console.log('farmsServiceArray', farmsServiceArray);
+// console.log('farmsArray', farmsArray);
+// console.log('farmsServiceArray', farmsServiceArray);
 
 // let heroBot = {
 //     x: 200,
@@ -47,7 +44,8 @@ console.log('farmsServiceArray', farmsServiceArray);
 
 
 function preload() {
-    hero = loadImage('hero.png');
+    // hero = loadImage('hero.png');
+    hero = loadImage(avatarsArray[avatar_id].img);
     mapBackground = loadImage('img/map/map-'+land_id+'.jpg');
     // clickableObject = loadImage('clickableObject.png');
     // console.log('farmsArray', farmsArray);
@@ -56,20 +54,41 @@ function preload() {
     // console.log();
 
     Object.keys(farmsArray).forEach(i => {
-        console.log(i, farmsArray[i]);
-        if(farmsArray[i].resource_id == 1){
-            farmsObject[i] = loadImage('img/res/tree.png');
-        }else if(farmsArray[i].resource_id == 2){
-            farmsObject[i] = loadImage('img/res/mount.png');
-        }else if(farmsArray[i].resource_id == 3){
-            farmsObject[i] = loadImage('img/res/market.png');
-        }else if(farmsArray[i].resource_id == 4){
-            farmsObject[i] = loadImage('img/res/soil.png');
-        } else {
+
+        if(resourceArray[farmsArray[i].resource_id].img){
+            farmsObject[i] = loadImage(resourceArray[farmsArray[i].resource_id].img);
+        }else {
             farmsObject[i] = loadImage('clickableObject.png');
         }
+
+
+        // console.log(i, farmsArray[i]);
+        // if(farmsArray[i].resource_id == 1){
+        //     // farmsObject[i] = loadImage('img/res/tree.png');
+        //     farmsObject[i] = loadImage(resourceArray[farmsArray[i].resource_id].img);
+        // }else if(farmsArray[i].resource_id == 2){
+        //     farmsObject[i] = loadImage('img/res/mount.png');
+        // }else if(farmsArray[i].resource_id == 3){
+        //     farmsObject[i] = loadImage('img/res/market.png');
+        // }else if(farmsArray[i].resource_id == 4){
+        //     farmsObject[i] = loadImage('img/res/soil.png');
+        // } else {
+        //     farmsObject[i] = loadImage('clickableObject.png');
+        // }
         farmsObjectSize[i] = farmsArray[i].size * 10;
     });
+
+    // Object.keys(usersArray).forEach(i => {
+    // console.log('usersArray', usersArray);
+    heros[1] = loadImage(avatarsArray[1].img);
+    heros[2] = loadImage(avatarsArray[2].img);
+    heros[3] = loadImage(avatarsArray[3].img);
+    //     heros[0] = loadImage('hero.png');
+    // heros[1] = loadImage('hero.png');
+    // heros[2] = loadImage('hero.png');
+    // });
+
+
 
 
     // for(let i = 0; i < farmsArrayLen; i++){
@@ -92,30 +111,22 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(700, 400);
-    // heroPos = createVector(mapWidth / 2, mapHeight / 2);
+
+    createCanvas(1200, 500);
     heroPos = createVector(posx, posy);
-    // clickableObjectPos = createVector(200, 200);
-
-    // farmObjectPos = createVector(200, 200);
-
-    console.log(farmsArray[1].posx, farmsArray[1].posy);
-    console.log(farmsArray.length);
-
-    // farmsArray.forEach(async (farm) => {
-    //     console.log('farm', farm);
-    // })
 
     startTime = millis();
+
+    // clickableObjectPos = createVector(200, 200);
+    // farmObjectPos = createVector(200, 200);
     // isCooldownActive = true;
 
-    // for(let i = 0; i < farmsArray.length; i++){
     Object.keys(farmsArray).forEach(i => {
         farmsObjectPos[i] = createVector(farmsArray[i].posx, farmsArray[i].posy);
         if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim'){
 
             if (typeof farmsServiceArray[i] !== 'undefined'){
-                console.log(farmsServiceArray[i]);
+                // console.log(farmsServiceArray[i]);
                 farmsObjectStatus[i] = createA('/service-use/select?farm_id=' + farmsArray[i].id , 'Select');
 
             // if(farmsArray[i].status == 'start' && farmServiceArray[i].length > 1){
@@ -133,7 +144,28 @@ function setup() {
         }
 
     });
-    // }
+
+    // console.log('usersArray', usersArray);
+
+
+    // herosPos[0] = createVector(posx, posy);
+    // herosPos[1] = createVector(posx, posy);
+    // herosPos[1] = createVector(usersArray[1].posx, usersArray[1].posy);
+    // herosPos[2] = createVector(posx, posy);
+    // herosPos[8] = createVector(posx, posy);
+    // herosPos[9] = createVector(posx, posy);
+
+
+    Object.keys(usersArray).forEach(i => {
+    //     console.log('i', i);
+    //     console.log('herosPos', herosPos[i]);
+        herosPos[i] = createVector(usersArray[i].posx, usersArray[i].posy);
+        // herosPos[i] = createVector(posx, posy);
+        if(i >10){
+            return;
+        }
+
+    });
 
 }
 
@@ -170,7 +202,7 @@ function draw() {
 
         // Create a clickable link
         if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim'){
-            farmsObjectStatus[i].position(farmsObjectPos[i].x - camX + 400, farmsObjectPos[i].y - camY + 200);
+            farmsObjectStatus[i].position(farmsObjectPos[i].x - camX + farmsObjectSize[i]+50, farmsObjectPos[i].y - camY + 100);
         } else {
             if (isCooldownActive[i]) {
                 timeRemaining[i] = cooldownDuration[i] - timeElapsed;
@@ -189,7 +221,7 @@ function draw() {
                     } else {
                         timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                     }
-                    text(timeString, farmsObjectPos[i].x - camX -30, farmsObjectPos[i].y - camY + 30 );
+                    text(timeString, farmsObjectPos[i].x - camX - farmsObjectSize[i]/2, farmsObjectPos[i].y - camY + farmsObjectSize[i]/2 );
                 } else {
                     // Cooldown complete
                     text("Cooldown Complete!", farmsObjectPos[i].x - camX, farmsObjectPos[i].y - camY );
@@ -218,7 +250,7 @@ function draw() {
     if (updateHeroPositionLoop >= updateHeroPositionInterval) {
         updateHeroPositionLoop = 0;
         //ajax request
-        console.log("heroPos: ", heroPos);
+        // console.log("heroPos: ", heroPos);
         $.ajax({
             url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
             // context: document.body
@@ -229,16 +261,40 @@ function draw() {
     }
 
 
-//     // Update the hero's position
-//     heroBot.x += random(-heroBot.speed, heroBot.speed);
-//     heroBot.y += random(-heroBot.speed, heroBot.speed);
-//
-//     heroBot.x = constrain(heroBot.x, 0 + heroBot.size / 2, width - heroBot.size / 2);
-//     heroBot.y = constrain(heroBot.y, 0 + heroBot.size / 2, height - heroBot.size / 2);
-//
-// // Draw the hero
-//     fill(255, 0, 0); // Red color
-//     ellipse(heroBot.x, heroBot.y, heroBot.size);
+
+    // console.log('usersArray', usersArray);
+    Object.keys(usersArray).forEach(i => {
+
+        // console.log('i', i);
+        // console.log('herosPos', herosPos[i]);
+
+        if(typeof herosPos[i] !== 'undefined'){
+            // return;
+            if(herosPos[i].x + speed < usersArray[i].posx){
+                herosPos[i].x += speed;
+            }
+            if(herosPos[i].x - speed > usersArray[i].posx){
+                herosPos[i].x -= speed;
+            }
+            if(herosPos[i].y + speed < usersArray[i].posy){
+                herosPos[i].y += speed;
+            }
+            if(herosPos[i].y - speed > usersArray[i].posy){
+                herosPos[i].y -= speed;
+            }
+
+            image(heros[usersArray[i].avatar_id], herosPos[i].x - camX, herosPos[i].y - camY, heroSize, heroSize);
+        }
+
+
+        if(i >10){
+            return;
+        }
+
+    });
+
+
+
 }
 
 function updateHeroPosition() {

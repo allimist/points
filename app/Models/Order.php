@@ -5,8 +5,9 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Resource extends Model
+class Order extends Model
 {
     use CrudTrait;
     use HasFactory;
@@ -17,9 +18,11 @@ class Resource extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-//        'currency_id',
-        'image',
+        'service_id',
+        'user_id',
+        'type',
+        'price',
+        'amount',
     ];
 
     /**
@@ -29,8 +32,11 @@ class Resource extends Model
      */
     protected $casts = [
         'id' => 'integer',
-//        'revenue' => 'integer',
-//        'reload' => 'integer',
-//    'image'
+        'service_id' => 'integer',
     ];
+
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
+    }
 }

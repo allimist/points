@@ -6,7 +6,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Resource extends Model
+class Avatar extends Model
 {
     use CrudTrait;
     use HasFactory;
@@ -18,7 +18,6 @@ class Resource extends Model
      */
     protected $fillable = [
         'name',
-//        'currency_id',
         'image',
     ];
 
@@ -29,8 +28,5 @@ class Resource extends Model
      */
     protected $casts = [
         'id' => 'integer',
-//        'revenue' => 'integer',
-//        'reload' => 'integer',
-//    'image'
     ];
 }

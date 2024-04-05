@@ -67,6 +67,15 @@ class LandController extends Controller
         Auth::user()->active_at = now();
         Auth::user()->save();
 
+        $data = [
+            'user_id' => $user_id,
+            'posx' => \request('x'),
+            'posy' => \request('y'),
+        ];
+        event(new \App\Events\YourCustomEvent($data));
+
+
+
     }
 
 

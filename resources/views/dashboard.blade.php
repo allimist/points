@@ -46,7 +46,28 @@
 <?php
 //  dd($status);
 
+$user_id = Auth::user()->id;
+
+$currency = \App\Models\Currency::get();
+foreach ($currency as $c) {
+    $currencyArray[$c->id] = $c->name;
+}
+
+$balance = \App\Models\Balance::where('user_id', $user_id)->get();
+foreach ($balance as $b) {
+    $balanceArray[$b->currency_id] = $b->value;
+}
+
+foreach ($currencyArray as $key => $value) {
+    if(!empty($balanceArray[$key])) {
+        echo $value.':'.$balanceArray[$key].' | ';
+    }
+}
+
 ?>
+
+
+
 
 
 <x-app-layout>
@@ -67,6 +88,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("You're logged in!") }}
+                    date time now : {{ now() }}<br>
 
                     hi, {{ Auth::user()->name }} - <a class="btn btn-info" href="/dashboard">Reload</a><br><br>
                     Reputation : {{ Auth::user()->reputation }} |
@@ -76,33 +98,31 @@
                     active_at : {{ Auth::user()->active_at }} <br>
 
                     <?php
-                        $user_id = Auth::user()->id;
+
+
+                        //avatar
+                        $avatarsArray = [];
+                        $avatars = \App\Models\Avatar::get();
+                        foreach ($avatars as $avatar) {
+                            $avatarsArray[$avatar->id] = ['name'=>$avatar->name,'img'=>$avatar->image];
+                        }
+//                        dd($avatarArray);
 
                         $resource = \App\Models\Resource::get();
                         foreach ($resource as $r) {
-                            $resourceArray[$r->id] = $r->name;
+                            $resourceArray[$r->id] = ['name'=>$r->name,'img'=>$r->image];
                         }
 
-                        $currency = \App\Models\Currency::get();
-                        foreach ($currency as $c) {
-                            $currencyArray[$c->id] = $c->name;
-                        }
 
-                        $balance = \App\Models\Balance::where('user_id', $user_id)->get();
-                        foreach ($balance as $b) {
-                            $balanceArray[$b->currency_id] = $b->value;
-                        }
+
+
 
                         $lands = \App\Models\Land::get();
                         foreach ($lands as $land) {
                             $landArray[$land->id] = $land->name;
                         }
 
-                        foreach ($currencyArray as $key => $value) {
-                            if(!empty($balanceArray[$key])) {
-                                echo $value.':'.$balanceArray[$key].' | ';
-                            }
-                        }
+
                     ?>
                     <br><br>
 
@@ -126,7 +146,8 @@
                         $farms = \App\Models\Farm::where('land_id',Auth::user()->land_id)->orderBy('resource_id')->get();
                         foreach ($farms as $farm) {
                             $farmsArray[$farm->id] = $farm->getAttributes();
-                            echo $resourceArray[$farm->resource_id].'['.$farm->id.']<br>';
+                            echo $resourceArray[$farm->resource_id]['name'].'['.$farm->id.']<br>';
+                            echo '<img src="'.$resourceArray[$farm->resource_id]['img'].'" width="50" height="50"><br>';
 
                             $service_use = \App\Models\ServiceUse::where('user_id', $user_id)
                                 ->where('farm_id', $farm->id)
@@ -208,6 +229,26 @@
                     ?>
 
 
+                    Player:<br>
+                    <?php
+                        //recent activity
+//                        $users = \App\Models\User::where('land_id', Auth::user()->land_id)->where('id', '!=', Auth::user()->id)->get();
+                        $users = \App\Models\User::where('land_id', Auth::user()->land_id)
+                            ->select('id','name','avatar_id','posx','posy')
+//                            ->where('id', '!=', Auth::user()->id)
+//                            ->whereDate('active_at', '>=', now()->subMinutes(10))
+                            ->where('active_at', '>=', now()->subMinutes(15))
+                            ->get();
+                        $usersArray = [];
+                        foreach ($users as $u) {
+                            $usersArray[$u->id] = $u->getAttributes();
+                            echo $u->name.' - '.$u->reputation.' - '.$u->land_id.' - '.$u->posx.' - '.$u->posy. ' - '.$u->active_at.'<br>';
+                        }
+
+                        echo now()->subMinutes(10).'<br>';
+
+                    ?>
+
 
                 </div>
             </div>
@@ -223,9 +264,46 @@
     let land_id = {{ Auth::user()->land_id }};
     let posx = {{ Auth::user()->posx }};
     let posy = {{ Auth::user()->posy }};
+    let avatar_id = {{ Auth::user()->avatar_id }};
     let farmsArray = <?php echo json_encode($farmsArray); ?>;
     let farmsServiceArray = <?php echo json_encode($farmsServiceArray); ?>;
+    let resourceArray = <?php echo json_encode($resourceArray); ?>;
+    let avatarsArray = <?php echo json_encode($avatarsArray); ?>;
+    let usersArray = <?php echo json_encode($usersArray); ?>;
+
 </script>
+
+<div>
+    <h2>Server Time: <span id="serverTime"></span></h2>
+    <h2>Message: <span id="serverMessage"></span></h2>
+</div>
+
+<script>
+        if (!!window.EventSource) {
+        console.log('ok');
+
+        var source = new EventSource("/stream");
+        //
+        source.onmessage = function(event) {
+            console.log('m');
+            // Parse the JSON data
+            var data = JSON.parse(event.data);
+
+            // Log the data or use it to update the DOM
+            console.log(data); // Example: { time: "2023-04-01T12:34:56", message: "Hello from Laravel SSE!" }
+
+            // Update the DOM or perform other actions with the data
+            document.getElementById("serverTime").innerText = data.time;
+            document.getElementById("serverMessage").innerText = data.message;
+
+            usersArray = data.usersArray;
+        };
+    } else {
+        console.log("Your browser does not support server-sent events.");
+    }
+</script>
+
+
 <script src="test6.js"></script>
 
 <button id="showPopupBtn">Get Wood</button>
@@ -275,7 +353,41 @@
         $('#to_hide').show();
     }
 
+
+    // import Echo from 'laravel-echo';
+    //
+    // window.Pusher = require('pusher-js');
+    //
+    // window.Echo = new Echo({
+    //     broadcaster: 'pusher',
+    //     key: process.env.MIX_PUSHER_APP_KEY,
+    //     wsHost: window.location.hostname,
+    //     wsPort: 6001,
+    //     disableStats: true,
+    //     encrypted: false,
+    //     enabledTransports: ['ws', 'wss'], // Only use WebSocket for transport
+    // });
+
+    // Echo.channel('your-channel')
+    //     .listen('.YourCustomEvent', (e) => {
+    //         console.log(e);
+    //     });
+
+
 </script>
+
+
+
+
+{{--<script type="module">--}}
+{{--    import Echo from '/laravel-echo.js';--}}
+{{--    // Your Laravel Echo setup here--}}
+{{--</script>--}}
+
+{{--<script type="module" src="https://unpkg.com/laravel-echo/dist/echo.js"></script>--}}
+
+
+{{--<script type="module" src="ws.js"></script>--}}
 
 
 

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResourceRequest extends FormRequest
+class AvatarRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +25,8 @@ class ResourceRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-//            'currency_id' => 'required|string',
-//            'revenue' => 'required|integer|gt:0',
-//            'reload' => 'required|integer|gt:0',
-//            'image' => 'nullable|image|mimes:png,gif|max:512',
-            'image' => 'nullable|nullable|max:90000',
+            'name' => 'nullable|nullable|string',
+            'image' => 'nullable|nullable|string',
         ];
     }
 

@@ -27,8 +27,12 @@ class CheckIfAdmin
      */
     private function checkIfUserIsAdmin($user)
     {
-        // return ($user->is_admin == 1);
-        return true;
+
+        return backpack_user()->hasRole('Admin');
+//        $user = \Auth::user();
+//        dd($user->role);
+//         return ($user->is_admin == 1);
+//        return true;
     }
 
     /**

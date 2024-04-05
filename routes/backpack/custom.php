@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
+//user role
+//dd(Auth::user());
+//dd(backpack_user()->hasRole('writer'));
+
+
 Route::group([
     'prefix' => config('backpack.base.route_prefix', 'admin'),
     'middleware' => array_merge(
@@ -23,4 +28,6 @@ Route::group([
     Route::crud('farm', 'FarmCrudController');
     Route::crud('service', 'ServiceCrudController');
     Route::crud('service-use', 'ServiceUseCrudController');
+    Route::crud('avatar', 'AvatarCrudController');
+    Route::crud('order', 'OrderCrudController');
 }); // this should be the absolute last line of this file

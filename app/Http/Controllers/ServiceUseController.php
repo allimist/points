@@ -16,6 +16,25 @@ class ServiceUseController extends Controller
     /**
      * Update the user's profile information.
      */
+
+    public function balance($currencyArray){
+
+        $user_id = Auth::user()->id;
+        $balance = \App\Models\Balance::where('user_id', $user_id)->get();
+        foreach ($balance as $b) {
+            $balanceArray[$b->currency_id] = $b->value;
+        }
+        foreach ($currencyArray as $key => $value) {
+            if(!empty($balanceArray[$key])) {
+                echo $value.':'.$balanceArray[$key].' | ';
+            }
+        }
+        echo '<br>';
+
+
+    }
+
+
     public function claim()
     {
 
@@ -222,46 +241,304 @@ class ServiceUseController extends Controller
 
     public function select()
     {
-        $farm = \App\Models\Farm::find(\request('farm_id'));
-        $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
-        $currencies = \App\Models\Currency::all();
-        $resource = \App\Models\Resource::find($farm->resource_id);
 
+        $currencies = \App\Models\Currency::all();
         foreach ($currencies as $currency){
             $currencyArray[$currency->id] = $currency->name;
         }
+        $this->balance($currencyArray);
 
-        $user_id = Auth::user()->id;
-        $balance = \App\Models\Balance::where('user_id', $user_id)->get();
-        foreach ($balance as $b) {
-            $balanceArray[$b->currency_id] = $b->value;
+        $farm = \App\Models\Farm::find(\request('farm_id'));
+
+
+        $resource = \App\Models\Resource::find($farm->resource_id);
+        echo '<br><br>';
+        echo '<h1>'.$resource->name.'</h1>';
+        echo 'id: '.$resource->id.'<br>';
+        echo '<br><br>';
+
+        if($resource->id == 7){
+            $services = \App\Models\Service::where('resource_id', 6)->get();
+        } else {
+            $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
         }
-        foreach ($currencyArray as $key => $value) {
-            if(!empty($balanceArray[$key])) {
-                echo $value.':'.$balanceArray[$key].' | ';
+
+
+        foreach ($services as $service){
+            echo $service->name.'[#'.$service->id.']<br>';
+
+
+//            dd($resource->getAttributes());
+            if($resource->id == 6 ) {
+
+//                echo ' <a href="/service-use/sell?farm_id=' . $farm->id . '&service_id=' . $service->id . '">Sell</a><br>';
+                echo '<form action="/service-use/sell" method="get">';
+                echo '<input type="hidden" name="farm_id" value="' . $farm->id . '">';
+                echo '<input type="hidden" name="service_id" value="' . $service->id . '">';
+                echo 'Price:<input type="number" id="price" name="price" value="10" min="1" max="1000"> ';
+                echo 'Amount:<input type="number" id="amount" name="amount" value="2" min="1" max="1000"> ';
+//                echo ' <a href="/service-use/sell?farm_id=' . $farm->id . '&service_id=' . $service->id . '">Sell</a><br>';
+                echo '<input type="submit" value="Sell">';
+                echo '</form>';
+
+            } if($resource->id == 7 ){
+
+                echo ' <a href="/service-use/orders?farm_id=' . $farm->id . '&service_id=' . $service->id . '">Buy</a><br>';
+//                echo '<form action="/service-use/buy" method="get">';
+//                echo '<input type="hidden" name="farm_id" value="'.$farm->id.'">';
+//                echo '<input type="hidden" name="service_id" value="'.$service->id.'">';
+//                echo 'Amount:<input type="number" id="amount" name="amount" value="2" min="1" max="1000"> ';
+////                echo ' <a href="/service-use/sell?farm_id=' . $farm->id . '&service_id=' . $service->id . '">Sell</a><br>';
+//                echo '<input type="submit" value="B">';
+//                echo '</form>';
+
+
+            } else {
+
+
+                echo 'Revenue:<br>';
+                foreach ($service->revenue as $revenue) {
+                    echo $revenue['value'] . ' ' . $currencyArray[$revenue['resource']] . '<br>';
+                }
+                echo 'Cost:<br>';
+                foreach ($service->cost as $cost) {
+                    echo $cost['value'] . ' ' . $currencyArray[$cost['resource']] . '<br>';
+                }
+                echo ' <a href="/service-use/claim?farm_id=' . $farm->id . '&service_id=' . $service->id . '">Start</a><br>';
+
             }
+
+            echo '<br>';
         }
+
+        echo '<a href ="/dashboard">Back</a>';
+
+        die;
+//        return view('service-use.select', ['services' => $services]);
+    }
+
+
+    //sell
+    public function sell()
+    {
+
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+
+        $currencies = \App\Models\Currency::all();
+        foreach ($currencies as $currency){
+            $currencyArray[$currency->id] = $currency->name;
+        }
+        $this->balance($currencyArray);
+
+        $farm_id = \request('farm_id');
+        $service_id = \request('service_id');
+        $price = \request('price');
+        $amount = \request('amount');
+
+        $service = \App\Models\Service::find($service_id);
+
+
+        //validate if user has enough resource
+
+        //decrease balance
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $service->cost[0]['resource'])->first();
+
+        if(empty($balance) || $balance->value < $amount){
+            echo 'Not enough resource';
+            die;
+        } else {
+            $balance->value = $balance->value - $amount;
+            $balance->save();
+        }
+
+        //add order
+        $order = new \App\Models\Order();
+        $order->service_id = $service_id;
+        $order->user_id = $user_id;
+        $order->type = 'sell';
+        $order->price = $price;
+        $order->amount = $amount;
+        $order->save();
+
+//        dd($service->cost[0]['resource']);
+
+//        echo 1; die;
+
+        echo "ok";
+        //back link
+        return Redirect::route('dashboard')->with('status', 'balance-updated');
+
+
+
+
+    }
+
+    public function orders()
+    {
+
+        $currencies = \App\Models\Currency::all();
+        foreach ($currencies as $currency){
+            $currencyArray[$currency->id] = $currency->name;
+        }
+        $this->balance($currencyArray);
+
+        $farm = \App\Models\Farm::find(\request('farm_id'));
+        $resource = \App\Models\Resource::find($farm->resource_id);
+        $service = \App\Models\Service::find(\request('service_id'));
+
         echo '<br><br>';
         echo '<h1>'.$resource->name.'</h1>';
         echo '<br><br>';
 
 
-        foreach ($services as $service){
-            echo $service->name.'[#'.$service->id.']<br>';
-            echo 'Revenue:<br>';
-            foreach ($service->revenue as $revenue){
-                echo $revenue['value'].' '.$currencyArray[$revenue['resource']].'<br>';
-            }
-            echo 'Cost:<br>';
-            foreach ($service->cost as $cost){
-                echo $cost['value'].' '.$currencyArray[$cost['resource']].'<br>';
-            }
-            echo ' <a href="/service-use/claim?farm_id='.$farm->id.'&service_id='.$service->id.'">Start</a><br>';
-            echo '<br>';
+//        dd($service);
+//        $orders = \App\Models\Order::where('service_id', $service->id)->where('type', 'sell')->get();
+//        $orders = \App\Models\Order::where('service_id', $service->id)->get();
+        $orders = \App\Models\Order::where('service_id', 14)->get();
+        foreach ($orders as $order){
+
+            echo $order->id.' Price: '.$order->price.' Amount: '.$order->amount;
+            echo ' <a href="/service-use/select-order?order_id='.$order->id.'">Select Order</a><br>';
+
+//            echo '<form action="/service-use/buy" method="get">';
+//            echo '<input type="hidden" name="order_id" value="'.$order->id.'">';
+//            echo 'Amount:<input type="number" id="amount" name="amount" value="2" min="1" max="1000"> ';
+//            echo 'Price: '.$order->price.' Amount: '.$order->amount.' ';
+//            echo '<input type="submit" value="Buy">';
+//            echo '</form>';
+
+
+
         }
+
+        //back link
+        echo '<a href ="/service-use/select?farm_id=18">Back</a>';
 
         die;
 //        return view('service-use.select', ['services' => $services]);
+    }
+
+    public function selectOrder()
+    {
+
+        $currencies = \App\Models\Currency::all();
+        foreach ($currencies as $currency){
+            $currencyArray[$currency->id] = $currency->name;
+        }
+        $this->balance($currencyArray);
+
+        $order = \App\Models\Order::find(\request('order_id'));
+        echo '<br>Order id: '.$order->id.'<br>';
+        echo 'Price: '.$order->price.'<br>';
+        echo 'Amount: '.$order->amount.'<br>';
+
+        echo '<form action="/service-use/buy" method="get">';
+        echo '<input type="hidden" name="order_id" value="'.$order->id.'">';
+        echo 'Amount:<input type="number" id="amount" name="amount" value="'.$order->amount.'" min="1" max="1000"> ';
+        echo '<input type="submit" value="Buy">';
+        echo '</form>';
+
+        die;
+//        return view('service-use.select', ['services' => $services]);
+    }
+
+    public function buy()
+    {
+
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+
+        $currencies = \App\Models\Currency::all();
+        foreach ($currencies as $currency){
+            $currencyArray[$currency->id] = $currency->name;
+        }
+        $this->balance($currencyArray);
+
+//        $farm_id = \request('farm_id');
+        $order = \App\Models\Order::find(\request('order_id'));
+
+        if(empty($order)){
+            echo 'Order not found';
+            die;
+        }
+
+        $service  = \App\Models\Service::find($order->service_id);
+
+
+        //validate if user has enough resource
+
+        //decrese amount of order or close order
+        if($order->amount < \request('amount')){
+            echo 'Not enough amount on order';
+            die;
+        } else if($order->amount > \request('amount')){
+            $order->amount = $order->amount - \request('amount');
+            $order->save();
+        } else {
+            $order->delete();
+        }
+
+        //decrease balance coins
+        $amount = \request('amount') * $order->price;
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $service->revenue[0]['resource'])->first();
+        if(empty($balance) || $balance->value < $amount * $order->price){
+            echo 'Not enough resource';
+            die;
+        } else {
+            $balance->value = $balance->value - $amount * $order->price;
+            $balance->save();
+        }
+
+
+        //add balance to seler order maker
+        $balance = \App\Models\Balance::where('user_id', $order->user_id)->where('currency_id', $service->revenue[0]['resource'])->first();
+        if(empty($balance)){
+            $balance = new \App\Models\Balance();
+            $balance->user_id = $order->user_id;
+            $balance->currency_id = $service->revenue[0]['resource'];
+            $balance->value = $amount * $order->price;
+            $balance->save();
+        } else {
+            $balance->value = $balance->value + $amount * $order->price;
+            $balance->save();
+        }
+
+        //add balance to buyer
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $service->cost[0]['resource'])->first();
+        if(empty($balance)){
+            $balance = new \App\Models\Balance();
+            $balance->user_id = $user_id;
+            $balance->currency_id = $service->cost[0]['resource'];
+            $balance->value = \request('amount');
+            $balance->save();
+        } else {
+            $balance->value = $balance->value + \request('amount');
+            $balance->save();
+        }
+
+
+
+//        dd($service->cost[0]['resource']);
+
+
+        echo "ok";
+        echo '<a href ="/service-use/orders?farm_id=18&service_id='.$service->id.'">Back</a>';
+        echo 1; die;
+
+        //back link
+//        return Redirect::route('dashboard')->with('status', 'balance-updated');
+//        return Redirect::route('dashboard')->with('status', 'balance-updated');
+
+
+
+
     }
 
 
