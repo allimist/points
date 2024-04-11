@@ -30,7 +30,10 @@ class ResourceRequest extends FormRequest
 //            'revenue' => 'required|integer|gt:0',
 //            'reload' => 'required|integer|gt:0',
 //            'image' => 'nullable|image|mimes:png,gif|max:512',
+            'size' => 'required|integer|gt:0',
             'image' => 'nullable|nullable|max:90000',
+            'image_hover' => 'nullable|nullable|max:90000',
+
         ];
     }
 

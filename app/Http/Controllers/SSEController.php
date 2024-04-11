@@ -37,7 +37,7 @@ class SSEController extends Controller
 
                 $data = [
                     'time' => now()->toDateTimeString(),
-                    'message' => 'Hello from Laravel SSE!',
+                    'serverTime' => strtotime(now()),
                     'usersArray' => $usersArray,
                 ];
 

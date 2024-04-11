@@ -3,12 +3,12 @@ let mapBackground;
 let heroPos;
 let speed = 2;
 let heroSize = 50;
-let mapWidth = 1300;
+let mapWidth = 2000;
 let mapHeight = 700;
 // let clickableObjectPos;
 // let clickableObject;
 // let clickableObjectSize = 70;
-// let interactionDistance = 100;
+let interactionDistance = 100;
 // let lastInteractionTime = -10; // Initialize to allow immediate interaction
 // let cooldownPeriod = 10; // Cooldown period in seconds
 
@@ -30,6 +30,9 @@ usersArrayLen = Object.values(usersArray).length;
 let heros = [];
 let herosPos = [];
 
+let fix_x= -50;
+let fix_y= 50;
+
 // farmsServiceArray = Object.values(farmsServiceArray);
 
 // console.log('farmsArray', farmsArray);
@@ -46,12 +49,9 @@ let herosPos = [];
 function preload() {
     // hero = loadImage('hero.png');
     hero = loadImage(avatarsArray[avatar_id].img);
-    mapBackground = loadImage('img/map/map-'+land_id+'.jpg');
+    // mapBackground = loadImage('img/map/map-'+land_id+'.jpg');
+    mapBackground = loadImage('storage/'+map);
     // clickableObject = loadImage('clickableObject.png');
-    // console.log('farmsArray', farmsArray);
-    //size
-    // console.log('farmsArrayLen', typeof (farmsArray));
-    // console.log();
 
     Object.keys(farmsArray).forEach(i => {
 
@@ -112,7 +112,8 @@ function preload() {
 
 function setup() {
 
-    createCanvas(1200, 500);
+    // createCanvas(1200, 500);
+    createCanvas(windowWidth, 500);
     heroPos = createVector(posx, posy);
 
     startTime = millis();
@@ -126,16 +127,21 @@ function setup() {
         if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim'){
 
             if (typeof farmsServiceArray[i] !== 'undefined'){
-                // console.log(farmsServiceArray[i]);
-                farmsObjectStatus[i] = createA('/service-use/select?farm_id=' + farmsArray[i].id , 'Select');
+                if(farmsArray[i].single_service == 1){
 
-            // if(farmsArray[i].status == 'start' && farmServiceArray[i].length > 1){
-                // for(let j = 0; j < farmServiceArray.length; j++){
-                //
-                // }
+                    if(farmsServiceArray[i].name == "Go"){
+                        farmsObjectStatus[i] = createA('/land/select?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id, 'Select').class('p-select');
+                    } else {
+                        farmsObjectStatus[i] = createA('/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id, 'Start').class('p-select');
+                    }
+
+                } else {
+                    farmsObjectStatus[i] = createA('/service-use/select?farm_id=' + farmsArray[i].id , 'Select').class('p-select');
+                }
+
             } else {
                 // farmsObjectStatus[i] = createA('/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id, farmsArray[i].status, '_blank');
-                farmsObjectStatus[i] = createA('/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id, farmsArray[i].text);
+                farmsObjectStatus[i] = createA('/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id, farmsArray[i].text).class('p-claim');
 
             }
         } else {
@@ -179,8 +185,8 @@ function draw() {
 
     updateHeroPosition();
 
-    fill('skyblue'); // Set the fill color for the rectangle
-    textSize(20); // Set the text size
+    // fill('skyblue'); // Set the fill color for the rectangle
+    // textSize(20); // Set the text size
     // textAlign(CENTER, CENTER); // Align the text to be centered
 
 
@@ -196,13 +202,26 @@ function draw() {
     // for(let i = 0; i < farmsArray.length; i++){
     Object.keys(farmsArray).forEach(i => {
     //     let farm = farmsArray[i];
+
+
+        if(mouseX > farmsObjectPos[i].x - camX - farmsObjectSize[i]/2 && mouseX < farmsObjectPos[i].x - camX + farmsObjectSize[i]/2 &&
+            mouseY > farmsObjectPos[i].y - camY - farmsObjectSize[i]/2 && mouseY < farmsObjectPos[i].y - camY + farmsObjectSize[i]/2){
+            fill('red');
+            // console.log('farmsArray[i]', farmsArray[i]);
+        } else {
+            fill('black');
+        }
+
+
+
+
         image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i]/2, farmsObjectPos[i].y - camY - farmsObjectSize[i]/2, farmsObjectSize[i], farmsObjectSize[i]);
         // return;
         // let textContent = farmsArray[i].status;
 
         // Create a clickable link
         if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim'){
-            farmsObjectStatus[i].position(farmsObjectPos[i].x - camX + farmsObjectSize[i]+50, farmsObjectPos[i].y - camY + 100);
+            farmsObjectStatus[i].position(farmsObjectPos[i].x - camX + farmsObjectSize[i]/2 + fix_x, farmsObjectPos[i].y - camY + farmsObjectPos[i].y/2 + fix_y);
         } else {
             if (isCooldownActive[i]) {
                 timeRemaining[i] = cooldownDuration[i] - timeElapsed;
@@ -221,7 +240,7 @@ function draw() {
                     } else {
                         timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                     }
-                    text(timeString, farmsObjectPos[i].x - camX - farmsObjectSize[i]/2, farmsObjectPos[i].y - camY + farmsObjectSize[i]/2 );
+                    text(timeString, farmsObjectPos[i].x - camX - farmsObjectSize[i]/2 - 50, farmsObjectPos[i].y - camY + farmsObjectSize[i]/2 );
                 } else {
                     // Cooldown complete
                     text("Cooldown Complete!", farmsObjectPos[i].x - camX, farmsObjectPos[i].y - camY );
@@ -318,120 +337,56 @@ function mousePressed() {
     let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
     let clickPos = createVector(mouseX + camX, mouseY + camY);
 
-    // if (!isCooldownActive) {
-    //     startTime = millis();
-    //     isCooldownActive = true;
-    // }
+    Object.keys(farmsArray).forEach(i => {
 
-    // if (clickPos.dist(clickableObjectPos) <= clickableObjectSize / 2) {
-    //     if (heroPos.dist(clickableObjectPos) <= interactionDistance) {
-    //         // Send AJAX request here
-    //
-    //         console.log("AJAX request sent.");
-    //         document.getElementById('popup').style.display = 'block';
-    //
-    //         // Example: fetch('your_endpoint', { method: 'POST', body: JSON.stringify({ action: 'interact' }) })
-    //     } else {
-    //         document.getElementById('popup-text').textContent = "Too far away!";
-    //         document.getElementById('popup').style.display = 'block';
-    //         setTimeout(() => {
-    //             document.getElementById('popup').style.display = 'none';
-    //         },1000);
-    //     }
-    // }
-}
+        console.log('farmsArray[i]', farmsArray[i]);
+        if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim' || i == 18){
 
 
+            //     let farm = farmsArray[i];
+            if (clickPos.x >= farmsObjectPos[i].x - farmsObjectSize[i] / 2 &&
+                clickPos.x <= farmsObjectPos[i].x + farmsObjectSize[i] / 2 &&
+                clickPos.y >= farmsObjectPos[i].y - farmsObjectSize[i] / 2 &&
+                clickPos.y <= farmsObjectPos[i].y + farmsObjectSize[i] / 2) {
+                if (heroPos.dist(farmsObjectPos[i]) <= interactionDistance) {
+                    // let currentTime = millis() / 1000; // Convert milliseconds to seconds
+                    // if (currentTime - lastInteractionTime >= cooldownPeriod) {
+                    //     lastInteractionTime = currentTime;
+                        console.log("Interaction occurred on"+i);
+                        // Interaction code here (e.g., AJAX request)
+                    // } else {
+                    //     console.log("Still in cooldown.");
+                    // }
 
-/*
-function draw() {
-    background(220);
-    let camX = constrain(heroPos.x - width / 2, 0, mapWidth - width);
-    let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
-    image(mapBackground, -camX, -camY, mapWidth, mapHeight);
-    updateHeroPosition();
-    // console.log("heroPos: ", heroPos);
+                    if(i == 18){
+                        window.location.href = '/service-use/orders?farm_id=18';
+                    } else if (typeof farmsServiceArray[i] !== 'undefined') {
+                        if (farmsArray[i].single_service == 1) {
 
-    heroPos.x = constrain(heroPos.x, 0, mapWidth - heroSize);
-    heroPos.y = constrain(heroPos.y, 0, mapHeight - heroSize);
+                            if (farmsServiceArray[i].name == "Go") {
+                                window.location.href = '/land/select?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+                            } else {
+                                window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+                            }
 
-
-    image(hero, heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
-    image(clickableObject, clickableObjectPos.x - camX - clickableObjectSize / 2, clickableObjectPos.y - camY - clickableObjectSize / 2, clickableObjectSize, clickableObjectSize);
-
-    //update hero position
-    updateHeroPositionLoop++;
-    if (updateHeroPositionLoop >= updateHeroPositionInterval) {
-        updateHeroPositionLoop = 0;
-        //ajax request
-        console.log("heroPos: ", heroPos);
-        $.ajax({
-            url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
-            // context: document.body
-        }).done(function(resp) {
-            // $( this ).addClass( "done" );
-            console.log("resp: ", resp);
-        });
-
-    }
-
-    // Handle cooldown display
-    handleCooldownDisplay(camX, camY);
-}
-
-function updateHeroPosition() {
-    if (keyIsDown(65)) { heroPos.x -= speed; }
-    if (keyIsDown(68)) { heroPos.x += speed; }
-    if (keyIsDown(87)) { heroPos.y -= speed; }
-    if (keyIsDown(83)) { heroPos.y += speed; }
-
-    if (mouseIsPressed) {
-        let camX = constrain(heroPos.x - width / 2, 0, mapWidth - width);
-        let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
-        let mousePos = createVector(mouseX + camX, mouseY + camY);
-        let direction = p5.Vector.sub(mousePos, heroPos);
-        direction.setMag(speed);
-        heroPos.add(direction);
-    }
-
-}
+                        } else {
+                            window.location.href = '/service-use/select?farm_id=' + farmsArray[i].id;
+                        }
+                    } else {
+                        window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+                    }
 
 
-
-
-function mousePressed() {
-    let camX = constrain(heroPos.x - width / 2, 0, mapWidth - width);
-    let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
-    let mousePos = createVector(mouseX + camX, mouseY + camY);
-
-    if (mousePos.x >= clickableObjectPos.x - clickableObjectSize / 2 &&
-        mousePos.x <= clickableObjectPos.x + clickableObjectSize / 2 &&
-        mousePos.y >= clickableObjectPos.y - clickableObjectSize / 2 &&
-        mousePos.y <= clickableObjectPos.y + clickableObjectSize / 2) {
-        if (heroPos.dist(clickableObjectPos) <= interactionDistance) {
-            let currentTime = millis() / 1000; // Convert milliseconds to seconds
-            if (currentTime - lastInteractionTime >= cooldownPeriod) {
-                lastInteractionTime = currentTime;
-                console.log("Interaction occurred.");
-                // Interaction code here (e.g., AJAX request)
-            } else {
-                console.log("Still in cooldown.");
+                } else {
+                    document.getElementById('popup-text').textContent = "Too far away!";
+                    document.getElementById('popup').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('popup').style.display = 'none';
+                    },1000);
+                }
             }
-        } else {
-            alert("Too far away!");
-        }
-    }
-}
 
-function handleCooldownDisplay(camX, camY) {
-    let currentTime = millis() / 1000;
-    if (currentTime - lastInteractionTime < cooldownPeriod) {
-        // Calculate remaining cooldown time
-        let remainingTime = ceil(cooldownPeriod - (currentTime - lastInteractionTime));
-        fill(0);
-        textAlign(CENTER, CENTER);
-        // Display countdown timer near the object
-        text(remainingTime.toString(), clickableObjectPos.x - camX, clickableObjectPos.y - camY - 20);
-    }
+        }
+    });
+
 }
-*/

@@ -8,6 +8,11 @@ use App\Http\Controllers\ServiceUseController;
 
 use App\Http\Controllers\SSEController;
 
+use App\Http\Controllers\PlayController;
+
+
+
+
 // Add this inside the routes file
 Route::get('/stream', [SSEController::class, 'streamData']);
 
@@ -46,7 +51,28 @@ Route::get('/service-use/select-order',   [ServiceUseController::class, 'selectO
 Route::get('/service-use/buy',      [ServiceUseController::class,  'buy']);
 
 Route::get('/land/go',              [LandController::class,  'go']);
-Route::get('/position/go',          [LandController::class,  'goPosition']);
+Route::get('/land/select',          [LandController::class,  'select']);
+Route::get('/position/go',          [LandController::class,  'goPosition']);//hero go
+
+
+//Route::get('/play',                 [PlayController::class,  'play']);
+Route::get('/play', function () {
+    return view('play');
+})->middleware(['auth', 'verified'])->name('play');
+
+//Route::get('/land/list', 'LandController@list');
+Route::get('/api/play/load', [PlayController::class,  'apiLoad']);
+Route::get('/api/land/list', [LandController::class,  'apiList']);
+Route::get('/api/service-use/select',    [ServiceUseController::class,  'ApiSelect']);
+Route::get('/api/service-use/claim',    [ServiceUseController::class,  'ApiClaim']);
+
+Route::get('/position/set',          [LandController::class,  'setPosition']);//save farm pos
+Route::get('/farm/add',          [LandController::class,  'addFarm']);//add new farm
+
+
+
+
+
 
 
 require __DIR__.'/auth.php';

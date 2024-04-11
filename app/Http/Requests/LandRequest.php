@@ -30,6 +30,7 @@ class LandRequest extends FormRequest
             'owner_id' => 'nullable|nullable|integer|exists:users,id',
             'type' => 'nullable|string',
             'size' => 'required|integer|gt:0',
+            'image' => 'nullable|nullable',
         ];
     }
 

@@ -19,7 +19,9 @@ class Resource extends Model
     protected $fillable = [
         'name',
 //        'currency_id',
+        'size',
         'image',
+        'image_hover',
     ];
 
     /**
@@ -29,6 +31,7 @@ class Resource extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'size' => 'integer',
 //        'revenue' => 'integer',
 //        'reload' => 'integer',
 //    'image'

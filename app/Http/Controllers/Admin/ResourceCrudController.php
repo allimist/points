@@ -43,7 +43,9 @@ class ResourceCrudController extends CrudController
         CRUD::column('created_at');
         CRUD::column('name');
 //        CRUD::column('currency_id');
+        CRUD::column('size');
         CRUD::column('image')->type('image');
+        CRUD::column('image_hover')->type('image');
 //        $this->crud->addField([
 
         /**
@@ -64,6 +66,7 @@ class ResourceCrudController extends CrudController
         CRUD::setValidation(ResourceRequest::class);
 
         CRUD::field('name');
+        CRUD::field('size')->type('number');
 //        CRUD::field('currency_id');
 //        CRUD::field('revenue');
 //        CRUD::field('reload');
@@ -71,6 +74,14 @@ class ResourceCrudController extends CrudController
         $this->crud->addField([
             'label' => 'Image',
             'name' => 'image',
+            'type' => 'image',
+            'crop' => true, // set to true to allow cropping, false to disable
+            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+        ]);
+
+        $this->crud->addField([
+            'label' => 'Image Hover',
+            'name' => 'image_hover',
             'type' => 'image',
             'crop' => true, // set to true to allow cropping, false to disable
             'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio

@@ -23,6 +23,7 @@ class Land extends Model
         'owner_id',
         'type',
         'size',
+        'image',
     ];
 
     /**
@@ -34,7 +35,22 @@ class Land extends Model
         'id' => 'integer',
         'user_id' => 'integer',
         'size' => 'integer',
+        'image' => 'string',
     ];
+
+    public function setImageAttribute($value)
+    {
+        $attribute_name = "image";
+        $disk = "public";
+        $destination_path = "uploads/images/lands";
+        $destination_path = "lands";
+
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+
+        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
+    }
+
+
 
 //    public function user(): BelongsTo
 //    {

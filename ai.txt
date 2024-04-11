@@ -1,0 +1,18 @@
+add next data to this welcome page
+name: "Points"
+type: play to earn game
+
+
+
+description: hero move on old world map get resource craft items and sell them for game token called points
+the game world include many interesting scenariops like deserts, forests, snow, mountains, farm, factories, villages, castles, islands, mines, and more. each one has different resources and items. the hero can move to another scenario by walking or use transport like horse carriage or boats.
+
+the game include market to sell and buy items and resources, the player can offer items for sale or buy, and other players can visit his market and buy items or sell to him.
+
+the game include quests to do and get rewards.
+
+the game include  leaderboard  to show the top players.
+
+the game include chat to allow players to chat.
+
+the game include the game token called points, the player can use it to buy items or resources from the market or other players, or to buy a ticket to enter a special scenario.
