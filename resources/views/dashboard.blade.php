@@ -93,31 +93,6 @@ $heroland = \App\Models\Land::where('id', Auth::user()->land_id)->first();
 {{--    <h2>Message: <span id="serverMessage"></span></h2>--}}
 {{--</div>--}}
 
-<script>
-        if (!!window.EventSource) {
-        // console.log('ok');
-
-        var source = new EventSource("/stream");
-        //
-        source.onmessage = function(event) {
-            // console.log('m');
-            // Parse the JSON data
-            var data = JSON.parse(event.data);
-
-            // Log the data or use it to update the DOM
-            // console.log(data); // Example: { time: "2023-04-01T12:34:56", message: "Hello from Laravel SSE!" }
-
-            // Update the DOM or perform other actions with the data
-            // document.getElementById("serverTime").innerText = data.time;
-            // document.getElementById("serverMessage").innerText = data.message;
-
-            usersArray = data.usersArray;
-        };
-    } else {
-        console.log("Your browser does not support server-sent events.");
-    }
-</script>
-
 
 {{--<script src="v.js"></script>--}}
 

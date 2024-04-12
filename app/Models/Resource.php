@@ -20,6 +20,7 @@ class Resource extends Model
         'name',
 //        'currency_id',
         'size',
+        'type',
         'image',
         'image_hover',
     ];
@@ -36,4 +37,27 @@ class Resource extends Model
 //        'reload' => 'integer',
 //    'image'
     ];
+
+    public function setImageAttribute($value)
+    {
+        $attribute_name = "image";
+        $disk = "public";
+        $destination_path = "resources";
+
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+
+        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
+    }
+
+
+    public function setImageHoverAttribute($value)
+    {
+        $attribute_name = "image_hover";
+        $disk = "public";
+        $destination_path = "resources";
+
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+
+        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
+    }
 }

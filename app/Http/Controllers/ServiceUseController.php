@@ -266,9 +266,13 @@ class ServiceUseController extends Controller
         $farm_id = \request('farm_id');
         $service_id = \request('service_id');
         $amount = \request('amount');
+
+        //test if amout is valid
         if(empty($amount)){
             $amount = 1;
         }
+
+
 
 
 //        echo 'user id: '. $user_id.'<br>';
@@ -280,6 +284,37 @@ class ServiceUseController extends Controller
             $currencyArray[$currency->id] = $currency->name;
         }
         $service = \App\Models\Service::find($service_id);
+
+        //amount allow on market only
+        if($service->resource_id != 10){
+            $amount = 1;
+        }
+
+        //if it task validate in user tasks
+        if($service->resource_id == 5){
+//            $task_ids = [];
+//            if(!empty(Auth::user()->task_ids)){
+//                $task_ids = json_decode(Auth::user()->task_ids);
+//            }
+            $user = Auth::user();
+            if(empty($user->task_ids)){
+                $data = [
+                    'status' => 'error',
+                    'message' => 'No tasks',
+                    'extra' => 'No tasks',
+                ];
+                return response()->json($data);
+            }
+            $task_ids = json_decode($user->task_ids);
+            if(!in_array($service_id, $task_ids)){
+                $data = [
+                    'status' => 'error',
+                    'message' => 'Task not found',
+                    'extra' => 'Task not found',
+                ];
+                return response()->json($data);
+            }
+        }
 
 
         //VALIDATE IF USER can use service
@@ -479,6 +514,38 @@ class ServiceUseController extends Controller
 //            die;
         }
 
+        //clear user task to get new one
+        if($service->resource_id == 5){
+
+            //remove task from task_ids array
+            $task_ids = json_decode(Auth::user()->task_ids,1);
+
+            if (($key = array_search($service_id, $task_ids)) !== false) {
+                unset($task_ids[$key]);
+            }
+
+            $new_task_ids = [];
+//            $first = false;
+            foreach ($task_ids as $key => $task_id){
+//                if($task_id != $service_id){
+////                    unset($task_ids[$key]);
+////                    break;
+                    $new_task_ids[] = $task_id;
+//                } else {
+//
+//                }
+            }
+//            $task_ids = array_diff($task_ids, [$service_id]);
+
+            Auth::user()->task_ids = $new_task_ids;
+            Auth::user()->save();
+
+//            dd($task_ids);
+//            $user = Auth::user();
+//            $user->task_ids = null;
+//            $user->save();
+        }
+
         $balanceArray = $this->Apibalance($currencyArray);
 
 
@@ -583,7 +650,55 @@ class ServiceUseController extends Controller
 //        $this->balance($currencyArray);
 
         $farm = \App\Models\Farm::find(\request('farm_id'));
-        $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
+
+        if($farm->resource_id == 5){
+
+            $open_tasks = 2;
+
+            $user_id = Auth::id();
+            if(empty($user_id)){
+                echo 'User not logged in';
+                die;
+            }
+//            dd($user_id = Auth::user()->tasks);
+            $task_ids = [];
+            if(!empty(Auth::user()->task_ids)){
+                $task_ids = json_decode(Auth::user()->task_ids);
+            }
+            if(sizeof($task_ids) < $open_tasks){
+
+                $services = \App\Models\Service::where('resource_id', 5)->get();
+
+                $tasks = [];
+//                $task_ids = [];
+                for ($i = sizeof($task_ids); $i < $open_tasks; $i++) {
+//                    echo sizeof($services);
+                    $random = rand(0, sizeof($services) -1);
+//                    $tasks[] = $services[$random];
+                    $task_ids[] = $services[$random]->id;
+//                    break;
+                }
+                Auth::user()->task_ids = $task_ids;
+                Auth::user()->save();
+
+            }
+
+            foreach ($task_ids as $task_id){
+                $tasks[] = \App\Models\Service::where('id', $task_id)->first();
+            }
+
+//            else {
+//                $tasks = \App\Models\Service::whereIn('id', $task_ids)->get();
+//            }
+//            $services = \App\Models\Service::whereIn('id', $task_ids)->get();
+
+            $services = $tasks;
+
+
+        } else {
+            $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
+        }
+
 
         $data = [
             'services' => $services
@@ -653,6 +768,82 @@ class ServiceUseController extends Controller
 
 
     }
+    public function ApiSell()
+    {
+
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+
+        $currencies = \App\Models\Currency::all();
+        foreach ($currencies as $currency){
+            $currencyArray[$currency->id] = $currency->name;
+        }
+
+//        $farm_id = \request('farm_id');
+        $service_id = \request('service_id');
+        $price = \request('price');
+        $amount = \request('amount');
+
+        $service = \App\Models\Service::find($service_id);
+
+
+        //validate if user has enough resource
+
+        //decrease balance
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $service->cost[0]['resource'])->first();
+
+        if(empty($balance) || $balance->value < $amount){
+            $msg = 'Not enough resource';
+            $msg_balance = 'Not enough resource';
+            $data = [
+                'status' => 'success',
+                'message' => $msg,
+                'extra' => $msg_balance,
+//                'balance' => $balanceArray
+            ];
+            return response()->json($data);
+
+        } else {
+            $balance->value = $balance->value - $amount;
+            $msg = '-'.($amount).' '.$service->cost[0]['resource'].' <br>';
+            $msg_balance = '-'.($amount).' '.$currencyArray[$service->cost[0]['resource']].' <br>';
+            $balance->save();
+        }
+
+        //add order
+        $order = new \App\Models\Order();
+        $order->service_id = $service_id;
+        $order->user_id = $user_id;
+        $order->type = 'sell';
+        $order->price = $price;
+        $order->amount = $amount;
+        $order->save();
+
+//        dd($service->cost[0]['resource']);
+
+//        echo 1; die;
+
+//        echo "ok";
+        //back link
+//        return Redirect::route('dashboard')->with('status', 'balance-updated');
+        $balanceArray = $this->Apibalance($currencyArray);
+
+        $data = [
+            'status' => 'success',
+            'message' => $msg,
+            'extra' => $msg_balance,
+            'balance' => $balanceArray
+        ];
+
+//        return Redirect::route('dashboard')->with('status', 'balance-updated');
+        return response()->json($data);
+
+
+
+    }
 
     public function orders()
     {
@@ -693,7 +884,8 @@ class ServiceUseController extends Controller
         }
 
         //back link
-        echo '<a href ="/dashboard">Back</a>';
+//        echo '<a href ="/dashboard">Back</a>';
+        echo '<a href ="/play">Back</a>';
 
         die;
 //        return view('service-use.select', ['services' => $services]);
@@ -710,14 +902,18 @@ class ServiceUseController extends Controller
 
         $order = \App\Models\Order::find(\request('order_id'));
         echo '<br>Order id: '.$order->id.'<br>';
-        echo 'Price: '.$order->price.'<br>';
-        echo 'Amount: '.$order->amount.'<br>';
+        echo 'Order Price: '.$order->price.'<br>';
+        echo 'Amount in sale: '.$order->amount.'<br>';
 
         echo '<form action="/service-use/buy" method="get">';
         echo '<input type="hidden" name="order_id" value="'.$order->id.'">';
-        echo 'Amount:<input type="number" id="amount" name="amount" value="'.$order->amount.'" min="1" max="1000"> ';
+        echo 'Amount to buy: <input type="number" id="amount" name="amount" value="'.$order->amount.'" min="1" max="1000"> ';
+        echo 'Price: '.$order->price.' Coins<br>';
         echo '<input type="submit" value="Buy">';
         echo '</form>';
+
+        //back link
+        echo '<a href ="/service-use/orders?farm_id=18">Back</a>';
 
         die;
 //        return view('service-use.select', ['services' => $services]);
@@ -805,9 +1001,11 @@ class ServiceUseController extends Controller
 //        dd($service->cost[0]['resource']);
 
 
-        echo "ok";
+//        echo "ok";
+//        echo '<a href ="/service-use/orders?farm_id=18&service_id='.$service->id.'">Back</a>';
         echo '<a href ="/service-use/orders?farm_id=18&service_id='.$service->id.'">Back</a>';
-        echo 1; die;
+//        echo 1;
+        die;
 
         //back link
 //        return Redirect::route('dashboard')->with('status', 'balance-updated');

@@ -14,7 +14,7 @@ $user_id = Auth::user()->id;
 
 $currency = \App\Models\Currency::get();
 foreach ($currency as $c) {
-    $currencyArray[$c->id] = $c->name;
+    $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image];
 }
 
 $balance = \App\Models\Balance::where('user_id', $user_id)->get();
@@ -35,8 +35,10 @@ foreach ($avatars as $avatar) {
 $resource = \App\Models\Resource::get();
 //dd($resource);
 foreach ($resource as $r) {
-    $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'img'=>$r->image,'img_hover'=>$r->image_hover];
-    if($r->id == 3){
+//    dd($r);
+
+    $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'type'=>$r->type, 'img'=>$r->image,'img_hover'=>$r->image_hover];
+    if($r->id == 3 || $r->id == 6){
         $resourceArray[$r->id]['amountable'] = true;
     } else {
         $resourceArray[$r->id]['amountable'] = false;
@@ -203,13 +205,15 @@ foreach ($users as $u) {
             <?php
             foreach ($currencyArray as $key => $value) {
                 if(!empty($balanceArray[$key])) {
-                    echo $value.':'.$balanceArray[$key].' | ';
+                    echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$value['name'].':'.$balanceArray[$key].' | ';
                 }
             }
             ?>
         </div>
         <div class="actions">
-          <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button>
+            <a class="btn" href="/dashboard">Dashboard</a>
+
+            <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button>
           <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button>
             <div id="addResource">
                 <?php
@@ -251,6 +255,7 @@ foreach ($users as $u) {
     let avatar_id = {{ Auth::user()->avatar_id }};
     let balanceArray = <?php echo json_encode($balanceArray); ?>;
     let avatarsArray = <?php echo json_encode($avatarsArray); ?>;
+    let currencyArray = <?php echo json_encode($currencyArray); ?>;
     let resourceArray = <?php echo json_encode($resourceArray); ?>;
     let serviceArray = <?php echo json_encode($serviceArray); ?>;
     let farmsArray = <?php echo json_encode($farmsArray); ?>;

@@ -18,11 +18,14 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-
-                <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('play')" :active="request()->routeIs('play')">
                         {{ __('Play') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('avatar')" :active="request()->routeIs('avatar')">
+                        {{ __('Avatar') }}
                     </x-nav-link>
                 </div>
 

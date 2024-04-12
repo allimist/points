@@ -1,1 +1,1 @@
-<input type="file" name="image" id="image" class="form-control">
+<input type="file" name="{{$field['name']}}" class="form-control">

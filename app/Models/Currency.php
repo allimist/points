@@ -18,7 +18,7 @@ class Currency extends Model
      */
     protected $fillable = [
         'name',
-        'sign',
+        'image',
     ];
 
     /**
@@ -29,4 +29,16 @@ class Currency extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+
+    public function setImageAttribute($value)
+    {
+        $attribute_name = "image";
+        $disk = "public";
+        $destination_path = "currencies";
+
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+
+        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
+    }
+
 }

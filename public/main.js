@@ -13,7 +13,7 @@ document.getElementsByClassName('closeBtn')[0].onclick = function() {
 // }
 
 if (!!window.EventSource) {
-    var source = new EventSource("/stream");
+    var source = new EventSource("/stream?land_id="+land_id);
     source.onmessage = function(event) {
         var data = JSON.parse(event.data);
         serverTime = data.serverTime;
@@ -51,6 +51,343 @@ function editor_mode(em) {
     // edit_mode = !edit_mode;
     //save to local storage
     // localStorage.setItem('edit_mode', edit_mode);
+}
+
+
+
+
+function isCollidingWithObjects(proposedPosition) {
+    let collision = false;
+    Object.keys(farmsArray).forEach(i => {
+
+        // if{}
+
+        if( resourceArray[farmsArray[i].resource_id].type != 'rug' &&
+            proposedPosition.x < farmsObjectPos[i].x &&
+            proposedPosition.x > farmsObjectPos[i].x - farmsObjectSize[i] &&
+            proposedPosition.y < farmsObjectPos[i].y &&
+            proposedPosition.y > farmsObjectPos[i].y - farmsObjectSize[i]
+        ){
+
+            // if(i == 36){
+            //     console.log('farmsArray[i].resource_id', farmsArray[i].resource_id);
+            //     console.log('resourceArray[farmsArray[i].resource_id].type', resourceArray[farmsArray[i].resource_id]);
+            // }
+
+            collision = true;
+            // return true;
+            return;
+        }
+        if(collision){
+            return;
+        }
+    });
+    return collision;
+}
+
+function land_go_select() {
+    //ajax call to /api/land/list
+    $.ajax({
+        url: "/api/land/list",
+    }).done(function(resp) {
+        // console.log("resp: ", resp);
+        isPopupVisible = true;
+        let html_form = 'Select land [1-5]<form action="/land/go" method="get">';
+        for (let i = 0; i < resp.length; i++) {
+            html_form += '- <a href="/land/go?id=' + resp[i].id + '">' + resp[i].name + '</a><br>';
+        }
+        document.getElementById('popup-text').innerHTML = html_form;
+        document.getElementById('popup').style.display = 'block';
+    });
+}
+
+function select_service(farm_id) {
+
+    // console.log('services len', Object.values(farmsServiceArray[farm_id]).length);
+    // farmsServiceArray[farm_id].length);
+    // farmsServiceArrayLen = Object.values(farmsServiceArray[farm_id]).length;
+
+    $.ajax({
+        url: "/api/service-use/select?farm_id=" + farm_id,
+    }).done(function(resp) {
+        // console.log("resp: ", resp);
+        // console.log("resourceArray[farmsArray[farm_id].resource_id]: ", resourceArray[farmsArray[farm_id].resource_id]);
+        // console.log('serviceArray', resp.services);
+
+        let html = '';
+
+        if(!resourceArray[farmsArray[farm_id].resource_id].amountable){
+            for (let i = 0; i < resp.services.length; i++) {
+                // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
+                // console.log('ssssssss', resp.services[i]);
+                // console.log('resource_id', farmsArray[farm_id].resource_id);
+                html += '- <span onclick = "start(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
+            }
+        } else {
+            for (let i = 0; i < resp.services.length; i++) {
+                // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
+                console.log('ssssssss', resp.services[i]);
+                // console.log('resource_id', farmsArray[farm_id].resource_id);
+                html += '<div class="service_item" ' +
+                    'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                    ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
+                    '>x '+resp.services[i].revenue[0].value+'<br>'
+
+                // html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="150" height="150">';
+                html += 'x '+resp.services[i].cost[0].value+' '
+                html += '<img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="50" height="50">';
+                html += '- <span>' + resp.services[i].name + '</span></div>';
+            }
+        }
+        // console.log('html', html);
+
+        isPopupVisible = true;
+        document.getElementById('popup-text').innerHTML = html;
+        document.getElementById('popup').style.display = 'block';
+
+
+    });
+
+
+
+}
+
+function select_amount(farm_id,service_id) {
+
+
+    let html = '';
+
+    //if exchnage sell add price field
+    if(farmsArray[farm_id].resource_id == 6){
+        html += 'Price: <input type="number" id="price" name="price" value="1" min="1" max="1000"> (max 1000 Coins)<br>';
+    }
+
+    html += 'Amount<input type="number" id="amount" name="amount" value="1" min="1" max="100"> (max 100 items)<br>';
+    html += '<button onclick="start_amount(' + farm_id + ',' + service_id + ')">Start</button>';
+
+    //back btn
+    html += '<br><button onclick="select_service(' + farm_id + ')">Back</button>';
+
+    document.getElementById('popup-text').innerHTML = html;
+
+
+    // console.log('services len', Object.values(farmsServiceArray[farm_id]).length);
+    // farmsServiceArray[farm_id].length);
+    // farmsServiceArrayLen = Object.values(farmsServiceArray[farm_id]).length;
+
+    // $.ajax({
+    //     url: "/api/service-use/select?farm_id=" + farm_id,
+    // }).done(function(resp) {
+    // console.log("resp: ", resp);
+    // console.log("resourceArray[farmsArray[farm_id].resource_id]: ", resourceArray[farmsArray[farm_id].resource_id]);
+    // console.log('serviceArray', resp.services);
+
+    // let html = '';
+    //
+    // if(!resourceArray[farmsArray[farm_id].resource_id].amountable){
+    //     for (let i = 0; i < resp.services.length; i++) {
+    //         // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
+    //         // console.log('ssssssss', resp.services[i]);
+    //         // console.log('resource_id', farmsArray[farm_id].resource_id);
+    //         html += '- <span onclick = "start(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
+    //     }
+    // } else {
+    //     for (let i = 0; i < resp.services.length; i++) {
+    //         // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
+    //         // console.log('ssssssss', resp.services[i]);
+    //         // console.log('resource_id', farmsArray[farm_id].resource_id);
+    //         html += '- <span onclick = "amount(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
+    //     }
+    // }
+    // console.log('html', html);
+
+    // isPopupVisible = true;
+    // document.getElementById('popup-text').innerHTML = html;
+    // document.getElementById('popup').style.display = 'block';
+
+
+    // });
+
+
+
+}
+
+function start_amount(farm_id,service_id) {
+    // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+
+
+    console.log('selected amount:', $('#amount').val());
+    //return;
+
+    let urlaction;
+
+    if(farmsArray[farm_id].resource_id == 6){
+        urlaction= "/api/service-use/sell?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#amount').val() + "&price=" + $('#price').val();
+    } else {
+        urlaction= "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#amount').val();
+    }
+
+
+    $.ajax({
+        url: urlaction
+    }).done(function(resp) {
+        console.log("resp: ", resp);
+
+        let html = '';
+        // if(resp.status == 'success'){
+        //     if(serviceArray[service_id].time>0){
+        //         farmsArray[farm_id].status = 'in_use';
+        //         farmsArray[farm_id].text = serviceArray[service_id].time;
+        //         isCooldownActive[farm_id] = true;
+        //         cooldownDuration[farm_id] = serviceArray[service_id].time;
+        //         cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
+        //     }
+        //     if(serviceArray[service_id].reload>0){
+        //         farmsArray[farm_id].status = 'reload';
+        //         farmsArray[farm_id].text = serviceArray[service_id].reload;
+        //         isCooldownActive[farm_id] = true;
+        //         cooldownDuration[farm_id] = serviceArray[service_id].reload;
+        //         cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
+        //     }
+        // } else {
+        //     //     html += 'Error';
+        // }
+
+        // if(resp.message){
+        //     html += '<br>' + resp.message;
+        // }
+
+        if(resp.extra){
+            html += '<br>' + resp.extra;
+        }
+
+        // isPopupVisible = true;
+
+        document.getElementById('popup-text').innerHTML = html;
+        // document.getElementById('popup').style.display = 'block';
+
+        // console.log('serviceArray', serviceArray[service_id]);
+        //
+        setTimeout(() => {
+            // document.getElementById('popup').style.display = 'none';
+            // isPopupVisible = false;
+            select_service(farm_id);
+
+        },2000);
+        //
+        // document.getElementById('p-head').textContent = resp.balance;
+
+
+    });
+
+}
+
+
+function start(farm_id,service_id) {
+    // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+    $.ajax({
+        url: "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id,
+    }).done(function(resp) {
+        console.log("resp: ", resp);
+
+        let html = '';
+        if(resp.status == 'success'){
+            //     html += 'Success';
+            //     delete farmsServiceArray[farm_id];
+            //reload page
+            // window.location.reload();
+            if(serviceArray[service_id].time>0){
+                farmsArray[farm_id].status = 'in_use';
+                farmsArray[farm_id].text = serviceArray[service_id].time;
+                isCooldownActive[farm_id] = true;
+                cooldownDuration[farm_id] = serviceArray[service_id].time;
+                cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
+            }
+            if(serviceArray[service_id].reload>0){
+                farmsArray[farm_id].status = 'reload';
+                farmsArray[farm_id].text = serviceArray[service_id].reload;
+                isCooldownActive[farm_id] = true;
+                cooldownDuration[farm_id] = serviceArray[service_id].reload;
+                cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
+            }
+        } else {
+            //     html += 'Error';
+        }
+
+        // if(resp.message){
+        //     html += '<br>' + resp.message;
+        // }
+
+        if(resp.extra){
+            html += '<br>' + resp.extra;
+        }
+
+        isPopupVisible = true;
+
+        document.getElementById('popup-text').innerHTML = html;
+        document.getElementById('popup').style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('popup').style.display = 'none';
+            isPopupVisible = false;
+        },2000);
+
+        // if(resp.balance){
+        document.getElementById('balance').textContent = resp.balance;
+        // }
+
+
+    });
+}
+
+function claim(farm_id,service_id) {
+    // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+    $.ajax({
+        url: "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id,
+    }).done(function(resp) {
+        console.log("resp: ", resp);
+
+        let html = '';
+        // if(resp.status == 'success'){
+        //     html += 'Success';
+        //     delete farmsServiceArray[farm_id];
+        //reload page
+        // window.location.reload();
+        // } else {
+        //     html += 'Error';
+        // }
+
+        // if(resp.message){
+        //     html += '<br>' + resp.message;
+        // }
+
+        if(resp.extra){
+            html += '<br>' + resp.extra;
+        }
+
+        document.getElementById('popup-text').innerHTML = html;
+        document.getElementById('popup').style.display = 'block';
+
+        if(serviceArray[service_id].reload>0){
+            farmsArray[farm_id].status = 'reload';
+            farmsArray[farm_id].text = serviceArray[service_id].reload;
+            isCooldownActive[farm_id] = true;
+            cooldownDuration[farm_id] = farmsArray[farm_id].text;
+        } else {
+            farmsArray[farm_id].status = 'start';
+            farmsArray[farm_id].text = 'Start';
+        }
+
+
+        setTimeout(() => {
+            document.getElementById('popup').style.display = 'none';
+        },2000);
+
+
+        document.getElementById('balance').textContent = resp.balance;
+
+
+    });
 }
 
 

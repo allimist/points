@@ -36,6 +36,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/avatar', function () {
+    return view('avatar');
+})->middleware(['auth', 'verified'])->name('avatar');
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -65,6 +71,7 @@ Route::get('/api/play/load', [PlayController::class,  'apiLoad']);
 Route::get('/api/land/list', [LandController::class,  'apiList']);
 Route::get('/api/service-use/select',    [ServiceUseController::class,  'ApiSelect']);
 Route::get('/api/service-use/claim',    [ServiceUseController::class,  'ApiClaim']);
+Route::get('/api/service-use/sell',     [ServiceUseController::class,  'ApiSell']);
 
 Route::get('/position/set',          [LandController::class,  'setPosition']);//save farm pos
 Route::get('/farm/add',          [LandController::class,  'addFarm']);//add new farm

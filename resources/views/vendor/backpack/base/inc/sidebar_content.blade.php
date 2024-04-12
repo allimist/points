@@ -12,7 +12,7 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('farm') }}"><i class="nav-icon la la-question"></i> Farms</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('service-use') }}"><i class="nav-icon la la-question"></i> Service uses</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('order') }}"><i class="nav-icon la la-question"></i> Orders</a></li>
-
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('userdata') }}"><i class="nav-icon la la-question"></i> Userdatas</a></li>
 <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-users"></i> Authentication</a>
     <ul class="nav-dropdown-items">
@@ -22,3 +22,5 @@
     </ul>
 </li>
 
+
+{{--<li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-question"></i> Users</a></li>--}}

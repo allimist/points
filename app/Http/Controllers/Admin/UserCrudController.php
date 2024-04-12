@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\CurrencyRequest;
+use App\Http\Requests\UserRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class CurrencyCrudController
+ * Class UserCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class CurrencyCrudController extends CrudController
+class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,9 @@ class CurrencyCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Currency::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/currency');
-        CRUD::setEntityNameStrings('currency', 'currencies');
+        CRUD::setModel(\App\Models\User::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
+        CRUD::setEntityNameStrings('user', 'users');
     }
 
     /**
@@ -39,10 +39,10 @@ class CurrencyCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
-        CRUD::column('created_at');
         CRUD::column('name');
-        CRUD::column('image')->type('image')->prefix('storage/');
+        CRUD::column('email');
+        CRUD::column('password');
+        CRUD::column('avatar_id');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -59,19 +59,12 @@ class CurrencyCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(CurrencyRequest::class);
+        CRUD::setValidation(UserRequest::class);
 
         CRUD::field('name');
-        //image
-        $this->crud->addField([
-            'name' => 'image', // The db column name where the image path is stored
-            'label' => 'Image', // Field label shown on the form
-            'type' => 'image_custom',
-//            'type' => 'image',
-//            'crop' => true,
-            'upload' => true,
-
-        ]);
+        CRUD::field('email');
+        CRUD::field('password');
+        CRUD::field('avatar_id');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

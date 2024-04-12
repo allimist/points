@@ -18,7 +18,7 @@ class SSEController extends Controller
 //            }
                 $users = \DB::table('users')
                     ->select('id', 'name', 'avatar_id', 'posx', 'posy')
-                    ->where('land_id', 1)
+                    ->where('land_id', \request('land_id'))
                     ->where('active_at', '>=', now()->subMinutes(15))
                     ->get();
 

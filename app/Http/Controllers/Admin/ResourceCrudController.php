@@ -44,8 +44,12 @@ class ResourceCrudController extends CrudController
         CRUD::column('name');
 //        CRUD::column('currency_id');
         CRUD::column('size');
-        CRUD::column('image')->type('image');
-        CRUD::column('image_hover')->type('image');
+        CRUD::column('type');
+//        CRUD::column('image')->type('image');
+        CRUD::column('image')->type('image')->prefix('storage/');
+        CRUD::column('image_hover')->type('image')->prefix('storage/');
+
+//        CRUD::column('image_hover')->type('image');
 //        $this->crud->addField([
 
         /**
@@ -67,25 +71,45 @@ class ResourceCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('size')->type('number');
-//        CRUD::field('currency_id');
+        CRUD::field('type');
 //        CRUD::field('revenue');
 //        CRUD::field('reload');
         // image
+//        $this->crud->addField([
+//            'label' => 'Image',
+//            'name' => 'image',
+//            'type' => 'image',
+//            'crop' => true, // set to true to allow cropping, false to disable
+//            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+//        ]);
         $this->crud->addField([
-            'label' => 'Image',
-            'name' => 'image',
-            'type' => 'image',
-            'crop' => true, // set to true to allow cropping, false to disable
-            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+            'name' => 'image', // The db column name where the image path is stored
+            'label' => 'Image', // Field label shown on the form
+            'type' => 'image_custom',
+//            'type' => 'image',
+//            'crop' => true,
+            'upload' => true,
+
         ]);
 
+
         $this->crud->addField([
-            'label' => 'Image Hover',
-            'name' => 'image_hover',
-            'type' => 'image',
-            'crop' => true, // set to true to allow cropping, false to disable
-            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+            'name' => 'image_hover', // The db column name where the image path is stored
+            'label' => 'Image', // Field label shown on the form
+            'type' => 'image_custom',
+//            'type' => 'image',
+//            'crop' => true,
+            'upload' => true,
         ]);
+
+
+//        $this->crud->addField([
+//            'label' => 'Image Hover',
+//            'name' => 'image_hover',
+//            'type' => 'image',
+//            'crop' => true, // set to true to allow cropping, false to disable
+//            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+//        ]);
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

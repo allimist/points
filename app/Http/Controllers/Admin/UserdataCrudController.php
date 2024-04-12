@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\CurrencyRequest;
+use App\Http\Requests\UserdataRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class CurrencyCrudController
+ * Class UserdataCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class CurrencyCrudController extends CrudController
+class UserdataCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,16 @@ class CurrencyCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Currency::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/currency');
-        CRUD::setEntityNameStrings('currency', 'currencies');
+
+        CRUD::setModel(\App\Models\User::class);
+//        CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
+//        CRUD::setEntityNameStrings('user', 'users');
+
+//        CRUD::setModel(\App\Models\Userdata::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/userdata');
+        CRUD::setEntityNameStrings('userdata', 'userdatas');
+
+
     }
 
     /**
@@ -41,8 +48,19 @@ class CurrencyCrudController extends CrudController
     {
         CRUD::column('id');
         CRUD::column('created_at');
-        CRUD::column('name');
-        CRUD::column('image')->type('image')->prefix('storage/');
+//        CRUD::column('name');
+        CRUD::column('email');
+        CRUD::column('avatar_id');
+        CRUD::column('task_ids');
+        CRUD::column('land_id');
+        CRUD::column('reputation');
+//        CRUD::column('updated_at');
+        CRUD::column('active_at');
+        CRUD::column('posx');
+        CRUD::column('posy');
+
+
+
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -59,19 +77,23 @@ class CurrencyCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(CurrencyRequest::class);
+        CRUD::setValidation(UserdataRequest::class);
 
-        CRUD::field('name');
-        //image
-        $this->crud->addField([
-            'name' => 'image', // The db column name where the image path is stored
-            'label' => 'Image', // Field label shown on the form
-            'type' => 'image_custom',
-//            'type' => 'image',
-//            'crop' => true,
-            'upload' => true,
+//        CRUD::field('email');
 
-        ]);
+//        CRUD::field('created_at');
+//        CRUD::column('name');
+        CRUD::field('email');
+        CRUD::field('avatar_id');
+        CRUD::field('task_ids');
+//        CRUD::column('land_id');
+//        CRUD::field('reputation');
+//        CRUD::column('updated_at');
+//        CRUD::column('active_at');
+//        CRUD::column('posx');
+//        CRUD::column('posy');
+
+
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

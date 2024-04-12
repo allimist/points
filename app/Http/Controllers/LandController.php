@@ -185,8 +185,8 @@ class LandController extends Controller
         $farm = new \App\Models\Farm();
         $farm->resource_id = \request('resource_id');
         $farm->land_id = Auth::user()->land_id;
-        $farm->posx = 0;
-        $farm->posy = 0;
+        $farm->posx = Auth::user()->posx;
+        $farm->posy = Auth::user()->posy;
         $farm->save();
 
         return Redirect::route('play');
