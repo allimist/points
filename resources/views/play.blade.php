@@ -191,16 +191,15 @@ foreach ($users as $u) {
 
 
 
-
 <x-app-layout class="">
     <div class="p-head">
-        <div>
-            Reputation : {{ Auth::user()->reputation }} |
-            Location : {{ '#'.Auth::user()->land_id.' '.$heroland->name }} |
-            posx : {{ Auth::user()->posx }} |
-            posy : {{ Auth::user()->posy }} |
-            active_at : {{ Auth::user()->active_at }} <br>
-        </div>
+{{--        <div>--}}
+{{--            Reputation : {{ Auth::user()->reputation }} |--}}
+{{--            Location : {{ '#'.Auth::user()->land_id.' '.$heroland->name }} |--}}
+{{--            posx : {{ Auth::user()->posx }} |--}}
+{{--            posy : {{ Auth::user()->posy }} |--}}
+{{--            active_at : {{ Auth::user()->active_at }} <br>--}}
+{{--        </div>--}}
         <div id="balance" class="">
             <?php
             foreach ($currencyArray as $key => $value) {
@@ -214,7 +213,7 @@ foreach ($users as $u) {
             <a class="btn" href="/dashboard">Dashboard</a>
 
             <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button>
-          <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button>
+            <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button>
             <div id="addResource">
                 <?php
                 foreach ($resourceArray as $key => $value) {

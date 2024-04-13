@@ -5,14 +5,39 @@
     color: #fff;
     width: 100%;
 }
+#balance {
+    display: inline-block;
+    /*position: absolute;*/
+    /*bottom: 0;*/
+    /*right: 0;*/
+    /*background-color: #333;*/
+    /*color: #fff;*/
+    /*padding: 5px;*/
+    /*border-radius: 5px;*/
+    /*margin: 5px;*/
+}
+
+.actions {
+    /*display: inline-block;*/
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px;
+}
+
 #editor_mode_on,#editor_mode_off{
     display: none;
+    /*position: absolute;*/
+    /*top: 200px;*/
+}
+#editor_mode_on:hover,#editor_mode_off:hover{
+    background-color: #0e111c;
 }
 #addResource{display: none;}
-
-
-
-#defaultCanvas0 {margin: 0 auto;}
 
 .resources {
     width: 20px;
@@ -21,6 +46,10 @@
     /*cursor: pointer;*/
     display: inline-block;
 }
+
+#defaultCanvas0 {padding: 50px 0 0 0;}
+
+
 
 
 

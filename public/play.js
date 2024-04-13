@@ -5,7 +5,7 @@ const moveThreshold = 200;
 let speed = 2;
 //patch for vip
 if(balanceArray[13] >0){
-    speed = 5;
+    speed = 4;
 }
 
 let heroSize = 70;
@@ -120,11 +120,11 @@ function preload() {
 
 function setup() {
 
-    if(windowHeight > 500){
-        createCanvas(windowWidth, 500);
-    } else {
+    // if(windowHeight > 500){
+    //     createCanvas(windowWidth, 500);
+    // } else {
         createCanvas(windowWidth, windowHeight);
-    }
+    // }
 
     // createCanvas(windowWidth, 500);
     heroFlipped = createGraphics(hero.width, hero.height);

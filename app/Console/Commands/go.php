@@ -26,6 +26,17 @@ class go extends Command
     public function handle()
     {
 
+        //add energy
+        $balances = \App\Models\Balance::where('currency_id', 1)
+            ->where('value', '<', 1000)
+            ->get();
+        foreach ($balances as $balance) {
+            echo $balance->value . '\r\n';
+            $balance->value++;
+            $balance->save();
+        }
+
+        //fix energy
         $balances = \App\Models\Balance::where('currency_id', 1)
             ->where('value', '>', 1000)
             ->get();
@@ -35,15 +46,12 @@ class go extends Command
             $balance->save();
         }
 
+        //add reputation
 
-        $balances = \App\Models\Balance::where('currency_id', 1)
-            ->where('value', '<', 1000)
-            ->get();
-        foreach ($balances as $balance) {
-            echo $balance->value . '\r\n';
-            $balance->value++;
-            $balance->save();
-        }
+
+        //-1day vip
+
+
 
 
     }
