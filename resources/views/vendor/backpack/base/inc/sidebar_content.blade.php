@@ -8,6 +8,7 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('balance') }}"><i class="nav-icon la la-question"></i> Balances</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('resource') }}"><i class="nav-icon la la-question"></i> Resources</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('service') }}"><i class="nav-icon la la-question"></i> Services</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('land-type') }}"><i class="nav-icon la la-question"></i> Land types</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('land') }}"><i class="nav-icon la la-question"></i> Lands</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('farm') }}"><i class="nav-icon la la-question"></i> Farms</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('service-use') }}"><i class="nav-icon la la-question"></i> Service uses</a></li>
@@ -24,3 +25,4 @@
 
 
 {{--<li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-question"></i> Users</a></li>--}}
+

@@ -18,7 +18,10 @@ class Currency extends Model
      */
     protected $fillable = [
         'name',
+        'resource_id',
+        'service_id',
         'image',
+
     ];
 
     /**
@@ -28,7 +31,14 @@ class Currency extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'resource_id' => 'integer',
+        'service_id' => 'integer',
     ];
+
+//    public function service(): BelongsTo
+//    {
+//        return $this->belongsTo(Service::class);
+//    }
 
     public function setImageAttribute($value)
     {
@@ -40,5 +50,7 @@ class Currency extends Model
 
         // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
     }
+
+
 
 }

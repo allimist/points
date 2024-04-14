@@ -48,6 +48,7 @@ class ResourceCrudController extends CrudController
 //        CRUD::column('image')->type('image');
         CRUD::column('image')->type('image')->prefix('storage/');
         CRUD::column('image_hover')->type('image')->prefix('storage/');
+//        CRUD::column('currency_id');
 
 //        CRUD::column('image_hover')->type('image');
 //        $this->crud->addField([
@@ -101,6 +102,9 @@ class ResourceCrudController extends CrudController
 //            'crop' => true,
             'upload' => true,
         ]);
+
+//        CRUD::field('currency_id');
+
 
 
 //        $this->crud->addField([

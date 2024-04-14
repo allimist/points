@@ -18,11 +18,11 @@ class Resource extends Model
      */
     protected $fillable = [
         'name',
-//        'currency_id',
         'size',
         'type',
         'image',
         'image_hover',
+//        'currency_id',
     ];
 
     /**
@@ -33,6 +33,8 @@ class Resource extends Model
     protected $casts = [
         'id' => 'integer',
         'size' => 'integer',
+//        'currency_id' => 'integer',
+
 //        'revenue' => 'integer',
 //        'reload' => 'integer',
 //    'image'
@@ -60,4 +62,10 @@ class Resource extends Model
 
         // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
     }
+
+
+//    public function currencysecond(): BelongsTo
+//    {
+//        return $this->belongsTo(Currency::class);
+//    }
 }

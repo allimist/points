@@ -5,9 +5,8 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Land extends Model
+class LandType extends Model
 {
     use CrudTrait;
     use HasFactory;
@@ -19,11 +18,10 @@ class Land extends Model
      */
     protected $fillable = [
         'name',
-        'nft',
-        'owner_id',
-        'type_id',
         'size',
+        'farms',
         'image',
+
     ];
 
     /**
@@ -34,8 +32,7 @@ class Land extends Model
     protected $casts = [
         'id' => 'integer',
         'size' => 'integer',
-        'user_id' => 'integer',
-        'type_id' => 'integer',
+        'farms' => 'array',
         'image' => 'string',
     ];
 
@@ -43,23 +40,10 @@ class Land extends Model
     {
         $attribute_name = "image";
         $disk = "public";
-        $destination_path = "uploads/images/lands";
         $destination_path = "lands";
 
         $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
 
         // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
     }
-
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(LandType::class);
-    }
-
-
-
-//    public function user(): BelongsTo
-//    {
-//        return $this->belongsTo(User::class);
-//    }
 }

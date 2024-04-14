@@ -1,32 +1,4 @@
-document.getElementsByClassName('closeBtn')[0].onclick = function() {
-    document.getElementById('popup').style.display = 'none';
-    isPopupVisible = false;
-}
 
-// script for popup
-// Close the popup if the user clicks anywhere outside of it
-// window.onclick = function(event) {
-//     if (event.target == document.getElementById('popup')) {
-//         document.getElementById('popup').style.display = 'none';
-//         isPopupVisible = false;
-//     }
-// }
-
-if (!!window.EventSource) {
-    var source = new EventSource("/stream?land_id="+land_id);
-    source.onmessage = function(event) {
-        var data = JSON.parse(event.data);
-        serverTime = data.serverTime;
-        usersArray = data.usersArray;
-    };
-} else {
-    console.log("Your browser does not support server-sent events.");
-}
-
-
-if(land_owner){
-    document.getElementById('editor_mode_on').style.display = 'block';
-}
 
 
 function editor_mode(em) {
@@ -39,14 +11,14 @@ function editor_mode(em) {
     console.log(edit_mode);
     if(edit_mode){
         // document.getElementById('editor_mode').style.color = 'red';
-        document.getElementById('addResource').style.display = 'block';
-        document.getElementById('editor_mode_off').style.display = 'block';
+        document.getElementById('addResource').style.display = 'inline';
+        document.getElementById('editor_mode_off').style.display = 'inline';
         document.getElementById('editor_mode_on').style.display = 'none';
     } else {
         // document.getElementById('editor_mode').style.color = 'black';
         document.getElementById('addResource').style.display = 'none';
         document.getElementById('editor_mode_off').style.display = 'none';
-        document.getElementById('editor_mode_on').style.display = 'block';
+        document.getElementById('editor_mode_on').style.display = 'inline';
     }
     // edit_mode = !edit_mode;
     //save to local storage
@@ -119,24 +91,53 @@ function select_service(farm_id) {
         if(!resourceArray[farmsArray[farm_id].resource_id].amountable){
             for (let i = 0; i < resp.services.length; i++) {
                 // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
-                // console.log('ssssssss', resp.services[i]);
+                console.log('not amountable', resp.services[i]);
                 // console.log('resource_id', farmsArray[farm_id].resource_id);
-                html += '- <span onclick = "start(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
+                html += '<div class="service_item" ' +
+                    // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                    ' onclick = "start(' + farm_id + ',' + resp.services[i].id + ')"' +
+                    '>';
+                html += 'x '+resp.services[i].revenue[0].value+'<br>'
+                html += currencyArray[resp.services[i].revenue[0].resource].name + ' ';
+
+                html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="70" height="70">';
+                html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="20" height="20"> ';
+                html += resp.services[i].cost[0].value+' '
+                html += currencyArray[resp.services[i].cost[0].resource].name + '</span><br>';
+                if(resp.services[i].cost[1]){
+                    html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
+                    html += resp.services[i].cost[1].value+' '
+                    html += currencyArray[resp.services[i].cost[1].resource].name + '</span>';
+                }
+
+
+                // html += '- <span>' + resp.services[i].name + '</span>';
+                html +='</div>';
+                // html += '- <span onclick = "start(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
             }
         } else {
             for (let i = 0; i < resp.services.length; i++) {
                 // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
-                console.log('ssssssss', resp.services[i]);
+                console.log('amountable', resp.services[i]);
                 // console.log('resource_id', farmsArray[farm_id].resource_id);
                 html += '<div class="service_item" ' +
-                    'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                    // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
                     ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
-                    '>x '+resp.services[i].revenue[0].value+'<br>'
+                    '>';
+                html += 'x '+resp.services[i].revenue[0].value+'<br>'
+                html += currencyArray[resp.services[i].revenue[0].resource].name + ' ';
 
-                // html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="150" height="150">';
-                html += 'x '+resp.services[i].cost[0].value+' '
-                html += '<img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="50" height="50">';
-                html += '- <span>' + resp.services[i].name + '</span></div>';
+                html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="70" height="70">';
+                html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="20" height="20"> ';
+                html += resp.services[i].cost[0].value+' '
+                html += currencyArray[resp.services[i].cost[0].resource].name + '</span><br>';
+                if(resp.services[i].cost[1]){
+                    html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
+                    html += resp.services[i].cost[1].value+' '
+                    html += currencyArray[resp.services[i].cost[1].resource].name + '</span>';
+                }
+                // html += '- <span>' + resp.services[i].name + '</span>';
+                html +='</div>';
             }
         }
         // console.log('html', html);
@@ -274,14 +275,12 @@ function start_amount(farm_id,service_id) {
             select_service(farm_id);
 
         },2000);
-        //
-        // document.getElementById('p-head').textContent = resp.balance;
+        document.getElementById('balance').innerHTML = resp.balance;
 
 
     });
 
 }
-
 
 function start(farm_id,service_id) {
     // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
@@ -318,9 +317,9 @@ function start(farm_id,service_id) {
         //     html += '<br>' + resp.message;
         // }
 
-        if(resp.extra){
+        // if(resp.extra){
             html += '<br>' + resp.extra;
-        }
+        // }
 
         isPopupVisible = true;
 
@@ -332,12 +331,20 @@ function start(farm_id,service_id) {
             isPopupVisible = false;
         },2000);
 
-        // if(resp.balance){
-        document.getElementById('balance').textContent = resp.balance;
-        // }
+        //not enoth balance not return balance
+        if(resp.balance){
+            document.getElementById('balance').innerHTML = resp.balance;
+        }
 
 
     });
+}
+
+function start_with(farm_id,currency_id) {
+    console.log('start_with');
+    //farm id
+    console.log(farm_id);
+    console.log(currency_id);
 }
 
 function claim(farm_id,service_id) {
@@ -348,22 +355,10 @@ function claim(farm_id,service_id) {
         console.log("resp: ", resp);
 
         let html = '';
-        // if(resp.status == 'success'){
-        //     html += 'Success';
-        //     delete farmsServiceArray[farm_id];
-        //reload page
-        // window.location.reload();
-        // } else {
-        //     html += 'Error';
-        // }
 
-        // if(resp.message){
-        //     html += '<br>' + resp.message;
-        // }
-
-        if(resp.extra){
+        // if(resp.extra){
             html += '<br>' + resp.extra;
-        }
+        // }
 
         document.getElementById('popup-text').innerHTML = html;
         document.getElementById('popup').style.display = 'block';
@@ -378,18 +373,74 @@ function claim(farm_id,service_id) {
             farmsArray[farm_id].text = 'Start';
         }
 
-
         setTimeout(() => {
             document.getElementById('popup').style.display = 'none';
         },2000);
 
-
-        document.getElementById('balance').textContent = resp.balance;
-
+        // if(resp.balance) {
+            document.getElementById('balance').innerHTML = resp.balance;
+        // }
 
     });
 }
 
+function set_farm(resource_id, click_pos) {
 
+}
+
+//select clicke resource
+
+
+
+document.getElementsByClassName('closeBtn')[0].onclick = function() {
+    document.getElementById('popup').style.display = 'none';
+    isPopupVisible = false;
+}
+
+// script for popup
+// Close the popup if the user clicks anywhere outside of it
+// window.onclick = function(event) {
+//     if (event.target == document.getElementById('popup')) {
+//         document.getElementById('popup').style.display = 'none';
+//         isPopupVisible = false;
+//     }
+// }
+
+
+
+document.getElementById('balance').style.display = 'block';
+
+
+if(land_owner){
+    document.getElementById('editor_mode_on').style.display = 'inline';
+
+    $('.resources').click(function(){
+
+        if(!currentlyDraggingResource) {
+            console.log($(this).data('id'));
+            currentlyDraggingResource = $(this).data('id');
+        } else {
+            currentlyDraggingResource = null;
+        }
+
+    });
+
+
+
+
+
+}
+
+
+if (!!window.EventSource) {
+    var source = new EventSource("/stream?land_id="+land_id);
+    source.onmessage = function(event) {
+        var data = JSON.parse(event.data);
+        serverTime = data.serverTime;
+        usersArray = data.usersArray;
+    };
+} else {
+    console.log("Your browser does not support server-sent events.");
+}
 
 

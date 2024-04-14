@@ -189,10 +189,47 @@ foreach ($users as $u) {
 ?>
 
 
-
+<link href="play.css" rel="stylesheet">
 
 <x-app-layout class="">
-    <div class="p-head">
+
+    <div id="balance" class="unselectable">
+        <?php
+        foreach ($currencyArray as $key => $value) {
+            if(!empty($balanceArray[$key]) && $balanceArray[$key] > 0) {
+//            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$value['name'].':'.$balanceArray[$key].' | ';
+                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.$balanceArray[$key].' | ';
+            }
+        }
+        ?>
+    </div>
+
+
+    <div id="menu" class="unselectable">
+
+        <a class="btn" href="/dashboard">Dashboard</a><br>
+        <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button><br>
+        <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button><br>
+        <div id="addResource">
+            <?php
+            foreach ($resourceArray as $key => $value) {
+//                    echo '<button class="btn addResource" onclick="addResource('.$key.')">'.$value['name'].'</button> | ';
+                echo '<a href=/farm/add?resource_id='.$key.' class="btn addResource" >'.$value['name'].'</a> | ';
+            }
+            ?>
+        </div>
+    </div>
+
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="closeBtn">&times;</span>
+            <p id="popup-text"></p>
+        </div>
+    </div>
+
+
+{{--    <div class="p-head">--}}
 {{--        <div>--}}
 {{--            Reputation : {{ Auth::user()->reputation }} |--}}
 {{--            Location : {{ '#'.Auth::user()->land_id.' '.$heroland->name }} |--}}
@@ -200,39 +237,18 @@ foreach ($users as $u) {
 {{--            posy : {{ Auth::user()->posy }} |--}}
 {{--            active_at : {{ Auth::user()->active_at }} <br>--}}
 {{--        </div>--}}
-        <div id="balance" class="">
-            <?php
-            foreach ($currencyArray as $key => $value) {
-                if(!empty($balanceArray[$key])) {
-                    echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$value['name'].':'.$balanceArray[$key].' | ';
-                }
-            }
-            ?>
-        </div>
-        <div class="actions">
-            <a class="btn" href="/dashboard">Dashboard</a>
 
-            <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button>
-            <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button>
-            <div id="addResource">
-                <?php
-                foreach ($resourceArray as $key => $value) {
-//                    echo '<button class="btn addResource" onclick="addResource('.$key.')">'.$value['name'].'</button> | ';
-                    echo '<a href=/farm/add?resource_id='.$key.' class="btn addResource" >'.$value['name'].'</a> | ';
-                }
-                ?>
-            </div>
-
-        </div>
-    </div>
+{{--        <div class="actions">--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--    <div id="canvasContainer">--}}
+{{--        <div id="textOverlay">Your Text Here</div>--}}
+{{--    </div>--}}
 </x-app-layout>
 
-<div id="popup" class="popup">
-    <div class="popup-content">
-        <span class="closeBtn">&times;</span>
-        <p id="popup-text"></p>
-    </div>
-</div>
+{{--<div id="canvasContainer"></div>--}}
+
+
 
 {{--<div id="popup_land_go" class="popup">--}}
 {{--    <div class="popup-content">--}}
@@ -240,6 +256,7 @@ foreach ($users as $u) {
 {{--        <p id="popup-text">You got 20 wood</p>--}}
 {{--    </div>--}}
 {{--</div>--}}
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -281,5 +298,4 @@ foreach ($users as $u) {
 
 {{--@push('after_styles')--}}
 {{--    <link href="{{ asset('play.css') }}" rel="stylesheet">--}}
-<link href="play.css" rel="stylesheet">
 {{--@endpush--}}

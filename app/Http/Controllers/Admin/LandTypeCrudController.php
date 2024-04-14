@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\CurrencyRequest;
+use App\Http\Requests\LandTypeRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class CurrencyCrudController
+ * Class LandTypeCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class CurrencyCrudController extends CrudController
+class LandTypeCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,9 @@ class CurrencyCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Currency::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/currency');
-        CRUD::setEntityNameStrings('currency', 'currencies');
+        CRUD::setModel(\App\Models\LandType::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/land-type');
+        CRUD::setEntityNameStrings('land type', 'land types');
     }
 
     /**
@@ -39,12 +39,11 @@ class CurrencyCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
-        CRUD::column('created_at');
         CRUD::column('name');
-        CRUD::column('resource_id');
-        CRUD::column('service_id');
+        CRUD::column('size');
+        CRUD::column('farms')->type('string');
         CRUD::column('image')->type('image')->prefix('storage/');
+
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -61,21 +60,59 @@ class CurrencyCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(CurrencyRequest::class);
+        CRUD::setValidation(LandTypeRequest::class);
 
         CRUD::field('name');
-        CRUD::field('resource_id');
-        CRUD::field('service_id');
+//        CRUD::field('farms');
 
-        //image
+//        $currencies = \App\Models\Currency::all();
+//        $currencyOptions = [];
+//        foreach($currencies as $currency){
+//            $currencyOptions[$currency->id] = $currency->name;
+//        }
+        $resourceOptions = \App\Models\Resource::all()->pluck('name', 'id')->toArray();
+        CRUD::field('size');
+
+        $this->crud->addField([
+//            'label' => 'Conditions * AND ( cmp-rpm + 10 ) OR ( cmp-visits - 20 ) - SOON',
+            'name' => 'farms',
+//            'type'  => 'view',
+//            'view' => 'vendor/backpack/crud/fields/repeatable',
+            'type'  => 'repeatable',
+            'subfields' => [
+                [
+                    'name'    => 'resource',
+                    'type'    => 'select2_from_array',
+                    'options'    => $resourceOptions,
+                    'wrapper' => ['class' => 'form-group col-md-5'],
+                ],
+                [
+                    'label'   => 'value',
+                    'name'    => 'value',
+                    'type'    => 'number',
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+            ],
+            'new_item_label'  => 'Add Group',
+            'init_rows' => 0,
+            'max_rows' => 2,
+        ]);
         $this->crud->addField([
             'name' => 'image', // The db column name where the image path is stored
             'label' => 'Image', // Field label shown on the form
             'type' => 'image_custom',
-//            'type' => 'image',
-//            'crop' => true,
             'upload' => true,
-
+//            'disk' => 'public', // Optional: Specify the filesystem disk you want to use
+//            'prefix' => 'uploads/images/', // Optional: Prefix path where the image will be stored in the disk
+//            'label' => 'Image',
+//            'name' => 'image',
+//            'type' => 'image',
+////            'type'      => 'upload',
+//            'crop' => true, // set to true to allow cropping, false to disable
+////            'upload' => true,
+//            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+//            'disk' => 'public',
+//            'rules' => 'required|image|max:5000'
         ]);
 
         /**
@@ -83,7 +120,6 @@ class CurrencyCrudController extends CrudController
          * - CRUD::field('price')->type('number');
          * - CRUD::addField(['name' => 'price', 'type' => 'number']));
          */
-
     }
 
     /**

@@ -24,6 +24,7 @@ class Service extends Model
         'revenue',
         'time',
         'reload',
+//        'currency_id',
     ];
 
     /**
@@ -38,10 +39,16 @@ class Service extends Model
         'revenue' => 'array',
         'time' => 'integer',
         'reload' => 'integer',
+//        'currency_id' => 'integer',
     ];
 
     public function resource(): BelongsTo
     {
         return $this->belongsTo(Resource::class);
     }
+
+//    public function currency(): BelongsTo
+//    {
+//        return $this->belongsTo(Currency::class);
+//    }
 }

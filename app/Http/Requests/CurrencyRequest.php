@@ -27,6 +27,10 @@ class CurrencyRequest extends FormRequest
         return [
             'name' => 'required|string',
             'image' => 'nullable|image',
+//            'resource_id' => 'nullable|exists:resources,id',
+            'resource_id' => 'nullable|integer',
+//            'service_id' => 'nullable|exists:services,id',
+            'service_id' => 'nullable|integer',
         ];
     }
 

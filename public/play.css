@@ -1,12 +1,21 @@
-.p-head{
-    position: absolute;
-    background-color: #333;
-    opacity: 0.5;
-    color: #fff;
-    width: 100%;
+/*.p-head{*/
+/*    position: absolute;*/
+/*    background-color: #333;*/
+/*    opacity: 0.5;*/
+/*    color: #fff;*/
+/*    width: 100%;*/
+/*}*/
+
+.unselectable {
+    user-select: none; /* This prevents text from being selectable */
+    -webkit-user-select: none; /* Safari specific prefix */
+    -moz-user-select: none; /* Firefox specific prefix */
+    -ms-user-select: none; /* Internet Explorer specific prefix */
 }
+
 #balance {
-    display: inline-block;
+    display: none;
+    /*display: inline-block;*/
     /*position: absolute;*/
     /*bottom: 0;*/
     /*right: 0;*/
@@ -47,13 +56,50 @@
     display: inline-block;
 }
 
-#defaultCanvas0 {padding: 50px 0 0 0;}
+/*#canvasContainer {*/
+/*    position: relative;*/
+/*    width: 100%; !* Match the width of the canvas *!*/
+/*}*/
+/*button {*/
+/*    position: absolute;*/
+/*    left: 10px;*/
+/*    top: 0 !important;*/
+/*}*/
+button:hover {
+    background-color: #0e111c;
+    color: #f0fff0;
+}
+/*#defaultCanvas0 {padding: 50px 0 0 0;}*/
 
 
 
 
 
 /* Style.css */
+
+#balance {
+    /*display: none;*/
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 80%;
+    height: 100%;
+    overflow: auto;
+    /*background-color: rgb(0,0,0,0.4);*/
+}
+#menu {
+    /*display: none;*/
+    position: fixed;
+    z-index: 1;
+    right: 0;
+    top: 0;
+    width: 20%;
+    height: 100%;
+    overflow: auto;
+    text-align: right;
+}
+
 .popup {
     display: none;
     position: fixed;
@@ -71,7 +117,7 @@
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-    max-width: 450px;
+    max-width: 480px;
 }
 .closeBtn {
     color: #aaa;
@@ -87,9 +133,10 @@
 }
 
 
-.service_item{
-    width: 100px;
-    height: 100px;
+/*.service_item{*/
+.popup-content div{
+    width: 125px;
+    /*height: 220px;*/
     margin: 5px;
     display: inline-block;
     text-align: center;
@@ -97,7 +144,14 @@
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
-    font-size: 14px;
+    /*font-size: 14px;*/
     background-size: auto 100%;
+}
+.popup-content div img{
+    margin: 0 auto;
+}
 
+
+.popup-content span img{
+    display: inline-block;
 }

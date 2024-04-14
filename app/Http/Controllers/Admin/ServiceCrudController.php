@@ -46,6 +46,8 @@ class ServiceCrudController extends CrudController
         CRUD::column('created_at');
         CRUD::column('name');
         CRUD::column('resource');
+//        CRUD::column('currency');
+
         CRUD::column('cost')->type('string');
         CRUD::column('revenue')->type('string');
         CRUD::column('time');
@@ -134,6 +136,8 @@ class ServiceCrudController extends CrudController
         ]);
         CRUD::field('time');
         CRUD::field('reload');
+//        CRUD::field('currency');
+
 
 
         /**

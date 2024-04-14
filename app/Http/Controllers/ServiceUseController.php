@@ -37,11 +37,14 @@ class ServiceUseController extends Controller
     public function Apibalance($currencyArray){
 
         $user_id = Auth::user()->id;
-        $balance = \App\Models\Balance::where('user_id', $user_id)->get();
+        $balance = \App\Models\Balance::where('user_id', $user_id)->orderBy('currency_id')->get();
         $balance_string = '';
         foreach ($balance as $b) {
 //            $balanceArray[$b->currency_id] = $b->value;
-            $balance_string .= $b->value . ' ' . $currencyArray[$b->currency_id] . ' | ';
+//            $balance_string .= $b->value . ' ' . $currencyArray[$b->currency_id] . ' | ';
+//            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$balanceArray[$key].' | ';
+            $balance_string .= '<img class="resources" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> '.$b->value.' | ';
+
         }
 //        return $balanceArray;
         return $balance_string;
@@ -272,21 +275,14 @@ class ServiceUseController extends Controller
             $amount = 1;
         }
 
-
-
-
-//        echo 'user id: '. $user_id.'<br>';
-//        echo 'farm id: '.$farm_id.'<br>';
-//        echo 'service id: '. $service_id.'<br>';
-
-        $currencies = \App\Models\Currency::all();
-        foreach ($currencies as $currency){
-            $currencyArray[$currency->id] = $currency->name;
+        $currency = \App\Models\Currency::get();
+        foreach ($currency as $c) {
+            $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image];
         }
         $service = \App\Models\Service::find($service_id);
 
         //amount allow on market only
-        if($service->resource_id != 10){
+        if($service->resource_id != 3 ){
             $amount = 1;
         }
 
@@ -415,16 +411,11 @@ class ServiceUseController extends Controller
 
                 }
 
-//                echo $currencyArray[$cost['resource']].' Cost: '.$cost['value'].' have: '.$balanceArray[$cost['resource']].'<br>';
                 if($balanceArray[$cost['resource']] < $cost['value'] * $amount){
-//                    echo 'Not enough '.$currencyArray[$cost['resource']].' balance';
-//                    $msg = 'Not enough '.$currencyArray[$cost['resource']].' balance';
-//                    $validBalance = false;
-//                    die;
                     $data = [
                         'status' => 'error',
-                        'message' => 'Not enough '.$currencyArray[$cost['resource']].'  balance nned '.($cost['value'] * $amount),
-                        'extra' => 'Not enough '.$currencyArray[$cost['resource']].' balance',
+                        'message' => 'Not enough '.$currencyArray[$cost['resource']]['name'].'  balance need '.($cost['value'] * $amount),
+                        'extra' => 'Not enough '.$currencyArray[$cost['resource']]['name'].' balance',
 //                        'balance' => $balanceArray
                     ];
                     return response()->json($data);
@@ -437,7 +428,7 @@ class ServiceUseController extends Controller
                 $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $cost['resource'])->first();
                 $balance->value = $balance->value - ($cost['value'] * $amount);
                 $balance->save();
-                $msg_balance .= '-'.($cost['value'] * $amount).' '.$currencyArray[$cost['resource']].' <br>';
+                $msg_balance .= '-'.($cost['value'] * $amount).' '.$currencyArray[$cost['resource']]['name'].' <br>';
             }
         }
 
@@ -459,7 +450,7 @@ class ServiceUseController extends Controller
                     $balance->value = $balance->value + ($revenue['value'] * $amount);
                     $balance->save();
                 }
-                $msg_balance .= '+'.($revenue['value'] * $amount).' '.$currencyArray[$revenue['resource']].' <br>';
+                $msg_balance .= '+'.($revenue['value'] * $amount).' '.$currencyArray[$revenue['resource']]['name'].' <br>';
 
 
                 //land owner
@@ -653,7 +644,7 @@ class ServiceUseController extends Controller
 
         if($farm->resource_id == 5){
 
-            $open_tasks = 2;
+            $open_tasks = 3;
 
             $user_id = Auth::id();
             if(empty($user_id)){
@@ -777,9 +768,9 @@ class ServiceUseController extends Controller
             die;
         }
 
-        $currencies = \App\Models\Currency::all();
-        foreach ($currencies as $currency){
-            $currencyArray[$currency->id] = $currency->name;
+        $currency = \App\Models\Currency::get();
+        foreach ($currency as $c) {
+            $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image];
         }
 
 //        $farm_id = \request('farm_id');
@@ -809,7 +800,7 @@ class ServiceUseController extends Controller
         } else {
             $balance->value = $balance->value - $amount;
             $msg = '-'.($amount).' '.$service->cost[0]['resource'].' <br>';
-            $msg_balance = '-'.($amount).' '.$currencyArray[$service->cost[0]['resource']].' <br>';
+            $msg_balance = '-'.($amount).' '.$currencyArray[$service->cost[0]['resource']]['name'].' <br>';
             $balance->save();
         }
 
@@ -856,20 +847,28 @@ class ServiceUseController extends Controller
 
         $farm = \App\Models\Farm::find(\request('farm_id'));
         $resource = \App\Models\Resource::find($farm->resource_id);
-        $service = \App\Models\Service::find(\request('service_id'));
+//        $service = \App\Models\Service::find(\request('service_id'));
 
         echo '<br><br>';
         echo '<h1>'.$resource->name.'</h1>';
-        echo '<br><br>';
+
 
 
 //        dd($service);
 //        $orders = \App\Models\Order::where('service_id', $service->id)->where('type', 'sell')->get();
 //        $orders = \App\Models\Order::where('service_id', $service->id)->get();
-        $orders = \App\Models\Order::where('service_id', 14)->get();
+//        $orders = \App\Models\Order::whereIn('service_id', [14,15])->get();
+        $orders = \App\Models\Order::orderBy('service_id')->orderBy('price')->get();
+
+
+        $sname[14] = 'Cornin';
+        $sname[15] = 'Cucumba';
+
         foreach ($orders as $order){
 
-            echo $order->id.' Price: '.$order->price.' Amount: '.$order->amount;
+            echo '#'.$order->id.' '.$sname[$order->service_id].' ';
+
+            echo ' Price: '.$order->price.' Amount: '.$order->amount;
             echo ' <a href="/service-use/select-order?order_id='.$order->id.'">Select Order</a><br>';
 
 //            echo '<form action="/service-use/buy" method="get">';

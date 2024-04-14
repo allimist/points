@@ -28,6 +28,7 @@ usersArrayLen = Object.values(usersArray).length;
 
 let interactionDistance = 200;
 
+let currencyObject = [];
 let farmsObjectPos = [];
 let farmsObject = [];
 let farmsObjectHover = [];
@@ -50,7 +51,7 @@ let herosPos = [];
 
 // let edit_mode = false;
 let currentlyDragging = null; // Track the rectangle currently being dragged
-
+let currentlyDraggingResource = null; // Track the rectangle currently being dragged
 
 
 // let fix_x= -50;
@@ -69,11 +70,19 @@ function preload() {
     } else {
         hero = loadImage(avatarsArray[avatar_id].img);
     }
-    posx = posx;
-    posy = posy;
+    // posx = posx;
+    // posy = posy;
 
 
     // farmsArrayLen = Object.values(farmsArray).length;
+
+    Object.keys(currencyArray).forEach(i => {
+        if(currencyArray[i].img){
+            currencyObject[i] = loadImage('storage/' + currencyArray[i].img);
+        } else {
+            currencyObject[i] = loadImage('clickableObject.png');
+        }
+    });
 
     Object.keys(farmsArray).forEach( i => {
 
@@ -120,11 +129,39 @@ function preload() {
 
 function setup() {
 
+
     // if(windowHeight > 500){
     //     createCanvas(windowWidth, 500);
     // } else {
-        createCanvas(windowWidth, windowHeight);
+    let cnv = createCanvas(windowWidth, windowHeight);
+    // cnv.parent('canvasContainer'); // This div will hold the canvas
+
+
     // }
+    cnv.elt.setAttribute('will-read-frequently', 'true');
+    cnv.elt.style.position = 'fixed';
+    cnv.elt.style.userSelect = 'none';
+    cnv.elt.style.touchAction = 'none';
+
+    // Add event listeners to the canvas element to prevent default behavior on touch start
+    cnv.elt.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+    });
+
+    // Optionally, prevent touch move events from scrolling the page as well
+    cnv.elt.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+    });
+
+    // Button setup
+    // let btn_dashboard = createButton('Back');
+    // btn_dashboard.position(10, height - 50);
+    // btn_dashboard.mousePressed(goBack);
+    //
+    // let btn_edit = createButton('Edit');
+    // btn_edit.position(10, height - 80);
+    // btn_edit.mousePressed(
+
 
     // createCanvas(windowWidth, 500);
     heroFlipped = createGraphics(hero.width, hero.height);
@@ -277,6 +314,11 @@ function draw() {
         });
     }
 
+    if(currentlyDraggingResource){
+        // image(farmsObject[currentlyDraggingResource], mouseX - farmsObjectSize[currentlyDraggingResource] / 2, mouseY - farmsObjectSize[currentlyDraggingResource] / 2, farmsObjectSize[currentlyDraggingResource], farmsObjectSize[currentlyDraggingResource]);
+        image(currencyObject[currentlyDraggingResource], mouseX - 30 / 2, mouseY - 30 / 2, 30, 30);
+    }
+
 
     heroPos.x = constrain(heroPos.x, 0, mapWidth - heroSize);
     heroPos.y = constrain(heroPos.y, 0, mapHeight - heroSize);
@@ -396,11 +438,11 @@ function updateHeroPosition() {
 function mousePressed() {
 
 
-    console.log('isPopupVisible',isPopupVisible);
+    // console.log('isPopupVisible',isPopupVisible);
 
     if(isPopupVisible == false) {
 
-        console.log('move');
+        // console.log('move');
 
         let camX = constrain(heroPos.x - width / 2, 0, mapWidth - width);
         let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
@@ -430,7 +472,7 @@ function mousePressed() {
             // }
         }
 
-
+        let freePos = true;
         Object.keys(farmsArray).forEach(i => {
 
             // console.log('farmsArray[i]', farmsArray[i]);
@@ -457,13 +499,18 @@ function mousePressed() {
                 } else {
 
 
+
                     if (heroPos.dist(farmsObjectPos[i]) <= interactionDistance) {
 
-
                         console.log('farmsArray[i]', farmsArray[i]);
+                        if(currentlyDraggingResource){
+                            freePos = false;
+                            //start service
+                            start_with(farmsArray[i].id, currentlyDraggingResource);
+                        }
                         // resourceArray[farmsArray[i].resorce_id].name
                         //patch for teleport
-                        if (farmsArray[i].resource_id == 10) {
+                        else if (farmsArray[i].resource_id == 10) {
                             //window.location.href = '/land/select?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
                             land_go_select();
                             //patch fot market sell to buy list
@@ -477,12 +524,12 @@ function mousePressed() {
                             if (farmsArray[i].single_service == true) {
                                 // console.log('farmsServiceArray[i]', farmsArray[i]);
 
-                                if (farmsArray[i].status == 'take') {
-                                    // take(farmsArray[i].id, farmsArray[i].service_id);
+                                // if (farmsArray[i].status == 'take') {
+                                //     // take(farmsArray[i].id, farmsArray[i].service_id);
+                                //     start(farmsArray[i].id, farmsArray[i].service_id);
+                                // } else {
                                     start(farmsArray[i].id, farmsArray[i].service_id);
-                                } else {
-                                    start(farmsArray[i].id, farmsArray[i].service_id);
-                                }
+                                // }
 
 
                             } else {
@@ -535,5 +582,22 @@ function mousePressed() {
 
             // }
         });
+
+
+        if(currentlyDraggingResource){
+            if(freePos) {
+                console.log('currentlyDraggingResource set farm', currentlyDraggingResource);
+                //set farm
+                set_farm(currentlyDraggingResource, clickPos);
+            } else {
+                console.log('pos not free');
+            }
+        }
+
     }
+}
+
+function goBack() {
+    // Functionality for the 'Back' button
+    window.history.back(); // This simply navigates to the previous page in the browser history
 }

@@ -33,6 +33,7 @@ class ResourceRequest extends FormRequest
             'size' => 'required|integer|gt:0',
             'image' => 'nullable|nullable|max:90000',
             'image_hover' => 'nullable|nullable|max:90000',
+            'currency_id' => 'required|integer|gt:0',
 
         ];
     }
