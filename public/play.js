@@ -54,6 +54,21 @@ let currentlyDragging = null; // Track the rectangle currently being dragged
 let currentlyDraggingResource = null; // Track the rectangle currently being dragged
 
 
+let joystick = {
+    baseX: 100,
+    // baseY: windowHeight - 100,
+    baseSize: 100,
+    stickX: 100,
+    // stickY: windowHeight - 100,
+    stickSize: 50,
+    dragging: false
+};
+function drawJoystick() {
+    fill(80);
+    circle(joystick.baseX, joystick.baseY, joystick.baseSize);
+    fill(160);
+    circle(joystick.stickX, joystick.stickY, joystick.stickSize);
+}
 // let fix_x= -50;
 // let fix_y= 50;
 
@@ -135,7 +150,8 @@ function setup() {
     // } else {
     let cnv = createCanvas(windowWidth, windowHeight);
     // cnv.parent('canvasContainer'); // This div will hold the canvas
-
+    joystick.baseX = windowWidth - 100;
+    joystick.baseY = windowHeight - 100;
 
     // }
     cnv.elt.setAttribute('will-read-frequently', 'true');
@@ -237,8 +253,15 @@ function draw() {
         image(mapBackground, -camX, -camY, mapWidth, mapHeight);
     }
 
+    // console.log('joystick.dragging', joystick.dragging);
+
     if(hero && !isPopupVisible){
+        // console.log('joystick.dragging', joystick.dragging);
         updateHeroPosition();
+    }
+
+    if(windowWidth < 1000) {
+        drawJoystick();
     }
 
 
@@ -330,19 +353,19 @@ function draw() {
     // image(hero, heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
 
     //update hero position
-    updateHeroPositionLoop++;
-    if (updateHeroPositionLoop >= updateHeroPositionInterval) {
-        updateHeroPositionLoop = 0;
-        //ajax request
-        $.ajax({
-            url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
-            // context: document.body
-        });
-        // .done(function(resp) {
-        //     // $( this ).addClass( "done" );
-        //     console.log("resp: ", resp);
-        // });
-    }
+    // updateHeroPositionLoop++;
+    // if (updateHeroPositionLoop >= updateHeroPositionInterval) {
+    //     updateHeroPositionLoop = 0;
+    //     //ajax request
+    //     $.ajax({
+    //         url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
+    //         // context: document.body
+    //     });
+    //     // .done(function(resp) {
+    //     //     // $( this ).addClass( "done" );
+    //     //     console.log("resp: ", resp);
+    //     // });
+    // }
 
 
 
@@ -398,7 +421,7 @@ function updateHeroPosition() {
     if (keyIsDown(83)) { proposedNewPosition.y += speed; }
 
 
-    if (mouseIsPressed) {
+    if (mouseIsPressed && !joystick.dragging) {
         if (millis() - mousePressedTime > moveThreshold) {
             // Mouse has been held down long enough; move hero
             let camX = constrain(proposedNewPosition.x - width / 2, 0, mapWidth - width);
@@ -413,6 +436,15 @@ function updateHeroPosition() {
         mousePressedTime = millis();
     }
 
+    if(joystick.dragging){
+        let dx = joystick.stickX - joystick.baseX;
+        let dy = joystick.stickY - joystick.baseY;
+        let angle = atan2(dy, dx);
+        proposedNewPosition.x += cos(angle) * speed;
+        proposedNewPosition.y += sin(angle) * speed;
+    }
+
+
     if (!isCollidingWithObjects(proposedNewPosition)) {
         // console.log('proposedNewPosition', proposedNewPosition);
         if(heroPos.x < proposedNewPosition.x){
@@ -424,15 +456,6 @@ function updateHeroPosition() {
         heroPos.y = proposedNewPosition.y;
     }
 
-
-    // if (mouseIsPressed) {
-    //     let camX = constrain(heroPos.x - width / 2, 0, mapWidth - width);
-    //     let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
-    //     let mousePos = createVector(mouseX + camX, mouseY + camY);
-    //     let direction = p5.Vector.sub(mousePos, heroPos);
-    //     direction.setMag(speed);
-    //     heroPos.add(direction);
-    // }
 }
 
 function mousePressed() {
@@ -448,67 +471,77 @@ function mousePressed() {
         let camY = constrain(heroPos.y - height / 2, 0, mapHeight - height);
         let clickPos = createVector(mouseX + camX, mouseY + camY);
 
-        if(currentlyDragging){
-        // else {
-                // Stop dragging
-
-                //save new position
-                console.log('new position', clickPos);
-                $.ajax({
-                    url: "/position/set?farm_id=" + currentlyDragging + "&x=" + clickPos.x + "&y=" + clickPos.y,
-                }).done(function(resp) {
-                    // console.log("resp: ", resp);
-
-                    farmsObjectPos[currentlyDragging].x = clickPos.x;
-                    farmsObjectPos[currentlyDragging].y = clickPos.y;
-                    currentlyDragging = null; // Stop dragging
-
-
-                });
 
 
 
-                return;
-            // }
-        }
+        // if(edit_mode && !currentlyDragging){
+        if(edit_mode || currentlyDraggingResource){
 
-        let freePos = true;
-        Object.keys(farmsArray).forEach(i => {
+            let freePos = true;
+            Object.keys(farmsArray).forEach(i => {
+                if (clickPos.x >= farmsObjectPos[i].x - farmsObjectSize[i] / 2 &&
+                    clickPos.x <= farmsObjectPos[i].x + farmsObjectSize[i] / 2 &&
+                    clickPos.y >= farmsObjectPos[i].y - farmsObjectSize[i] / 2 &&
+                    clickPos.y <= farmsObjectPos[i].y + farmsObjectSize[i] / 2) {
 
-            // console.log('farmsArray[i]', farmsArray[i]);
-            // if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim' || i == 18){
-
-
-            //     let farm = farmsArray[i];
-            if ((typeof farmsArray[i].service_id !== 'undefined' || edit_mode) &&
-                clickPos.x >= farmsObjectPos[i].x - farmsObjectSize[i] / 2 &&
-                clickPos.x <= farmsObjectPos[i].x + farmsObjectSize[i] / 2 &&
-                clickPos.y >= farmsObjectPos[i].y - farmsObjectSize[i] / 2 &&
-                clickPos.y <= farmsObjectPos[i].y + farmsObjectSize[i] / 2) {
-
-                if(edit_mode){
-
-                    if(!currentlyDragging) {
+                    if (!currentlyDragging) {
                         currentlyDragging = i; // Store reference to the rectangle being dragged
                         console.log('currentlyDragging', currentlyDragging);
-                        //break;
-                        return;
+                        freePos = false;
+                        // return;
+                    } else {
+                        freePos = false;
+                        // return;
                     }
+                }
+            });
 
-
+            if(currentlyDragging){
+                if(freePos) {
+                    console.log('currentlyDragging set farm', currentlyDragging);
+                    //set farm
+                    move_farm(clickPos);
                 } else {
+                    console.log('move_farm - pos not free');
+                }
+            }
+
+            if(currentlyDraggingResource){
+                if(freePos) {
+                    console.log('currentlyDraggingResource set farm', currentlyDraggingResource);
+                    //set farm
+                    set_farm(clickPos);
+                } else {
+                    console.log('set_farm - pos not free');
+                }
+            }
 
 
+
+        } else {
+
+            Object.keys(farmsArray).forEach(i => {
+
+                // console.log('farmsArray[i]', farmsArray[i]);
+                // if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim' || i == 18){
+
+
+                //     let farm = farmsArray[i];
+                if ((typeof farmsArray[i].service_id !== 'undefined' || edit_mode) &&
+                    clickPos.x >= farmsObjectPos[i].x - farmsObjectSize[i] / 2 &&
+                    clickPos.x <= farmsObjectPos[i].x + farmsObjectSize[i] / 2 &&
+                    clickPos.y >= farmsObjectPos[i].y - farmsObjectSize[i] / 2 &&
+                    clickPos.y <= farmsObjectPos[i].y + farmsObjectSize[i] / 2) {
 
                     if (heroPos.dist(farmsObjectPos[i]) <= interactionDistance) {
 
                         console.log('farmsArray[i]', farmsArray[i]);
-                        if(currentlyDraggingResource){
-                            freePos = false;
+                        if (currentlyDraggingResource) {
+                            // freePos = false;
                             //start service
                             start_with(farmsArray[i].id, currentlyDraggingResource);
                         }
-                        // resourceArray[farmsArray[i].resorce_id].name
+                            // resourceArray[farmsArray[i].resorce_id].name
                         //patch for teleport
                         else if (farmsArray[i].resource_id == 10) {
                             //window.location.href = '/land/select?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
@@ -528,7 +561,7 @@ function mousePressed() {
                                 //     // take(farmsArray[i].id, farmsArray[i].service_id);
                                 //     start(farmsArray[i].id, farmsArray[i].service_id);
                                 // } else {
-                                    start(farmsArray[i].id, farmsArray[i].service_id);
+                                start(farmsArray[i].id, farmsArray[i].service_id);
                                 // }
 
 
@@ -577,27 +610,73 @@ function mousePressed() {
                     }
 
 
+                    // }
                 }
-            }
 
-            // }
-        });
+                // }
+            });
 
-
-        if(currentlyDraggingResource){
-            if(freePos) {
-                console.log('currentlyDraggingResource set farm', currentlyDraggingResource);
-                //set farm
-                set_farm(currentlyDraggingResource, clickPos);
-            } else {
-                console.log('pos not free');
-            }
         }
+
+
 
     }
 }
 
-function goBack() {
-    // Functionality for the 'Back' button
-    window.history.back(); // This simply navigates to the previous page in the browser history
+function touchStarted() {
+    let d = dist(mouseX, mouseY, joystick.baseX, joystick.baseY);
+    if (d < joystick.baseSize / 2) {
+        joystick.dragging = true;
+        console.log('joystick.dragging', joystick.dragging);
+        return false;
+    }
 }
+
+function touchMoved() {
+    if (joystick.dragging) {
+        let dx = mouseX - joystick.baseX;
+        let dy = mouseY - joystick.baseY;
+        let angle = atan2(dy, dx);
+        let distance = min(dist(0, 0, dx, dy), joystick.baseSize / 2);
+        joystick.stickX = joystick.baseX + cos(angle) * distance;
+        joystick.stickY = joystick.baseY + sin(angle) * distance;
+        // hero.x += cos(angle) * 2;
+        // hero.y += sin(angle) * 2;
+
+        // console.log('heroPos.x', heroPos.x);
+        // console.log('heroPos.y', heroPos.y);
+
+        // proposedNewPosition.x = heroPos.x + cos(angle) * 4;
+        // proposedNewPosition.y = heroPos.y + sin(angle) * 4;
+
+        // let camX = constrain(proposedNewPosition.x - width / 2, 0, mapWidth - width);
+        // let camY = constrain(proposedNewPosition.y - height / 2, 0, mapHeight - height);
+        // let mousePos = createVector(mouseX + camX, mouseY + camY);
+        // let direction = p5.Vector.sub(mousePos, proposedNewPosition);
+        // direction.setMag(speed);
+        // proposedNewPosition.add(direction);
+
+        // if (!isCollidingWithObjects(proposedNewPosition)) {
+        //     // console.log('proposedNewPosition', proposedNewPosition);
+        //     if(heroPos.x < proposedNewPosition.x){
+        //         heroMoveRight = true;
+        //     }else if(heroPos.x > proposedNewPosition.x){
+        //         heroMoveRight = false;
+        //     }
+        //     heroPos.x = proposedNewPosition.x;
+        //     heroPos.y = proposedNewPosition.y;
+        // }
+
+    }
+    return false;
+}
+
+function touchEnded() {
+    joystick.dragging = false;
+    joystick.stickX = joystick.baseX;
+    joystick.stickY = joystick.baseY;
+    console.log('joystick.dragging', joystick.dragging);
+
+}
+
+

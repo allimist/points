@@ -384,14 +384,108 @@ function claim(farm_id,service_id) {
     });
 }
 
-function set_farm(resource_id, click_pos) {
+function move_farm(clickPos) {
+    // else {
+    // Stop dragging
+    console.log('move_farm');
+    //save new position
+    console.log('new position', clickPos);
+    $.ajax({
+        url: "/farm/move?farm_id=" + currentlyDragging + "&x=" + clickPos.x + "&y=" + clickPos.y,
+    }).done(function(resp) {
+        // console.log("resp: ", resp);
+        farmsObjectPos[currentlyDragging].x = clickPos.x;
+        farmsObjectPos[currentlyDragging].y = clickPos.y;
+        currentlyDragging = null; // Stop dragging
+    });
+}
 
+function set_farm(clickPos) {
+
+    console.log('set_farm');
+
+    //check id currency can build farm
+    console.log(currencyArray[currentlyDraggingResource]);
+    if(!currencyArray[currentlyDraggingResource].resource_id){
+        console.log('currency not buildable');
+        // isPopupVisible = true;
+        //
+        // document.getElementById('popup-text').innerHTML = 'Currency not buildable';
+        // document.getElementById('popup').style.display = 'block';
+        //
+        // setTimeout(() => {
+        //     document.getElementById('popup').style.display = 'none';
+        //     isPopupVisible = false;
+        // },2000);
+
+    } else {
+        console.log('currency buildable',clickPos.x,clickPos.y);
+        window.location.href = '/farm/set?currency_id=' + currentlyDraggingResource + '&x=' + clickPos.x + '&y=' + clickPos.y;
+    }
+
+
+
+
+
+    // $.ajax({
+    //     url: "/farm/set?currency_id=" + currentlyDraggingResource + "&x=" + clickPos.x + "&y=" + clickPos.y,
+    // }).done(function(resp) {
+    //     // console.log("resp: ", resp);
+    //     farmsObjectPos[currentlyDragging].x = clickPos.x;
+    //     farmsObjectPos[currentlyDragging].y = clickPos.y;
+    //     currentlyDragging = null; // Stop dragging
+    // });
+
+
+}
+/*
+function pick_farm() {
+
+    console.log('pick_farm');
+
+    //check id currency can build farm
+    // console.log(currencyArray[currentlyDragging]);
+    // if(!currencyArray[currentlyDragging].resource_id){
+    //     console.log('currency not pickable');
+    //     // isPopupVisible = true;
+    //     //
+    //     // document.getElementById('popup-text').innerHTML = 'Currency not buildable';
+    //     // document.getElementById('popup').style.display = 'block';
+    //     //
+    //     // setTimeout(() => {
+    //     //     document.getElementById('popup').style.display = 'none';
+    //     //     isPopupVisible = false;
+    //     // },2000);
+    //
+    // } else {
+        console.log('farm pickable',currentlyDragging);
+        // window.location.href = '/farm/pick?currency_id=' + currentlyDragging;
+    // }
+
+
+
+
+
+    // $.ajax({
+    //     url: "/farm/set?currency_id=" + currentlyDraggingResource + "&x=" + clickPos.x + "&y=" + clickPos.y,
+    // }).done(function(resp) {
+    //     // console.log("resp: ", resp);
+    //     farmsObjectPos[currentlyDragging].x = clickPos.x;
+    //     farmsObjectPos[currentlyDragging].y = clickPos.y;
+    //     currentlyDragging = null; // Stop dragging
+    // });
+
+
+}
+*/
+
+
+function goBack() {
+    // Functionality for the 'Back' button
+    window.history.back(); // This simply navigates to the previous page in the browser history
 }
 
 //select clicke resource
-
-
-
 document.getElementsByClassName('closeBtn')[0].onclick = function() {
     document.getElementById('popup').style.display = 'none';
     isPopupVisible = false;
@@ -425,6 +519,19 @@ if(land_owner){
 
     });
 
+    $('#pickResource').click(function(){
+
+        if(currentlyDragging){
+            console.log('pick up');
+            // pick_farm();
+            console.log('farm pickable',currentlyDragging);
+            window.location.href = '/farm/pick?farm_id=' + currentlyDragging;
+
+        }
+
+    });
+
+
 
 
 
@@ -444,3 +551,13 @@ if (!!window.EventSource) {
 }
 
 
+setInterval(function() {
+    $.ajax({
+        url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
+            // context: document.body
+    });
+        // .done(function(resp) {
+        //     // $( this ).addClass( "done" );
+        //     console.log("resp: ", resp);
+        // });
+}, 5000);

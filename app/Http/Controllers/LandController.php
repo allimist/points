@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Currency;
 use Backpack\CRUD\app\Library\Widget;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -122,7 +123,7 @@ class LandController extends Controller
         return response()->json($landArray);
     }
 
-    public function setPosition()
+    public function moveFarm()
     {
         $user_id = Auth::id();
         $farm_id = \request('farm_id');
@@ -188,6 +189,103 @@ class LandController extends Controller
         $farm->posx = Auth::user()->posx;
         $farm->posy = Auth::user()->posy;
         $farm->save();
+
+        return Redirect::route('play');
+
+    }
+
+    public function setFarm()
+    {
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+        //if owner of the land
+        $land = \App\Models\Land::where('owner_id', $user_id)->where('id', Auth::user()->land_id)->first();
+        if(empty($land || $user_id == 1)){
+            echo 'You are not the owner of this land';
+            die;
+        }
+        //if currency is buildable
+        $currency_id = \request('currency_id');
+        $currency = Currency::where('id', $currency_id)->first();
+        if(empty($currency->resource_id)){
+            echo 'Currency not buildable';
+            die;
+        }
+
+        //if has this currency in balance decrease balance
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $currency_id)->first();
+        if(empty($balance)){
+            echo 'You do not have this currency';
+            die;
+        }
+        if($balance->value < 1){
+            echo 'You do not have enough currency';
+            die;
+        }
+        $balance->value = $balance->value - 1;
+        $balance->save();
+
+
+//        dd($currency->getAttributes());
+
+
+        $farm = new \App\Models\Farm();
+        $farm->resource_id = $currency->resource_id;
+        $farm->land_id = Auth::user()->land_id;
+        $farm->posx = \request('x');
+        $farm->posy = \request('y');
+        $farm->save();
+
+        return Redirect::route('play');
+
+    }
+    public function pickFarm()
+    {
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+        //if owner of the land
+        $land = \App\Models\Land::where('owner_id', $user_id)->where('id', Auth::user()->land_id)->first();
+        if(empty($land || $user_id == 1)){
+            echo 'You are not the owner of this land';
+            die;
+        }
+        //if farm is picable
+        $farm_id = \request('farm_id');
+        $farm = \App\Models\Farm::where('id', $farm_id)->first();
+        if(empty($farm)){
+            echo 'Farm not found';
+            die;
+        }
+
+        $currency = Currency::where('resource_id', $farm->resource_id)->first();
+        if(empty($currency)){
+            echo 'Farm is picable - Currency not found';
+            die;
+        }
+
+        echo 'Farm is picable';
+        echo 'Currency: '.$currency->name;
+
+        $farm->delete();
+
+        //add balance
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $currency->id)->first();
+        if(empty($balance)){
+            $balance = new \App\Models\Balance();
+            $balance->user_id = $user_id;
+            $balance->currency_id = $currency->id;
+            $balance->value = 1;
+            $balance->save();
+        } else {
+            $balance->value = $balance->value + 1;
+            $balance->save();
+        }
 
         return Redirect::route('play');
 

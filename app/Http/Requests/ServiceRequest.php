@@ -31,7 +31,7 @@ class ServiceRequest extends FormRequest
             'revenue' => 'nullable|array',
             'time' => 'nullable|integer',
             'reload' => 'nullable|integer',
-            'currency' => 'required|integer|exists:currencies,id',
+//            'currency' => 'required|integer|exists:currencies,id',
         ];
     }
 

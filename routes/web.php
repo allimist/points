@@ -73,8 +73,13 @@ Route::get('/api/service-use/select',    [ServiceUseController::class,  'ApiSele
 Route::get('/api/service-use/claim',    [ServiceUseController::class,  'ApiClaim']);
 Route::get('/api/service-use/sell',     [ServiceUseController::class,  'ApiSell']);
 
-Route::get('/position/set',          [LandController::class,  'setPosition']);//save farm pos
-Route::get('/farm/add',          [LandController::class,  'addFarm']);//add new farm
+
+Route::get('/farm/move',         [LandController::class,  'moveFarm']);
+//for admin not limmited amount
+Route::get('/farm/add',          [LandController::class,  'addFarm']);
+//for player decrease balance
+Route::get('/farm/set',          [LandController::class,  'setFarm']);
+Route::get('/farm/pick',         [LandController::class,  'pickFarm']);
 
 
 

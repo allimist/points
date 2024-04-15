@@ -95,7 +95,7 @@ class LandTypeCrudController extends CrudController
             ],
             'new_item_label'  => 'Add Group',
             'init_rows' => 0,
-            'max_rows' => 2,
+            'max_rows' => 20,
         ]);
         $this->crud->addField([
             'name' => 'image', // The db column name where the image path is stored

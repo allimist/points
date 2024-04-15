@@ -1,20 +1,15 @@
-
-{{--<style>--}}
-
-
-{{--</style>--}}
-
-
-
-
 <?php
-//  dd($status);
 
 $user_id = Auth::user()->id;
 
 $currency = \App\Models\Currency::get();
+$currencyArray = [];
+$resourceCurrencyArray = [];
 foreach ($currency as $c) {
-    $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image];
+    $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image , 'resource_id'=>$c->resource_id];
+    if($c->resource_id){
+        $resourceCurrencyArray[$c->resource_id] = $c->id;
+    }
 }
 
 $balance = \App\Models\Balance::where('user_id', $user_id)->get();
@@ -30,13 +25,9 @@ $avatars = \App\Models\Avatar::get();
 foreach ($avatars as $avatar) {
     $avatarsArray[$avatar->id] = ['name'=>$avatar->name,'img'=>$avatar->image];
 }
-//dd($avatarsArray);
 
 $resource = \App\Models\Resource::get();
-//dd($resource);
 foreach ($resource as $r) {
-//    dd($r);
-
     $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'type'=>$r->type, 'img'=>$r->image,'img_hover'=>$r->image_hover];
     if($r->id == 3 || $r->id == 6){
         $resourceArray[$r->id]['amountable'] = true;
@@ -51,14 +42,8 @@ foreach ($service as $s) {
     $serviceArray[$s->id] = ['name'=>$s->name, 'time'=>$s->time, 'reload'=>$s->reload , 'cost'=>$s->cost , 'revenue'=>$s->revenue];
 }
 
-//$lands = \App\Models\Land::select('id','name')->get();
-//foreach ($lands as $land) {
-//    $landArray[$land->id] = $land->name;
-//}
 
 $heroland = \App\Models\Land::where('id', Auth::user()->land_id)->first();
-//dd($land->image);
-
 if($heroland->owner_id == $user_id || $user_id == 1){
     $land_owner = true;
 } else {
@@ -71,9 +56,6 @@ $farmsArray = [];
 //$farmsServiceArray = [];
 foreach ($farms as $farm) {
     $farmsArray[$farm->id] = $farm->getAttributes();
-    //            echo $resourceArray[$farm->resource_id]['name'].'['.$farm->id.']<br>';
-    //            echo '<img src="'.$resourceArray[$farm->resource_id]['img'].'" width="50" height="50"><br>';
-
 
     $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
     if(sizeof($services) == 1){
@@ -90,24 +72,17 @@ foreach ($farms as $farm) {
     $service_free = true;
 
 
-
-
-
-
     if(!empty($service_use)) {
         $service = \App\Models\Service::where('id', $service_use->service_id)->first();
         if($service_use->claimed_at == null) {
             $service_free = false;
             $diff = strtotime($service_use->created_at->addSeconds($service->time)) - strtotime(now());
             if ($diff > 0) {
-    //                           echo ' - in progress - diff:' . $diff . ' ' . date("H:i:s", $diff).'<br>';
                 $farmsArray[$farm->id]['service_id'] = $service->id;
                 $farmsArray[$farm->id]['status'] = 'in_use';
                 $farmsArray[$farm->id]['text'] = $diff;
                 $farmsArray[$farm->id]['ready'] = strtotime(now())+$diff;
             } else {
-    //                        echo $service->name.' - ['.$service->id.']';
-    //                        echo ' <a href="/service-use/claim?farm_id=' . $farm->id . '&service_id=' . $service->id . '">Claim</a><br>';
                 $farmsArray[$farm->id]['service_id'] = $service->id;
                 $farmsArray[$farm->id]['status'] = 'claim';
                 $farmsArray[$farm->id]['text'] = 'Claim';
@@ -115,8 +90,6 @@ foreach ($farms as $farm) {
         } else {
             $diff = strtotime($service_use->claimed_at->addSeconds($service->reload)) -strtotime(now());
             if($diff > 0 ){
-    //                        echo $service->name.' - ['.$service->id.']';
-    //                        echo ' - in reload - diff:'.$diff.' '.date("H:i:s", $diff);
                 $service_free = false;
                 $farmsArray[$farm->id]['service_id'] = $service->id;
                 $farmsArray[$farm->id]['status'] = 'reload';
@@ -183,15 +156,12 @@ foreach ($users as $u) {
     $usersArray[$u->id] = $u->getAttributes();
 //            echo $u->name.' - '.$u->reputation.' - '.$u->land_id.' - '.$u->posx.' - '.$u->posy. ' - '.$u->active_at.'<br>';
 }
-
-//dd($serviceArray);
-
 ?>
 
 
 <link href="play.css" rel="stylesheet">
 
-<x-app-layout class="">
+<x-app-layout class="unselectable">
 
     <div id="balance" class="unselectable">
         <?php
@@ -211,17 +181,21 @@ foreach ($users as $u) {
         <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button><br>
         <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button><br>
         <div id="addResource">
+            <span id="pickResource">(Pick resource)</span><br>
             <?php
             foreach ($resourceArray as $key => $value) {
+
+                if(empty($resourceCurrencyArray[$key])) {
 //                    echo '<button class="btn addResource" onclick="addResource('.$key.')">'.$value['name'].'</button> | ';
-                echo '<a href=/farm/add?resource_id='.$key.' class="btn addResource" >'.$value['name'].'</a> | ';
+                    echo '<a href=/farm/add?resource_id=' . $key . ' class="btn addResource" >' . $value['name'] . '</a> | ';
+                }
             }
             ?>
         </div>
     </div>
 
 
-    <div id="popup" class="popup">
+    <div id="popup" class="popup unselectable">
         <div class="popup-content">
             <span class="closeBtn">&times;</span>
             <p id="popup-text"></p>
