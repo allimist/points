@@ -11,14 +11,14 @@ class go extends Command
      *
      * @var string
      */
-    protected $signature = 'app:go';
+    protected $signature = 'zapp:go';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'add energy (every 5 minutes)';
 
     /**
      * Execute the console command.
@@ -26,33 +26,36 @@ class go extends Command
     public function handle()
     {
 
-        //add energy
-        $balances = \App\Models\Balance::where('currency_id', 1)
+//        //add energy
+//        $balances = \App\Models\Balance::where('currency_id', 1)
+//            ->where('value', '<', 1000)
+//            ->get();
+//        foreach ($balances as $balance) {
+//            echo $balance->value . '\r\n';
+//            $balance->value++;
+//            $balance->save();
+//        }
+//
+//        //fix energy
+//        $balances = \App\Models\Balance::where('currency_id', 1)
+//            ->where('value', '>', 1000)
+//            ->get();
+//        foreach ($balances as $balance) {
+//            echo $balance->value . "\r\n";
+//            $balance->value = 1000;
+//            $balance->save();
+//        }
+
+        //+5 energy every 5 minutes
+        \DB::table('balances')
+            ->where('currency_id', 1)
             ->where('value', '<', 1000)
-            ->get();
-        foreach ($balances as $balance) {
-            echo $balance->value . '\r\n';
-            $balance->value++;
-            $balance->save();
-        }
+            ->increment('value', 5);
 
-        //fix energy
-        $balances = \App\Models\Balance::where('currency_id', 1)
+        \DB::table('balances')
+            ->where('currency_id', 1)
             ->where('value', '>', 1000)
-            ->get();
-        foreach ($balances as $balance) {
-            echo $balance->value . "\r\n";
-            $balance->value = 1000;
-            $balance->save();
-        }
-
-        //add reputation
-
-
-        //-1day vip
-
-
-
+            ->update(['value'=>1000]);
 
     }
 }

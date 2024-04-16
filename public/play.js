@@ -260,6 +260,7 @@ function draw() {
         updateHeroPosition();
     }
 
+
     if(windowWidth < 1000) {
         drawJoystick();
     }
@@ -291,7 +292,20 @@ function draw() {
                 } else {
                     // fill('black');
                     image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+                    // Draw the rectangle around the circle
+
                 }
+
+                if(edit_mode) {
+                    noFill(); // Ensure the rectangle isn't filled
+                    if(resourceArray[farmsArray[i].resource_id].type == 'rug'){
+                        stroke(255, 255, 0); // Color the stroke red for visibilitysasadasd
+                    } else {
+                        stroke(255, 0, 0); // Color the stroke red for visibility
+                    }
+                    rect(farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+                }
+
             }
 
             // if(farmsArray[i].status == 'in_use'){
@@ -350,24 +364,12 @@ function draw() {
     } else {
         image(hero, heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
     }
-    // image(hero, heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
 
-    //update hero position
-    // updateHeroPositionLoop++;
-    // if (updateHeroPositionLoop >= updateHeroPositionInterval) {
-    //     updateHeroPositionLoop = 0;
-    //     //ajax request
-    //     $.ajax({
-    //         url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
-    //         // context: document.body
-    //     });
-    //     // .done(function(resp) {
-    //     //     // $( this ).addClass( "done" );
-    //     //     console.log("resp: ", resp);
-    //     // });
-    // }
-
-
+    if(edit_mode) {
+        noFill(); // Ensure the rectangle isn't filled
+        stroke(255, 0, 0); // Color the stroke red for visibility
+        rect(heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
+    }
 
     // console.log('usersArray', usersArray);
     if(usersArrayLen > 0) {
@@ -456,6 +458,53 @@ function updateHeroPosition() {
         heroPos.y = proposedNewPosition.y;
     }
 
+}
+
+function isCollidingWithObjects(proposedPosition) {
+    let collision = false;
+    Object.keys(farmsArray).forEach(i => {
+
+        // if{}
+        // if(edit_mode) {
+        //     noFill(); // Ensure the rectangle isn't filled
+        //     stroke(0, 0, 255); // Color the stroke red for visibility
+        //     // rect(heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
+        //     rect(proposedPosition.x, proposedPosition.y , 50, 50);
+        // }
+
+        // if(i == 57){
+        //     console.log('farmsObjectSize[i]',farmsObjectSize[i]);
+        //     // console.log('pur-x: ', farmsObjectPos[i].x - farmsObjectSize[i] /2 , ' < ' , proposedPosition.x , ' < ' , farmsObjectPos[i].x);
+        //     // console.log('che-x',proposedPosition.y);
+        //
+        //
+        // }
+
+
+        if( resourceArray[farmsArray[i].resource_id].type != 'rug' &&
+
+            proposedPosition.x > farmsObjectPos[i].x - farmsObjectSize[i] && //+ 20  &&
+            proposedPosition.x < farmsObjectPos[i].x && // + 20 &&
+
+            proposedPosition.y > farmsObjectPos[i].y - farmsObjectSize[i] && // +20 &&
+            proposedPosition.y < farmsObjectPos[i].y //+ 20
+
+        ){
+
+            // if(i == 36){
+            //     console.log('farmsArray[i].resource_id', farmsArray[i].resource_id);
+            //     console.log('resourceArray[farmsArray[i].resource_id].type', resourceArray[farmsArray[i].resource_id]);
+            // }
+
+            collision = true;
+            // return true;
+            return;
+        }
+        if(collision){
+            return;
+        }
+    });
+    return collision;
 }
 
 function mousePressed() {

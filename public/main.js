@@ -28,34 +28,6 @@ function editor_mode(em) {
 
 
 
-function isCollidingWithObjects(proposedPosition) {
-    let collision = false;
-    Object.keys(farmsArray).forEach(i => {
-
-        // if{}
-
-        if( resourceArray[farmsArray[i].resource_id].type != 'rug' &&
-            proposedPosition.x < farmsObjectPos[i].x &&
-            proposedPosition.x > farmsObjectPos[i].x - farmsObjectSize[i] &&
-            proposedPosition.y < farmsObjectPos[i].y &&
-            proposedPosition.y > farmsObjectPos[i].y - farmsObjectSize[i]
-        ){
-
-            // if(i == 36){
-            //     console.log('farmsArray[i].resource_id', farmsArray[i].resource_id);
-            //     console.log('resourceArray[farmsArray[i].resource_id].type', resourceArray[farmsArray[i].resource_id]);
-            // }
-
-            collision = true;
-            // return true;
-            return;
-        }
-        if(collision){
-            return;
-        }
-    });
-    return collision;
-}
 
 function land_go_select() {
     //ajax call to /api/land/list

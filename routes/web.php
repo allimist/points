@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceUseController;
 use App\Http\Controllers\SSEController;
 
 use App\Http\Controllers\PlayController;
+use App\Http\Controllers\Admin\SettingCrudController;
 
 
 
@@ -81,7 +82,7 @@ Route::get('/farm/add',          [LandController::class,  'addFarm']);
 Route::get('/farm/set',          [LandController::class,  'setFarm']);
 Route::get('/farm/pick',         [LandController::class,  'pickFarm']);
 
-
+Route::crud('admin/setting', 'App\Http\Controllers\Admin\SettingCrudController');
 
 
 
