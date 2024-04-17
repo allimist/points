@@ -44,6 +44,10 @@ foreach ($service as $s) {
 
 
 $heroland = \App\Models\Land::where('id', Auth::user()->land_id)->first();
+$landType = \App\Models\LandType::where('id', $heroland->type_id)->first();
+//dd($landType);
+//$heroland->image = $landType->image;
+
 if($heroland->owner_id == $user_id || $user_id == 1){
     $land_owner = true;
 } else {
@@ -239,7 +243,7 @@ foreach ($users as $u) {
 <script>
     let serverTime = {{ strtotime(now()) }};
     let land_id = {{ Auth::user()->land_id }};
-    let map = <?php echo json_encode($heroland->image); ?>;
+    let map = <?php echo json_encode($landType->image); ?>;
     let posx = {{ Auth::user()->posx }};
     let posy = {{ Auth::user()->posy }};
     let avatar_id = {{ Auth::user()->avatar_id }};

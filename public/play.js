@@ -29,6 +29,9 @@ usersArrayLen = Object.values(usersArray).length;
 let interactionDistance = 200;
 
 let currencyObject = [];
+let resourceObject = [];
+let resourceObjectHover = [];
+let resourceObjectSize = [];
 let farmsObjectPos = [];
 let farmsObject = [];
 let farmsObjectHover = [];
@@ -57,25 +60,19 @@ let currentlyDraggingResource = null; // Track the rectangle currently being dra
 let joystick = {
     baseX: 100,
     // baseY: windowHeight - 100,
-    baseSize: 100,
+    baseY: 100,
+    baseSize: 80,
     stickX: 100,
     // stickY: windowHeight - 100,
-    stickSize: 50,
+    stickY: 100,
+    stickSize: 40,
     dragging: false
 };
-function drawJoystick() {
-    fill(80);
-    circle(joystick.baseX, joystick.baseY, joystick.baseSize);
-    fill(160);
-    circle(joystick.stickX, joystick.stickY, joystick.stickSize);
-}
-// let fix_x= -50;
-// let fix_y= 50;
 
-// let isPopupVisible = false;
+
 
 function preload() {
-
+    console.log('preload');
 
     mapBackground = loadImage('storage/'+map);
     // hero = loadImage(avatarsArray[3].img);
@@ -99,6 +96,7 @@ function preload() {
         }
     });
 
+    /*
     Object.keys(farmsArray).forEach( i => {
 
         if (resourceArray[farmsArray[i].resource_id].img) {
@@ -123,6 +121,32 @@ function preload() {
 
         farmsObjectSize[i] = resourceArray[farmsArray[i].resource_id].size * 10;
     });
+    */
+
+    Object.keys(resourceArray).forEach( i => {
+
+        if (resourceArray[i].img) {
+            if(resourceArray[i].img.length<200){
+                resourceObject[i] = loadImage('storage/' + resourceArray[i].img);
+            } else {
+                resourceObject[i] = loadImage(resourceArray[i].img);
+            }
+        } else {
+            resourceObject[i] = loadImage('clickableObject.png');
+        }
+        if (resourceArray[i].img_hover) {
+            if(resourceArray[i].img_hover.length<200){
+                resourceObjectHover[i] = loadImage('storage/' + resourceArray[i].img_hover);
+            } else {
+                resourceObjectHover[i] = loadImage(resourceArray[i].img_hover);
+            }
+        }
+        // else {
+        //     farmsObjectHover[i] = loadImage('clickableObject.png');
+        // }
+
+        resourceObjectSize[i] = resourceArray[i].size * 10;
+    });
 
     // hero = loadImage('img/hero.png');
 
@@ -144,17 +168,30 @@ function preload() {
 
 function setup() {
 
+    console.log('setup');
 
     // if(windowHeight > 500){
     //     createCanvas(windowWidth, 500);
     // } else {
     let cnv = createCanvas(windowWidth, windowHeight);
+    // cnv.drawingContext.setContextAttribute("willReadFrequently", true);
+    // cnv.drawingContext.setContextAttribute('willReadFrequently',true);
+    // cnv.drawingContext.setAttribute('willReadFrequently', true);
+
+
+    // ?? cnv.elt.setAttribute('willReadFrequently', true);
+
+    // console.log(cnv.drawingContext.getContextAttributes());
+
+    // let cnv = createCanvas(windowWidth, windowHeight).elt.getContext('2d', { willReadFrequently: true });
+
+    // contextReadFrequently = createCanvas(800, 600).elt.getContext('2d', { willReadFrequently: true });
     // cnv.parent('canvasContainer'); // This div will hold the canvas
-    joystick.baseX = windowWidth - 100;
-    joystick.baseY = windowHeight - 100;
+    joystick.baseX =joystick.stickX = windowWidth - 100;
+    joystick.baseY = joystick.stickY = windowHeight - 100;
 
     // }
-    cnv.elt.setAttribute('will-read-frequently', 'true');
+    // cnv.elt.setAttribute('willReadFrequently', true);
     cnv.elt.style.position = 'fixed';
     cnv.elt.style.userSelect = 'none';
     cnv.elt.style.touchAction = 'none';
@@ -240,6 +277,8 @@ function setup() {
 
     });
 
+    console.log('setup end');
+
 }
 
 function draw() {
@@ -253,6 +292,8 @@ function draw() {
         image(mapBackground, -camX, -camY, mapWidth, mapHeight);
     }
 
+    // cursor('pointer');
+
     // console.log('joystick.dragging', joystick.dragging);
 
     if(hero && !isPopupVisible){
@@ -261,39 +302,51 @@ function draw() {
     }
 
 
-    if(windowWidth < 1000) {
-        drawJoystick();
-    }
+
 
 
     let currentTime = millis();
     let timeElapsed = (currentTime - startTime)/1000;
 
+    let isMouseOver = false;
     if(farmsArray) {
+        let resourceId = null;
         Object.keys(farmsArray).forEach(i => {
+
+            resourceId = farmsArray[i].resource_id;
 
             if(currentlyDragging === i) {
 
-                image(farmsObject[i], mouseX - farmsObjectSize[i] / 2, mouseY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+                image(resourceObject[resourceId], mouseX - resourceObjectSize[resourceId] / 2, mouseY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
 
             } else {
 
-                if (farmsObjectHover[i] &&
-                    mouseX > farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2 &&
-                    mouseX < farmsObjectPos[i].x - camX + farmsObjectSize[i] / 2 &&
-                    mouseY > farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2 &&
-                    mouseY < farmsObjectPos[i].y - camY + farmsObjectSize[i] / 2) {
+                if (
+                    mouseX > farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2 &&
+                    mouseX < farmsObjectPos[i].x - camX + resourceObjectSize[resourceId] / 2 &&
+                    mouseY > farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2 &&
+                    mouseY < farmsObjectPos[i].y - camY + resourceObjectSize[resourceId] / 2) {
                     // fill('red');
 
                     // farmsObjectHover
-                    image(farmsObjectHover[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+                    // if(farmsObjectHover[i]) {
+                    //     image(farmsObjectHover[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+                    // } else {
+                    //     image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+                    // }
+                    if(resourceObjectHover[resourceId]) {
+                        image(resourceObjectHover[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else {
+                        image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    }
+                    // if(resourceArray[farmsArray[i].resource_id].type != 'rug') {
+                    if(farmsArray[i].service_id) {
+                        isMouseOver = true;
+                    }
                     // image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i]/2, farmsObjectPos[i].y - camY - farmsObjectSize[i]/2, farmsObjectSize[i], farmsObjectSize[i]);
 
                 } else {
-                    // fill('black');
-                    image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
-                    // Draw the rectangle around the circle
-
+                    image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
                 }
 
                 if(edit_mode) {
@@ -303,7 +356,8 @@ function draw() {
                     } else {
                         stroke(255, 0, 0); // Color the stroke red for visibility
                     }
-                    rect(farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
+
+                    rect(farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
                 }
 
             }
@@ -324,11 +378,14 @@ function draw() {
                         let formattedSeconds = seconds.toString().padStart(2, '0');
 
                         if(farmsArray[i].status == 'in_use') {
-                            timeString = `In use ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+                            // timeString = `In use ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+                            timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                         } else {
-                            timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+                            // timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+                            timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                         }
-                        text(timeString, farmsObjectPos[i].x - camX - farmsObjectSize[i]/2 - 50, farmsObjectPos[i].y - camY + farmsObjectSize[i]/2 );
+                        fill(255);
+                        text(timeString, farmsObjectPos[i].x - camX - resourceObjectSize[resourceId]/2 + 10, farmsObjectPos[i].y - camY + resourceObjectSize[resourceId]/2 -10);
                     } else {
                         if(farmsArray[i].status == 'in_use') {
                             farmsArray[i].status = 'claim';
@@ -352,7 +409,6 @@ function draw() {
     }
 
     if(currentlyDraggingResource){
-        // image(farmsObject[currentlyDraggingResource], mouseX - farmsObjectSize[currentlyDraggingResource] / 2, mouseY - farmsObjectSize[currentlyDraggingResource] / 2, farmsObjectSize[currentlyDraggingResource], farmsObjectSize[currentlyDraggingResource]);
         image(currencyObject[currentlyDraggingResource], mouseX - 30 / 2, mouseY - 30 / 2, 30, 30);
     }
 
@@ -409,7 +465,19 @@ function draw() {
         });
     }
 
+    if(windowWidth < 1000) {
+        drawJoystick();
+    }
 
+    // Check for mouse over any rectangle
+    if (isMouseOver) {
+        cursor('pointer');
+    // console.log('cursor');
+    } else {
+        cursor('default');
+    }
+
+    // console.log('draw end');
 }
 
 function updateHeroPosition() {
@@ -446,59 +514,48 @@ function updateHeroPosition() {
         proposedNewPosition.y += sin(angle) * speed;
     }
 
-
-    if (!isCollidingWithObjects(proposedNewPosition)) {
-        // console.log('proposedNewPosition', proposedNewPosition);
-        if(heroPos.x < proposedNewPosition.x){
-            heroMoveRight = true;
-        }else if(heroPos.x > proposedNewPosition.x){
-            heroMoveRight = false;
+    if(heroPos.x != proposedNewPosition.x || heroPos.y != proposedNewPosition.y ){
+        if (!isCollidingWithObjects(proposedNewPosition)) {
+            // console.log('proposedNewPosition', proposedNewPosition);
+            if(heroPos.x < proposedNewPosition.x){
+                heroMoveRight = true;
+            }else if(heroPos.x > proposedNewPosition.x){
+                heroMoveRight = false;
+            }
+            heroPos.x = proposedNewPosition.x;
+            heroPos.y = proposedNewPosition.y;
         }
-        heroPos.x = proposedNewPosition.x;
-        heroPos.y = proposedNewPosition.y;
     }
+    // else {
+    //     console.log('hero not move');
+    // }
+
+
 
 }
 
 function isCollidingWithObjects(proposedPosition) {
     let collision = false;
     Object.keys(farmsArray).forEach(i => {
-
-        // if{}
-        // if(edit_mode) {
-        //     noFill(); // Ensure the rectangle isn't filled
-        //     stroke(0, 0, 255); // Color the stroke red for visibility
-        //     // rect(heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
-        //     rect(proposedPosition.x, proposedPosition.y , 50, 50);
+        // if(i == 40){
+        //     console.log(camX,' pur-x: ', farmsObjectPos[i].x - resourceObjectSize[resourceId]/2 , ' < ' , proposedPosition.x , ' < ' , farmsObjectPos[i].x + resourceObjectSize[resourceId]/2);
         // }
+        resourceId = farmsArray[i].resource_id;
+        divi = resourceObjectSize[resourceId]/22 ;//10; //50;
+        divi = divi*divi;
+        if( resourceArray[resourceId].type != 'rug' &&
 
-        // if(i == 57){
-        //     console.log('farmsObjectSize[i]',farmsObjectSize[i]);
-        //     // console.log('pur-x: ', farmsObjectPos[i].x - farmsObjectSize[i] /2 , ' < ' , proposedPosition.x , ' < ' , farmsObjectPos[i].x);
-        //     // console.log('che-x',proposedPosition.y);
-        //
-        //
-        // }
+            // proposedPosition.x > farmsObjectPos[i].x - resourceObjectSize[resourceId]/2  && //+ 20  &&
+            farmsObjectPos[i].x - resourceObjectSize[resourceId] + divi < proposedPosition.x  &&
+            proposedPosition.x  < farmsObjectPos[i].x + divi && // + 20 &&
 
-
-        if( resourceArray[farmsArray[i].resource_id].type != 'rug' &&
-
-            proposedPosition.x > farmsObjectPos[i].x - farmsObjectSize[i] && //+ 20  &&
-            proposedPosition.x < farmsObjectPos[i].x && // + 20 &&
-
-            proposedPosition.y > farmsObjectPos[i].y - farmsObjectSize[i] && // +20 &&
-            proposedPosition.y < farmsObjectPos[i].y //+ 20
+            // proposedPosition.y > farmsObjectPos[i].y - resourceObjectSize[resourceId] && // +20 &&
+            farmsObjectPos[i].y - resourceObjectSize[resourceId] + divi < proposedPosition.y && // +20 &&
+            proposedPosition.y < farmsObjectPos[i].y + divi //+ 20
 
         ){
-
-            // if(i == 36){
-            //     console.log('farmsArray[i].resource_id', farmsArray[i].resource_id);
-            //     console.log('resourceArray[farmsArray[i].resource_id].type', resourceArray[farmsArray[i].resource_id]);
-            // }
-
             collision = true;
-            // return true;
-            return;
+            //return;
         }
         if(collision){
             return;
@@ -527,11 +584,14 @@ function mousePressed() {
         if(edit_mode || currentlyDraggingResource){
 
             let freePos = true;
+            let resourceId = null;
             Object.keys(farmsArray).forEach(i => {
-                if (clickPos.x >= farmsObjectPos[i].x - farmsObjectSize[i] / 2 &&
-                    clickPos.x <= farmsObjectPos[i].x + farmsObjectSize[i] / 2 &&
-                    clickPos.y >= farmsObjectPos[i].y - farmsObjectSize[i] / 2 &&
-                    clickPos.y <= farmsObjectPos[i].y + farmsObjectSize[i] / 2) {
+                resourceId = farmsArray[i].resource_id;
+
+                if (clickPos.x >= farmsObjectPos[i].x - resourceObjectSize[resourceId] / 2 &&
+                    clickPos.x <= farmsObjectPos[i].x + resourceObjectSize[resourceId] / 2 &&
+                    clickPos.y >= farmsObjectPos[i].y - resourceObjectSize[resourceId] / 2 &&
+                    clickPos.y <= farmsObjectPos[i].y + resourceObjectSize[resourceId] / 2) {
 
                     if (!currentlyDragging) {
                         currentlyDragging = i; // Store reference to the rectangle being dragged
@@ -568,19 +628,19 @@ function mousePressed() {
 
 
         } else {
-
+            let resourceId = null;
             Object.keys(farmsArray).forEach(i => {
-
+                resourceId = farmsArray[i].resource_id;
                 // console.log('farmsArray[i]', farmsArray[i]);
                 // if(farmsArray[i].status == 'start' || farmsArray[i].status == 'claim' || i == 18){
 
 
                 //     let farm = farmsArray[i];
                 if ((typeof farmsArray[i].service_id !== 'undefined' || edit_mode) &&
-                    clickPos.x >= farmsObjectPos[i].x - farmsObjectSize[i] / 2 &&
-                    clickPos.x <= farmsObjectPos[i].x + farmsObjectSize[i] / 2 &&
-                    clickPos.y >= farmsObjectPos[i].y - farmsObjectSize[i] / 2 &&
-                    clickPos.y <= farmsObjectPos[i].y + farmsObjectSize[i] / 2) {
+                    clickPos.x >= farmsObjectPos[i].x - resourceObjectSize[resourceId] / 2 &&
+                    clickPos.x <= farmsObjectPos[i].x + resourceObjectSize[resourceId] / 2 &&
+                    clickPos.y >= farmsObjectPos[i].y - resourceObjectSize[resourceId] / 2 &&
+                    clickPos.y <= farmsObjectPos[i].y + resourceObjectSize[resourceId] / 2) {
 
                     if (heroPos.dist(farmsObjectPos[i]) <= interactionDistance) {
 
@@ -676,7 +736,7 @@ function touchStarted() {
     let d = dist(mouseX, mouseY, joystick.baseX, joystick.baseY);
     if (d < joystick.baseSize / 2) {
         joystick.dragging = true;
-        console.log('joystick.dragging', joystick.dragging);
+        // console.log('joystick.dragging', joystick.dragging);
         return false;
     }
 }
@@ -724,8 +784,15 @@ function touchEnded() {
     joystick.dragging = false;
     joystick.stickX = joystick.baseX;
     joystick.stickY = joystick.baseY;
-    console.log('joystick.dragging', joystick.dragging);
+    // console.log('joystick.dragging', joystick.dragging);
 
 }
 
-
+function drawJoystick() {
+    // fill(80);
+    fill('rgba(100, 100, 255, 0.5)');
+    circle(joystick.baseX, joystick.baseY, joystick.baseSize);
+    // fill(160);
+    fill('rgba(255, 100, 100, 0.5)');
+    circle(joystick.stickX, joystick.stickY, joystick.stickSize);
+}
