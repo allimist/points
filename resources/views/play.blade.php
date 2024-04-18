@@ -172,28 +172,30 @@ foreach ($users as $u) {
         foreach ($currencyArray as $key => $value) {
             if(!empty($balanceArray[$key]) && $balanceArray[$key] > 0) {
 //            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$value['name'].':'.$balanceArray[$key].' | ';
-                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.$balanceArray[$key].' | ';
+                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.floor($balanceArray[$key]).' | ';
             }
         }
         ?>
     </div>
 
-
     <div id="menu" class="unselectable">
 
-        <a class="btn" href="/dashboard">Dashboard</a><br>
+        <a class="btn" href="/dashboard">Q</a> |
+        <a class="btn" href="/play">R</a><br>
         <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button><br>
         <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button><br>
         <div id="addResource">
-            <span id="pickResource">(Pick resource)</span><br>
+            <span id="pickResource">(-Pick-)</span><br>
             <?php
-            foreach ($resourceArray as $key => $value) {
+                if($user_id == 1){
+                    foreach ($resourceArray as $key => $value) {
 
-                if(empty($resourceCurrencyArray[$key])) {
+                        if(empty($resourceCurrencyArray[$key])) {
 //                    echo '<button class="btn addResource" onclick="addResource('.$key.')">'.$value['name'].'</button> | ';
-                    echo '<a href=/farm/add?resource_id=' . $key . ' class="btn addResource" >' . $value['name'] . '</a> | ';
+                            echo '<a href=/farm/add?resource_id=' . $key . ' class="btn addResource" >' . $value['name'] . '</a> | ';
+                        }
+                    }
                 }
-            }
             ?>
         </div>
     </div>
@@ -202,7 +204,7 @@ foreach ($users as $u) {
     <div id="popup" class="popup unselectable">
         <div class="popup-content">
             <span class="closeBtn">&times;</span>
-            <p id="popup-text"></p>
+            <p id="popup-text">Loading ...</p>
         </div>
     </div>
 

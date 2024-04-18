@@ -53,7 +53,7 @@ let heros = [];
 let herosPos = [];
 
 // let edit_mode = false;
-let currentlyDragging = null; // Track the rectangle currently being dragged
+let currentlyDraggingFarm = null; // Track the rectangle currently being dragged
 let currentlyDraggingResource = null; // Track the rectangle currently being dragged
 
 
@@ -72,7 +72,7 @@ let joystick = {
 
 
 function preload() {
-    console.log('preload');
+    // console.log('preload');
 
     mapBackground = loadImage('storage/'+map);
     // hero = loadImage(avatarsArray[3].img);
@@ -168,7 +168,7 @@ function preload() {
 
 function setup() {
 
-    console.log('setup');
+    // console.log('setup');
 
     // if(windowHeight > 500){
     //     createCanvas(windowWidth, 500);
@@ -277,7 +277,8 @@ function setup() {
 
     });
 
-    console.log('setup end');
+    document.getElementById('popup').style.display = 'none';
+    // console.log('setup end');
 
 }
 
@@ -315,7 +316,7 @@ function draw() {
 
             resourceId = farmsArray[i].resource_id;
 
-            if(currentlyDragging === i) {
+            if(currentlyDraggingFarm === i) {
 
                 image(resourceObject[resourceId], mouseX - resourceObjectSize[resourceId] / 2, mouseY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
 
@@ -490,28 +491,28 @@ function updateHeroPosition() {
     if (keyIsDown(87)) { proposedNewPosition.y -= speed; }
     if (keyIsDown(83)) { proposedNewPosition.y += speed; }
 
-
-    if (mouseIsPressed && !joystick.dragging) {
-        if (millis() - mousePressedTime > moveThreshold) {
-            // Mouse has been held down long enough; move hero
-            let camX = constrain(proposedNewPosition.x - width / 2, 0, mapWidth - width);
-            let camY = constrain(proposedNewPosition.y - height / 2, 0, mapHeight - height);
-            let mousePos = createVector(mouseX + camX, mouseY + camY);
-            let direction = p5.Vector.sub(mousePos, proposedNewPosition);
-            direction.setMag(speed);
-            proposedNewPosition.add(direction);
+    // if (mouseIsPressed && !joystick.dragging) {
+    if(!joystick.dragging) {
+        if (mouseIsPressed) {
+            if (millis() - mousePressedTime > moveThreshold) {
+                // Mouse has been held down long enough; move hero
+                let camX = constrain(proposedNewPosition.x - width / 2, 0, mapWidth - width);
+                let camY = constrain(proposedNewPosition.y - height / 2, 0, mapHeight - height);
+                let mousePos = createVector(mouseX + camX, mouseY + camY);
+                let direction = p5.Vector.sub(mousePos, proposedNewPosition);
+                direction.setMag(speed);
+                proposedNewPosition.add(direction);
+            }
+        } else {
+            // Reset mousePressedTime when the mouse is released
+            mousePressedTime = millis();
         }
     } else {
-        // Reset mousePressedTime when the mouse is released
-        mousePressedTime = millis();
-    }
-
-    if(joystick.dragging){
-        let dx = joystick.stickX - joystick.baseX;
-        let dy = joystick.stickY - joystick.baseY;
-        let angle = atan2(dy, dx);
-        proposedNewPosition.x += cos(angle) * speed;
-        proposedNewPosition.y += sin(angle) * speed;
+            let dx = joystick.stickX - joystick.baseX;
+            let dy = joystick.stickY - joystick.baseY;
+            let angle = atan2(dy, dx);
+            proposedNewPosition.x += cos(angle) * speed;
+            proposedNewPosition.y += sin(angle) * speed;
     }
 
     if(heroPos.x != proposedNewPosition.x || heroPos.y != proposedNewPosition.y ){
@@ -567,7 +568,7 @@ function isCollidingWithObjects(proposedPosition) {
 function mousePressed() {
 
 
-    // console.log('isPopupVisible',isPopupVisible);
+    // console.log('press');
 
     if(isPopupVisible == false) {
 
@@ -592,22 +593,23 @@ function mousePressed() {
                     clickPos.x <= farmsObjectPos[i].x + resourceObjectSize[resourceId] / 2 &&
                     clickPos.y >= farmsObjectPos[i].y - resourceObjectSize[resourceId] / 2 &&
                     clickPos.y <= farmsObjectPos[i].y + resourceObjectSize[resourceId] / 2) {
+                    freePos = false;
+                    if (!currentlyDraggingFarm && !currentlyDraggingResource) {
+                        currentlyDraggingFarm = i; // Store reference to the rectangle being dragged
+                        // console.log('currentlyDragging', currentlyDragging);
 
-                    if (!currentlyDragging) {
-                        currentlyDragging = i; // Store reference to the rectangle being dragged
-                        console.log('currentlyDragging', currentlyDragging);
-                        freePos = false;
-                        // return;
-                    } else {
-                        freePos = false;
                         // return;
                     }
+                    // else {
+                    //     freePos = false;
+                    //     // return;
+                    // }
                 }
             });
 
-            if(currentlyDragging){
+            if(currentlyDraggingFarm){
                 if(freePos) {
-                    console.log('currentlyDragging set farm', currentlyDragging);
+                    console.log('currentlyDraggingFarm set farm', currentlyDraggingFarm);
                     //set farm
                     move_farm(clickPos);
                 } else {
@@ -644,7 +646,7 @@ function mousePressed() {
 
                     if (heroPos.dist(farmsObjectPos[i]) <= interactionDistance) {
 
-                        console.log('farmsArray[i]', farmsArray[i]);
+                        // console.log('farmsArray[i]', farmsArray[i]);
                         if (currentlyDraggingResource) {
                             // freePos = false;
                             //start service
@@ -730,6 +732,7 @@ function mousePressed() {
 
 
     }
+    return false;
 }
 
 function touchStarted() {
@@ -739,7 +742,12 @@ function touchStarted() {
         // console.log('joystick.dragging', joystick.dragging);
         return false;
     }
+    if(!isPopupVisible){
+        mousePressed();
+    }
+    // return false; // this break popups clicks
 }
+
 
 function touchMoved() {
     if (joystick.dragging) {
@@ -785,7 +793,7 @@ function touchEnded() {
     joystick.stickX = joystick.baseX;
     joystick.stickY = joystick.baseY;
     // console.log('joystick.dragging', joystick.dragging);
-
+    // return false; // this break popups clicks
 }
 
 function drawJoystick() {

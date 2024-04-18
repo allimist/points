@@ -357,18 +357,15 @@ function claim(farm_id,service_id) {
 }
 
 function move_farm(clickPos) {
-    // else {
-    // Stop dragging
-    console.log('move_farm');
     //save new position
-    console.log('new position', clickPos);
+    // console.log('new position', clickPos);
     $.ajax({
-        url: "/farm/move?farm_id=" + currentlyDragging + "&x=" + clickPos.x + "&y=" + clickPos.y,
+        url: "/farm/move?farm_id=" + currentlyDraggingFarm + "&x=" + clickPos.x + "&y=" + clickPos.y,
     }).done(function(resp) {
         // console.log("resp: ", resp);
-        farmsObjectPos[currentlyDragging].x = clickPos.x;
-        farmsObjectPos[currentlyDragging].y = clickPos.y;
-        currentlyDragging = null; // Stop dragging
+        farmsObjectPos[currentlyDraggingFarm].x = clickPos.x;
+        farmsObjectPos[currentlyDraggingFarm].y = clickPos.y;
+        currentlyDraggingFarm = null; // Stop dragging
     });
 }
 
@@ -452,10 +449,12 @@ function pick_farm() {
 */
 
 
-function goBack() {
-    // Functionality for the 'Back' button
-    window.history.back(); // This simply navigates to the previous page in the browser history
-}
+// function goBack() {
+//     // Functionality for the 'Back' button
+//     window.history.back(); // This simply navigates to the previous page in the browser history
+// }
+
+
 
 //select clicke resource
 document.getElementsByClassName('closeBtn')[0].onclick = function() {
@@ -493,19 +492,15 @@ if(land_owner){
 
     $('#pickResource').click(function(){
 
-        if(currentlyDragging){
+        if(currentlyDraggingFarm){
             console.log('pick up');
             // pick_farm();
-            console.log('farm pickable',currentlyDragging);
-            window.location.href = '/farm/pick?farm_id=' + currentlyDragging;
+            console.log('farm pickable',currentlyDraggingFarm);
+            window.location.href = '/farm/pick?farm_id=' + currentlyDraggingFarm;
 
         }
 
     });
-
-
-
-
 
 
 }

@@ -634,24 +634,16 @@ class ServiceUseController extends Controller
     public function ApiSelect()
     {
 
-//        $currencies = \App\Models\Currency::all();
-//        foreach ($currencies as $currency) {
-//            $currencyArray[$currency->id] = $currency->name;
-//        }
-//        $this->balance($currencyArray);
-
         $farm = \App\Models\Farm::find(\request('farm_id'));
-
         if($farm->resource_id == 5){
 
-            $open_tasks = 3;
+            $open_tasks = 4;
 
             $user_id = Auth::id();
             if(empty($user_id)){
                 echo 'User not logged in';
                 die;
             }
-//            dd($user_id = Auth::user()->tasks);
             $task_ids = [];
             if(!empty(Auth::user()->task_ids)){
                 $task_ids = json_decode(Auth::user()->task_ids);
@@ -661,11 +653,8 @@ class ServiceUseController extends Controller
                 $services = \App\Models\Service::where('resource_id', 5)->get();
 
                 $tasks = [];
-//                $task_ids = [];
                 for ($i = sizeof($task_ids); $i < $open_tasks; $i++) {
-//                    echo sizeof($services);
                     $random = rand(0, sizeof($services) -1);
-//                    $tasks[] = $services[$random];
                     $task_ids[] = $services[$random]->id;
 //                    break;
                 }
@@ -678,24 +667,16 @@ class ServiceUseController extends Controller
                 $tasks[] = \App\Models\Service::where('id', $task_id)->first();
             }
 
-//            else {
-//                $tasks = \App\Models\Service::whereIn('id', $task_ids)->get();
-//            }
-//            $services = \App\Models\Service::whereIn('id', $task_ids)->get();
-
             $services = $tasks;
-
 
         } else {
             $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
         }
 
-
         $data = [
             'services' => $services
         ];
 
-//        return Redirect::route('dashboard')->with('status', 'balance-updated');
         return response()->json($data);
 
     }
