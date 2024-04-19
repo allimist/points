@@ -80,9 +80,10 @@ button:hover {
     background-color: rgb(0,0,0,0.6);
     color: lightskyblue;
 }
-#menu btn{
-    margin: 1px;
-    padding: 1px;
+#menu .btn{
+    margin: 3px;
+    padding: 2px;
+    font-size: 20px;
 }
 
 .popup {

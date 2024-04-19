@@ -732,7 +732,7 @@ function mousePressed() {
 
 
     }
-    return false;
+    //return false;
 }
 
 function touchStarted() {

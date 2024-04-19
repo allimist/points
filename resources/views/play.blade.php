@@ -179,6 +179,11 @@ foreach ($users as $u) {
     </div>
 
     <div id="menu" class="unselectable">
+        <?php
+        if($user_id == 1){
+            echo '<a class="btn" href="/admin">A</a> | ';
+        }
+        ?>
 
         <a class="btn" href="/dashboard">Q</a> |
         <a class="btn" href="/play">R</a><br>
