@@ -34,4 +34,7 @@ Route::group([
     Route::crud('userdata', 'UserdataCrudController');
     Route::crud('land-type', 'LandTypeCrudController');
 //    Route::crud('setting', 'SettingCrudController');
+    Route::crud('skill', 'SkillCrudController');
+    Route::crud('skill-user', 'SkillUserCrudController');
+    Route::crud('skill-level', 'SkillLevelCrudController');
 }); // this should be the absolute last line of this file

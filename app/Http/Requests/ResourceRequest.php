@@ -31,6 +31,7 @@ class ResourceRequest extends FormRequest
 //            'reload' => 'required|integer|gt:0',
 //            'image' => 'nullable|image|mimes:png,gif|max:512',
             'size' => 'required|integer|gt:0',
+            'skill_id' => 'nullable|integer|gt:0',
             'image' => 'nullable|nullable|max:900000',
             'image_hover' => 'nullable|nullable|max:900000',
 //            'currency_id' => 'required|integer|gt:0',

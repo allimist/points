@@ -48,7 +48,8 @@ class ResourceCrudController extends CrudController
 //        CRUD::column('image')->type('image');
         CRUD::column('image')->type('image')->prefix('storage/');
         CRUD::column('image_hover')->type('image')->prefix('storage/');
-//        CRUD::column('currency_id');
+//        CRUD::column('skill_id');
+        CRUD::column('skill');
 
 //        CRUD::column('image_hover')->type('image');
 //        $this->crud->addField([
@@ -73,6 +74,9 @@ class ResourceCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('size')->type('number');
         CRUD::field('type');
+//        CRUD::field('skill_id')->type('number');
+        CRUD::field('skill');
+
 //        CRUD::field('revenue');
 //        CRUD::field('reload');
         // image

@@ -68,8 +68,10 @@ Route::get('/play', function () {
 })->middleware(['auth', 'verified'])->name('play');
 
 //Route::get('/land/list', 'LandController@list');
-Route::get('/api/play/load', [PlayController::class,  'apiLoad']);
+//Route::get('/api/play/load', [PlayController::class,  'apiLoad']);
 Route::get('/api/land/list', [LandController::class,  'apiList']);
+Route::post('/api/land/grid/save', [LandController::class,  'apiGridSave']);
+
 Route::get('/api/service-use/select',    [ServiceUseController::class,  'ApiSelect']);
 Route::get('/api/service-use/claim',    [ServiceUseController::class,  'ApiClaim']);
 Route::get('/api/service-use/sell',     [ServiceUseController::class,  'ApiSell']);

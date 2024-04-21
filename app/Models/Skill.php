@@ -6,7 +6,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Avatar extends Model
+class Skill extends Model
 {
     use CrudTrait;
     use HasFactory;
@@ -28,18 +28,13 @@ class Avatar extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'image' => 'string',
     ];
-
 
     public function setImageAttribute($value)
     {
         $attribute_name = "image";
         $disk = "public";
-        $destination_path = "avatars";
-
+        $destination_path = "skills";
         $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
-
-        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
     }
 }

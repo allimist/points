@@ -12,7 +12,8 @@ foreach ($currency as $c) {
     }
 }
 
-$balance = \App\Models\Balance::where('user_id', $user_id)->get();
+//$balance = \App\Models\Balance::where('user_id', $user_id)->get();
+$balance = \App\Models\Balance::where('user_id', $user_id)->where('value', '>' , 0)->orderBy('currency_id')->get();
 foreach ($balance as $b) {
     $balanceArray[$b->currency_id] = $b->value;
 }
@@ -45,9 +46,18 @@ foreach ($service as $s) {
 
 $heroland = \App\Models\Land::where('id', Auth::user()->land_id)->first();
 $landType = \App\Models\LandType::where('id', $heroland->type_id)->first();
-//dd($landType);
-//$heroland->image = $landType->image;
-
+if(empty($landType->grid)) {
+////    dd('no gssdrid');
+    $gridSize = 100;
+    $grid = [];
+    for ($i = 0; $i < $gridSize; $i++) {
+        $matrix[$i] = [];
+        for ($j = 0; $j < $gridSize; $j++) {
+            $matrix[$i][$j] = 0;
+        }
+    }
+    $landType->grid = json_encode($matrix);
+}
 if($heroland->owner_id == $user_id || $user_id == 1){
     $land_owner = true;
 } else {
@@ -169,12 +179,19 @@ foreach ($users as $u) {
 
     <div id="balance" class="unselectable">
         <?php
-        foreach ($currencyArray as $key => $value) {
-            if(!empty($balanceArray[$key]) && $balanceArray[$key] > 0) {
-//            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$value['name'].':'.$balanceArray[$key].' | ';
-                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.floor($balanceArray[$key]).' | ';
-            }
+//        foreach ($currencyArray as $key => $value) {
+//            if(!empty($balanceArray[$key]) && $balanceArray[$key] > 0) {
+//                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.floor($balanceArray[$key]).' | ';
+//
+//            }
+//        }
+        foreach ($balanceArray as $key => $value) {
+            echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$currencyArray[$key]['img'].'"> '.floor($value).' | ';
         }
+
+
+//        $balance_string = substr($balance_string, 0, -2);
+//        echo $balance_string;
         ?>
     </div>
 
@@ -186,9 +203,10 @@ foreach ($users as $u) {
         ?>
 
         <a class="btn" href="/dashboard">Q</a> |
-        <a class="btn" href="/play">R</a><br>
-        <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit On</button><br>
-        <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit Off</button><br>
+        <a class="btn" href="/play">R</a> |
+        <button class="btn" onclick="land_go_select()">T</button><br>
+        <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit on</button><br>
+        <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit off</button><br>
         <div id="addResource">
             <span id="pickResource">(-Pick-)</span><br>
             <?php
@@ -203,6 +221,11 @@ foreach ($users as $u) {
                 }
             ?>
         </div>
+        <button id="grid_mode_on" class="btn" onclick="egrid_mode(true)">Grid on</button><br>
+        <button id="grid_mode_off" class="btn grid_mode" onclick="egrid_mode(false)">Grid off</button><br>
+        <button id="grid_mode_allno" class="btn grid_mode" onclick="egrid_all(0)">All no</button><br>
+        <button id="grid_mode_allyes" class="btn grid_mode" onclick="egrid_all(1)">All yes</button><br>
+        <button id="grid_mode_save" class="btn grid_mode" onclick="egrid_save()">Save</button><br>
     </div>
 
 
@@ -212,35 +235,7 @@ foreach ($users as $u) {
             <p id="popup-text">Loading ...</p>
         </div>
     </div>
-
-
-{{--    <div class="p-head">--}}
-{{--        <div>--}}
-{{--            Reputation : {{ Auth::user()->reputation }} |--}}
-{{--            Location : {{ '#'.Auth::user()->land_id.' '.$heroland->name }} |--}}
-{{--            posx : {{ Auth::user()->posx }} |--}}
-{{--            posy : {{ Auth::user()->posy }} |--}}
-{{--            active_at : {{ Auth::user()->active_at }} <br>--}}
-{{--        </div>--}}
-
-{{--        <div class="actions">--}}
-{{--        </div>--}}
-{{--    </div>--}}
-{{--    <div id="canvasContainer">--}}
-{{--        <div id="textOverlay">Your Text Here</div>--}}
-{{--    </div>--}}
 </x-app-layout>
-
-{{--<div id="canvasContainer"></div>--}}
-
-
-
-{{--<div id="popup_land_go" class="popup">--}}
-{{--    <div class="popup-content">--}}
-{{--        <span class="closeBtn">&times;</span>--}}
-{{--        <p id="popup-text">You got 20 wood</p>--}}
-{{--    </div>--}}
-{{--</div>--}}
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -265,7 +260,9 @@ foreach ($users as $u) {
     let usersArray = <?php echo json_encode($usersArray); ?>;
     let isPopupVisible = false;
     let land_owner = '<?php echo $land_owner; ?>';
-    let edit_mode = false;
+    let user_id = <?php echo $user_id; ?>;
+    let grid = <?php echo $landType->grid; ?>;
+    // let edit_mode = false;
     // let edit_mode = localStorage.getItem('edit_mode');
     // // console.log('edit_mode',edit_mode);
     // if(edit_mode==true){

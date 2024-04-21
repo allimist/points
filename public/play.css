@@ -25,10 +25,12 @@
 
 #editor_mode_on,#editor_mode_off{
     display: none;
+}#grid_mode_on,.grid_mode{
+    display: none;
 }
-#editor_mode_on:hover,#editor_mode_off:hover{
-    background-color: #0e111c;
-}
+/*#editor_mode_on:hover,#editor_mode_off:hover{*/
+/*    background-color: #0e111c;*/
+/*}*/
 #addResource{display: none;}
 
 

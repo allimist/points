@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\UserdataRequest;
+use App\Http\Requests\SkillUserRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class UserdataCrudController
+ * Class SkillUserCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class UserdataCrudController extends CrudController
+class SkillUserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -21,90 +21,61 @@ class UserdataCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     *
+     * 
      * @return void
      */
     public function setup()
     {
-
-        CRUD::setModel(\App\Models\User::class);
-//        CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
-//        CRUD::setEntityNameStrings('user', 'users');
-
-//        CRUD::setModel(\App\Models\Userdata::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/userdata');
-        CRUD::setEntityNameStrings('userdata', 'userdatas');
-
-
+        CRUD::setModel(\App\Models\SkillUser::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/skill-user');
+        CRUD::setEntityNameStrings('skill user', 'skill users');
     }
 
     /**
      * Define what happens when the List operation is loaded.
-     *
+     * 
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
-        CRUD::column('created_at');
-//        CRUD::column('name');
-        CRUD::column('email');
-        CRUD::column('avatar_id');
-        CRUD::column('task_ids');
-        CRUD::column('land_id');
-        CRUD::column('reputation');
-//        CRUD::column('updated_at');
-        CRUD::column('active_at');
-        CRUD::column('posx');
-        CRUD::column('posy');
-
-
-
+        CRUD::column('skill');
+        CRUD::column('user');
+        CRUD::column('level');
+        CRUD::column('xp');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
+         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
          */
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     *
+     * 
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(UserdataRequest::class);
+        CRUD::setValidation(SkillUserRequest::class);
 
-//        CRUD::field('email');
-
-//        CRUD::field('created_at');
-//        CRUD::column('name');
-        CRUD::field('email');
-        CRUD::field('avatar_id');
-        CRUD::field('task_ids');
-        CRUD::field('land_id');
-//        CRUD::field('reputation');
-//        CRUD::column('updated_at');
-//        CRUD::column('active_at');
-//        CRUD::column('posx');
-//        CRUD::column('posy');
-
-
+        CRUD::field('skill');
+        CRUD::field('user');
+        CRUD::field('level');
+        CRUD::field('xp');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
+         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
          */
     }
 
     /**
      * Define what happens when the Update operation is loaded.
-     *
+     * 
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */

@@ -22,8 +22,8 @@ class Land extends Model
         'nft',
         'owner_id',
         'type_id',
-        'size',
-        'image',
+//        'size',
+//        'image',
     ];
 
     /**
@@ -33,23 +33,23 @@ class Land extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'size' => 'integer',
+//        'size' => 'integer',
         'user_id' => 'integer',
         'type_id' => 'integer',
-        'image' => 'string',
+//        'image' => 'string',
     ];
 
-    public function setImageAttribute($value)
-    {
-        $attribute_name = "image";
-        $disk = "public";
-        $destination_path = "uploads/images/lands";
-        $destination_path = "lands";
-
-        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
-
-        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
-    }
+//    public function setImageAttribute($value)
+//    {
+//        $attribute_name = "image";
+//        $disk = "public";
+//        $destination_path = "uploads/images/lands";
+//        $destination_path = "lands";
+//
+//        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+//
+//        // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field
+//    }
 
     public function type(): BelongsTo
     {

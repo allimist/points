@@ -27,8 +27,10 @@ class ServiceRequest extends FormRequest
         return [
             'name' => 'required|string',
             'resource' => 'required|integer|exists:resources,id',
+            'level' => 'required|integer|gt:-1',
             'cost' => 'nullable|array',
             'revenue' => 'nullable|array',
+            'xp' => 'nullable|integer',
             'time' => 'nullable|integer',
             'reload' => 'nullable|integer',
 //            'currency' => 'required|integer|exists:currencies,id',

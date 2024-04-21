@@ -107,6 +107,9 @@ if(!empty(\request()->avatar_id)){
                                     $selected = 'checked';
                                 }
                                 echo '<li>';
+                                if(strlen($value['img'])<200){
+                                    $value['img'] = '/storage/'.$value['img'];
+                                }
                                 echo '<img src="'.$value['img'].'" class="avatar_img alt="'.$value['name'].'" title="'.$value['name'].'">';
                                 echo '<input type="radio" name="avatar_id" value="'.$key.'" '.$selected.'>';
                                 echo '</li>';

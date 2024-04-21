@@ -2,13 +2,7 @@
 
 
 function editor_mode(em) {
-
     edit_mode = em;
-    // editor_mode = em;
-    console.log('editor_mode');
-    //read from local storage
-    // let edit_mode = localStorage.getItem('edit_mode');
-    console.log(edit_mode);
     if(edit_mode){
         // document.getElementById('editor_mode').style.color = 'red';
         document.getElementById('addResource').style.display = 'inline';
@@ -20,11 +14,43 @@ function editor_mode(em) {
         document.getElementById('editor_mode_off').style.display = 'none';
         document.getElementById('editor_mode_on').style.display = 'inline';
     }
-    // edit_mode = !edit_mode;
-    //save to local storage
-    // localStorage.setItem('edit_mode', edit_mode);
 }
-
+function egrid_mode(em) {
+    grid_mode = em;
+    if(grid_mode){
+        document.getElementById('grid_mode_off').style.display = 'inline';
+        document.getElementById('grid_mode_allno').style.display = 'inline';
+        document.getElementById('grid_mode_allyes').style.display = 'inline';
+        document.getElementById('grid_mode_save').style.display = 'inline';
+        document.getElementById('grid_mode_on').style.display = 'none';
+    } else {
+        document.getElementById('grid_mode_off').style.display = 'none';
+        document.getElementById('grid_mode_allno').style.display = 'none';
+        document.getElementById('grid_mode_allyes').style.display = 'none';
+        document.getElementById('grid_mode_save').style.display = 'none';
+        document.getElementById('grid_mode_on').style.display = 'inline';
+    }
+}
+function egrid_all(em) {
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            grid[i][j] = em;
+        }
+    }
+}
+function egrid_save() {
+    //save new position
+    // console.log('new position', clickPos);
+    $.post({
+        url: "/api/land/grid/save",
+        data: {
+            land_id : land_id,
+            grid: grid
+        },
+    }).done(function(resp) {
+        console.log("Grid saved");
+    });
+}
 
 
 
@@ -36,9 +62,9 @@ function land_go_select() {
     }).done(function(resp) {
         // console.log("resp: ", resp);
         isPopupVisible = true;
-        let html_form = 'Select land [1-5]<form action="/land/go" method="get">';
+        let html_form = 'Select land<form action="/land/go" method="get">';
         for (let i = 0; i < resp.length; i++) {
-            html_form += '- <a href="/land/go?id=' + resp[i].id + '">' + resp[i].name + '</a><br>';
+            html_form += '#' + resp[i].id + '- <a href="/land/go?id=' + resp[i].id + '">' + resp[i].name + '</a><br>';
         }
         document.getElementById('popup-text').innerHTML = html_form;
         document.getElementById('popup').style.display = 'block';
@@ -407,6 +433,8 @@ function set_farm(clickPos) {
 
 
 }
+
+
 /*
 function pick_farm() {
 
@@ -501,8 +529,9 @@ if(land_owner){
         }
 
     });
-
-
+}
+if(user_id == 1){
+    document.getElementById('grid_mode_on').style.display = 'inline';
 }
 
 
@@ -518,11 +547,19 @@ if (!!window.EventSource) {
 }
 
 
+
+
 setInterval(function() {
-    $.ajax({
-        url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
+
+
+    if(!isPopupVisible){
+        $.ajax({
+            url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
             // context: document.body
-    });
+        });
+    }
+
+
         // .done(function(resp) {
         //     // $( this ).addClass( "done" );
         //     console.log("resp: ", resp);

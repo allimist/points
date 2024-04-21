@@ -47,8 +47,8 @@ class LandCrudController extends CrudController
         CRUD::column('nft');
         CRUD::column('owner_id');
         CRUD::column('type');
-        CRUD::column('size');
-        CRUD::column('image')->type('image')->prefix('storage/');
+//        CRUD::column('size');
+//        CRUD::column('image')->type('image')->prefix('storage/');
 //        CRUD::column('image')->type('upload');
 
 
@@ -72,26 +72,7 @@ class LandCrudController extends CrudController
         CRUD::field('nft');
         CRUD::field('owner_id');
         CRUD::field('type');
-        CRUD::field('size');
-
-        $this->crud->addField([
-            'name' => 'image', // The db column name where the image path is stored
-            'label' => 'Image', // Field label shown on the form
-            'type' => 'image_custom',
-            'upload' => true,
-//            'disk' => 'public', // Optional: Specify the filesystem disk you want to use
-//            'prefix' => 'uploads/images/', // Optional: Prefix path where the image will be stored in the disk
-//            'label' => 'Image',
-//            'name' => 'image',
-//            'type' => 'image',
-////            'type'      => 'upload',
-//            'crop' => true, // set to true to allow cropping, false to disable
-////            'upload' => true,
-//            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
-//            'disk' => 'public',
-//            'rules' => 'required|image|max:5000'
-        ]);
-
+//        CRUD::field('size');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

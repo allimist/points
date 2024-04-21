@@ -27,6 +27,7 @@ class UserdataRequest extends FormRequest
         return [
             // 'name' => 'required|min:5|max:255'
             'task_ids' => 'nullable|string',
+            'land_id' => 'nullable|integer',
         ];
     }
 

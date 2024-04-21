@@ -5,6 +5,7 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Resource extends Model
 {
@@ -20,6 +21,7 @@ class Resource extends Model
         'name',
         'size',
         'type',
+        'skill_id',
         'image',
         'image_hover',
 //        'currency_id',
@@ -33,6 +35,7 @@ class Resource extends Model
     protected $casts = [
         'id' => 'integer',
         'size' => 'integer',
+        'skill_id' => 'integer',
 //        'currency_id' => 'integer',
 
 //        'revenue' => 'integer',
@@ -68,4 +71,9 @@ class Resource extends Model
 //    {
 //        return $this->belongsTo(Currency::class);
 //    }
+//
+    public function skill(): BelongsTo
+    {
+        return $this->belongsTo(Skill::class);
+    }
 }

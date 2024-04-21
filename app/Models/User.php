@@ -28,7 +28,8 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar_id',
-        'task_ids'
+        'task_ids',
+        'land_id'
     ];
 
     /**
@@ -49,5 +50,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'land_id' => 'integer',
     ];
 }

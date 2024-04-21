@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LandRequest extends FormRequest
+class SkillRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +26,7 @@ class LandRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'nft' => 'nullable|string',
-            'owner_id' => 'nullable|nullable|integer|exists:users,id',
-            'type' => 'nullable|string',
-//            'size' => 'required|integer|gt:0',
-//            'image' => 'nullable|nullable',
+            'image' => 'required|nullable',
         ];
     }
 

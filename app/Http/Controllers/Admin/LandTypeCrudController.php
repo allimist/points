@@ -40,10 +40,13 @@ class LandTypeCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+
+        CRUD::column('id');
         CRUD::column('name');
         CRUD::column('size');
         CRUD::column('farms')->type('string');
         CRUD::column('image')->type('image')->prefix('storage/');
+        CRUD::column('grid')->type('string');
 
 
         /**

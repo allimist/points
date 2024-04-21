@@ -40,7 +40,9 @@ class AvatarCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('name');
-        CRUD::column('image')->type('image');
+//        CRUD::column('image')->type('image');
+        CRUD::column('image')->type('image')->prefix('storage/');
+
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -62,12 +64,17 @@ class AvatarCrudController extends CrudController
         CRUD::field('name');
 //        CRUD::field('image');
 
+//        $this->crud->addField([
+//            'label' => 'Image',
+//            'name' => 'image',
+//            'type' => 'image',
+//            'crop' => true, // set to true to allow cropping, false to disable
+//            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+//        ]);
         $this->crud->addField([
-            'label' => 'Image',
             'name' => 'image',
-            'type' => 'image',
-            'crop' => true, // set to true to allow cropping, false to disable
-            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
+            'type' => 'image_custom',
+            'upload' => true,
         ]);
         /**
          * Fields can be defined using the fluent syntax or array syntax:

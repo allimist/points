@@ -292,4 +292,33 @@ class LandController extends Controller
     }
 
 
+    public function apiGridSave()
+    {
+
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+        if ($user_id != 1) {
+            echo 'You are not the owner of this game';
+            die;
+        }
+
+
+        $land_id = request('land_id');
+        $grid = request('grid');
+
+//        dd($grid);
+
+        $land = \App\Models\Land::where('id', $land_id)->first();
+//        dd($land);
+        $landType = \App\Models\LandType::where('id', $land->type_id)->first();
+//        dd($landType);
+        $landType->grid = $grid;
+        echo "length of grid: ".sizeof($grid)."<br>";
+        $landType->save();
+    }
+
+
 }

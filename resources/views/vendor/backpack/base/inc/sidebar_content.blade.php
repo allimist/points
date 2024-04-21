@@ -8,6 +8,9 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('avatar') }}"><i class="nav-icon la la-question"></i> Avatars</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('currency') }}"><i class="nav-icon la la-question"></i> Currencies</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('balance') }}"><i class="nav-icon la la-question"></i> Balances</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('skill') }}"><i class="nav-icon la la-question"></i> Skills</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('skill-level') }}"><i class="nav-icon la la-question"></i> Skill levels</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('skill-user') }}"><i class="nav-icon la la-question"></i> Skill users</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('resource') }}"><i class="nav-icon la la-question"></i> Resources</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('service') }}"><i class="nav-icon la la-question"></i> Services</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('land-type') }}"><i class="nav-icon la la-question"></i> Land types</a></li>
@@ -27,5 +30,6 @@
 
 
 {{--<li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-question"></i> Users</a></li>--}}
+
 
 

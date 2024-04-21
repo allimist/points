@@ -33,10 +33,10 @@ let resourceObject = [];
 let resourceObjectHover = [];
 let resourceObjectSize = [];
 let farmsObjectPos = [];
-let farmsObject = [];
-let farmsObjectHover = [];
-let farmsObjectSize  = [];
-let farmsObjectStatus = [];
+// let farmsObject = [];
+// let farmsObjectHover = [];
+// let farmsObjectSize  = [];
+// let farmsObjectStatus = [];
 
 
 let cooldownDuration = [];
@@ -45,14 +45,14 @@ let startTime;
 let isCooldownActive = [];
 let timeRemaining = [];
 
-let updateHeroPositionLoop = 0;
-let updateHeroPositionInterval = 200;
+// let updateHeroPositionLoop = 0;
+// let updateHeroPositionInterval = 200;
 
 
 let heros = [];
 let herosPos = [];
 
-// let edit_mode = false;
+let edit_mode = false;
 let currentlyDraggingFarm = null; // Track the rectangle currently being dragged
 let currentlyDraggingResource = null; // Track the rectangle currently being dragged
 
@@ -69,19 +69,55 @@ let joystick = {
     dragging: false
 };
 
+let grid_mode = false;
 
+// if(!grid){
+//     grid = [
+//         [0, 1, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 1, 0, 1, 0 ,0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 1, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 1, 1, 1, 0, 0, 0, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 1, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 1, 0, 1, 0 ,0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 1, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 1, 1, 1, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0]
+//     ];
+// }
+let cols = grid[0].length;
+let rows = grid.length;
+let cellSize = mapWidth / cols;
 
 function preload() {
     // console.log('preload');
 
     mapBackground = loadImage('storage/'+map);
     // hero = loadImage(avatarsArray[3].img);
-    hero = loadImage('img/fly-sky.gif');
-    if(avatar_id == 1){
-        hero = loadImage('img/fly-sky.gif');
+    // hero = loadImage('img/fly-sky.gif');
+
+    // console.log(avatarsArray);
+
+    if(avatarsArray[avatar_id].img.length<200){
+        hero = loadImage('storage/' + avatarsArray[avatar_id].img);
     } else {
         hero = loadImage(avatarsArray[avatar_id].img);
     }
+
+
+    // if(avatar_id == 1){
+    //     hero = loadImage('img/fly-sky.gif');
+    // } else {
+    //     hero = loadImage(avatarsArray[avatar_id].img);
+    // }
     // posx = posx;
     // posy = posy;
 
@@ -149,24 +185,19 @@ function preload() {
     });
 
     // hero = loadImage('img/hero.png');
-
-
     Object.keys(avatarsArray).forEach(i => {
-
-        if(i == 1){
-            heros[i] = loadImage('img/fly-sky.gif');
+        if(avatarsArray[i].img.length<200){
+            heros[i] = loadImage('storage/' + avatarsArray[i].img);
         } else {
             heros[i] = loadImage(avatarsArray[i].img);
         }
-
-
     });
-
-
 
 }
 
 function setup() {
+
+
 
     // console.log('setup');
 
@@ -280,6 +311,9 @@ function setup() {
     document.getElementById('popup').style.display = 'none';
     // console.log('setup end');
 
+
+
+
 }
 
 function draw() {
@@ -291,6 +325,10 @@ function draw() {
 
     if(mapBackground){
         image(mapBackground, -camX, -camY, mapWidth, mapHeight);
+    }
+
+    if(grid_mode) {
+        drawGrid(camX, camY);
     }
 
     // cursor('pointer');
@@ -478,6 +516,9 @@ function draw() {
         cursor('default');
     }
 
+
+
+
     // console.log('draw end');
 }
 
@@ -516,16 +557,34 @@ function updateHeroPosition() {
     }
 
     if(heroPos.x != proposedNewPosition.x || heroPos.y != proposedNewPosition.y ){
-        if (!isCollidingWithObjects(proposedNewPosition)) {
-            // console.log('proposedNewPosition', proposedNewPosition);
-            if(heroPos.x < proposedNewPosition.x){
-                heroMoveRight = true;
-            }else if(heroPos.x > proposedNewPosition.x){
-                heroMoveRight = false;
+
+        gx= Math.floor((proposedNewPosition.x + heroSize /2 ) / cellSize );
+        gy = Math.floor((proposedNewPosition.y + heroSize /2)  / cellSize);
+
+        if (
+            gx >= 0 && gx < cols && gy >= 0 && gy < rows &&
+            grid[gy][gx] == 0) {
+            // console.log('ok to move grid[newY][newX]');
+            // console.log('proposedNewPosition ok', gx,gy);
+            if (!isCollidingWithObjects(proposedNewPosition)) {
+
+                if(heroPos.x < proposedNewPosition.x){
+                    heroMoveRight = true;
+                }else if(heroPos.x > proposedNewPosition.x){
+                    heroMoveRight = false;
+                }
+                heroPos.x = proposedNewPosition.x;
+                heroPos.y = proposedNewPosition.y;
             }
-            heroPos.x = proposedNewPosition.x;
-            heroPos.y = proposedNewPosition.y;
         }
+
+        // else {
+        //     console.log('proposedNewPosition not ok', gx,gy);
+        //
+        // }
+
+
+
     }
     // else {
     //     console.log('hero not move');
@@ -579,10 +638,22 @@ function mousePressed() {
         let clickPos = createVector(mouseX + camX, mouseY + camY);
 
 
+        if(grid_mode) {
+            let gx = Math.floor(clickPos.x / cellSize);
+            let gy = Math.floor(clickPos.y / cellSize);
+            // if (gx >= 0 && gx < cols && gy >= 0 && gy < rows) {
+            //     grid[gy][gx] = grid[gy][gx] == 0 ? 1 : 0;
+            // }
+            console.log('grid[gy][gx]', grid[gy][gx]);
+            if (grid[gy][gx] == 0) {
+                console.log('change to busy (1) ');
+                grid[gy][gx] = 1;
+            } else {
+                console.log('change to free (0) ');
+                grid[gy][gx] = 0;
+            }
 
-
-        // if(edit_mode && !currentlyDragging){
-        if(edit_mode || currentlyDraggingResource){
+        }else if(edit_mode || currentlyDraggingResource){
 
             let freePos = true;
             let resourceId = null;
@@ -803,4 +874,19 @@ function drawJoystick() {
     // fill(160);
     fill('rgba(255, 100, 100, 0.5)');
     circle(joystick.stickX, joystick.stickY, joystick.stickSize);
+}
+
+function drawGrid(camX, camY) {
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (grid[i][j] == 1) {
+                fill(255, 0, 0);
+            } else {
+                // fill(0,255,0,0.6);
+                noFill();
+            }
+            stroke(0);
+            rect(j * cellSize - camX , i * cellSize - camY, cellSize, cellSize);
+        }
+    }
 }

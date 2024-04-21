@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Resource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ class ServiceUseController extends Controller
      * Update the user's profile information.
      */
 
+    /*
     public function balance($currencyArray){
 
         $user_id = Auth::user()->id;
@@ -33,24 +35,28 @@ class ServiceUseController extends Controller
 
 
     }
+    */
 
     public function Apibalance($currencyArray){
 
         $user_id = Auth::user()->id;
-        $balance = \App\Models\Balance::where('user_id', $user_id)->orderBy('currency_id')->get();
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('value', '>' , 0)->orderBy('currency_id')->get();
         $balance_string = '';
         foreach ($balance as $b) {
 //            $balanceArray[$b->currency_id] = $b->value;
 //            $balance_string .= $b->value . ' ' . $currencyArray[$b->currency_id] . ' | ';
 //            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$balanceArray[$key].' | ';
-            $balance_string .= '<img class="resources" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> '.$b->value.' | ';
+            $balance_string .= '<img class="resources" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> ';
+            $balance_string .=  floor($b->value).' | ';
 
         }
+        $balance_string = substr($balance_string, 0, -2);
 //        return $balanceArray;
         return $balance_string;
 
     }
 
+    /*
     public function claim()
     {
 
@@ -254,6 +260,7 @@ class ServiceUseController extends Controller
 
         return Redirect::route('dashboard')->with('status', 'balance-updated');
     }
+    */
 
     public function ApiClaim()
     {
@@ -436,8 +443,6 @@ class ServiceUseController extends Controller
         //if time == 0 add balance or claim = true
         if($service->time == 0 || $claim){
 
-
-
             foreach ($service->revenue as $revenue){
                 $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $revenue['resource'])->first();
                 if(empty($balance)){
@@ -479,6 +484,34 @@ class ServiceUseController extends Controller
 
 
             }
+
+            //add experience
+            if(!empty($service->xp)){
+//                echo "xp yes".$service->xp.'<br>';
+                $resource = Resource::where('id',$service->resource_id)->first();
+                if(!empty($resource->skill_id)){
+//                    echo "resource->skill_id: ".$resource->skill_id.'<br>';
+                    $skillUser = \App\Models\SkillUser::where('skill_id',$resource->skill_id)->where('user_id', $user_id)->first();
+                    if(empty($skillUser)){
+                        $skillUser = new \App\Models\SkillUser();
+                        $skillUser->skill_id = $resource->skill_id;
+                        $skillUser->user_id = $user_id;
+                        $skillUser->level = 0;
+                        $skillUser->xp = $service->xp;
+                        $skillUser->save();
+//                        print_r($skillUser->toArray());
+                    } else {
+                        $skillUser->xp += $service->xp;
+                        $skillUser->save();
+                    }
+                }
+                //recalculate level ????
+
+            }
+
+
+
+
         }
 
         if(!$claim){

@@ -35,6 +35,7 @@ class Userdata extends Model
         'avatar_id',
         'task_ids',
         'reputation',
+        'land_id',
 
 
     ];

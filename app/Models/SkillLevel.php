@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Service extends Model
+class SkillLevel extends Model
 {
     use CrudTrait;
     use HasFactory;
@@ -18,14 +18,9 @@ class Service extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'resource_id',
+        'skill_id',
         'level',
-        'cost',
-        'revenue',
-        'xp',
-        'time',
-        'reload',
+        'xp_required',
     ];
 
     /**
@@ -35,22 +30,13 @@ class Service extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'resource_id' => 'integer',
+        'skill_id' => 'integer',
         'level' => 'integer',
-        'cost' => 'array',
-        'revenue' => 'array',
-        'xp' => 'integer',
-        'time' => 'integer',
-        'reload' => 'integer',
+        'xp_required' => 'integer',
     ];
 
-    public function resource(): BelongsTo
+    public function skill(): BelongsTo
     {
-        return $this->belongsTo(Resource::class);
+        return $this->belongsTo(Skill::class);
     }
-
-//    public function currency(): BelongsTo
-//    {
-//        return $this->belongsTo(Currency::class);
-//    }
 }

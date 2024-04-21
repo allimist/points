@@ -26,7 +26,7 @@ class AvatarRequest extends FormRequest
     {
         return [
             'name' => 'nullable|nullable|string',
-            'image' => 'nullable|nullable|string',
+            'image' => 'nullable|nullable',
         ];
     }
 

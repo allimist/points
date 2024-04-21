@@ -46,10 +46,10 @@ class ServiceCrudController extends CrudController
         CRUD::column('created_at');
         CRUD::column('name');
         CRUD::column('resource');
-//        CRUD::column('currency');
-
+        CRUD::column('level');
         CRUD::column('cost')->type('string');
         CRUD::column('revenue')->type('string');
+        CRUD::column('xp');
         CRUD::column('time');
         CRUD::column('reload');
 
@@ -72,6 +72,7 @@ class ServiceCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('resource');
+        CRUD::field('level');
 
 //        $resources = Resource::all();
 //        $resourceOptions = [];
@@ -129,11 +130,26 @@ class ServiceCrudController extends CrudController
                     'type'    => 'number',
                     'wrapper' => ['class' => 'form-group col-md-2'],
                 ],
+                [
+                    'name'    => 'percent',
+                    'type'    => 'number',
+//                    'options'    => $currencyOptions,
+                    'default' => 100,
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+                [
+                    'name'    => 'level',
+                    'type'    => 'number',
+//                    'options'    => $currencyOptions,
+                    'default' => 0,
+                    'wrapper' => ['class' => 'form-group col-md-3'],
+                ],
             ],
             'new_item_label'  => 'Add Group',
             'init_rows' => 0,
             'max_rows' => 2,
         ]);
+        CRUD::field('xp');
         CRUD::field('time');
         CRUD::field('reload');
 //        CRUD::field('currency');
