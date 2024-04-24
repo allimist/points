@@ -26,6 +26,10 @@ class Service extends Model
         'xp',
         'time',
         'reload',
+        'damage',
+        'image_init',
+        'image_ready',
+        'image_reload',
     ];
 
     /**
@@ -42,6 +46,10 @@ class Service extends Model
         'xp' => 'integer',
         'time' => 'integer',
         'reload' => 'integer',
+        'damage' => 'integer',
+        'image_init' => 'string',
+        'image_ready' => 'string',
+        'image_reload' => 'string',
     ];
 
     public function resource(): BelongsTo
@@ -53,4 +61,30 @@ class Service extends Model
 //    {
 //        return $this->belongsTo(Currency::class);
 //    }
+
+    public function setImageInitAttribute($value)
+    {
+        $attribute_name = "image_init";
+        $disk = "public";
+        $destination_path = "services";
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+    }
+
+    public function setImageReadyAttribute($value)
+    {
+        $attribute_name = "image_ready";
+        $disk = "public";
+        $destination_path = "services";
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+    }
+
+    public function setImageReloadAttribute($value)
+    {
+        $attribute_name = "image_reload";
+        $disk = "public";
+        $destination_path = "services";
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
+    }
+
+
 }

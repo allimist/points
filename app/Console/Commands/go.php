@@ -57,5 +57,8 @@ class go extends Command
             ->where('value', '>', 1000)
             ->update(['value'=>1000]);
 
+
+
+
     }
 }

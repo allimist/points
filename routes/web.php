@@ -75,6 +75,12 @@ Route::post('/api/land/grid/save', [LandController::class,  'apiGridSave']);
 Route::get('/api/service-use/select',    [ServiceUseController::class,  'ApiSelect']);
 Route::get('/api/service-use/claim',    [ServiceUseController::class,  'ApiClaim']);
 Route::get('/api/service-use/sell',     [ServiceUseController::class,  'ApiSell']);
+Route::get('/api/service-use/orders',   [ServiceUseController::class, 'apiOrders']);
+Route::get('/api/service-use/buy',      [ServiceUseController::class,  'apiBuy']);
+
+Route::get('/api/farm/attack',          [ServiceUseController::class,  'apiFarmAttack']);
+
+//Route::get('/api/service-use/select-order',   [ServiceUseController::class, 'ApiSelectOrder']);
 
 
 Route::get('/farm/move',         [LandController::class,  'moveFarm']);

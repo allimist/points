@@ -24,7 +24,9 @@ class Resource extends Model
         'skill_id',
         'image',
         'image_hover',
-//        'currency_id',
+        'health',
+        'reload',
+        'revenue',
     ];
 
     /**
@@ -36,10 +38,9 @@ class Resource extends Model
         'id' => 'integer',
         'size' => 'integer',
         'skill_id' => 'integer',
-//        'currency_id' => 'integer',
-
-//        'revenue' => 'integer',
-//        'reload' => 'integer',
+        'health' => 'integer',
+        'reload' => 'integer',
+        'revenue' => 'array',
 //    'image'
     ];
 

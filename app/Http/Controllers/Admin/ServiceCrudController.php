@@ -16,8 +16,8 @@ class ServiceCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CloneOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CloneOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
@@ -43,16 +43,19 @@ class ServiceCrudController extends CrudController
     {
 
         CRUD::column('id');
-        CRUD::column('created_at');
+//        CRUD::column('created_at');
         CRUD::column('name');
         CRUD::column('resource');
         CRUD::column('level');
         CRUD::column('cost')->type('string');
         CRUD::column('revenue')->type('string');
+
+        CRUD::column('image_init')->type('image')->prefix('storage/');
+        CRUD::column('image_ready')->type('image')->prefix('storage/');
+        CRUD::column('image_reload')->type('image')->prefix('storage/');
         CRUD::column('xp');
         CRUD::column('time');
         CRUD::column('reload');
-
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
@@ -108,7 +111,7 @@ class ServiceCrudController extends CrudController
             ],
             'new_item_label'  => 'Add Group',
             'init_rows' => 0,
-            'max_rows' => 2,
+            'max_rows' => 5,
         ]);
 //        CRUD::field('revenue');
         $this->crud->addField([
@@ -147,12 +150,33 @@ class ServiceCrudController extends CrudController
             ],
             'new_item_label'  => 'Add Group',
             'init_rows' => 0,
-            'max_rows' => 2,
+            'max_rows' => 5,
         ]);
+
         CRUD::field('xp');
+        CRUD::field('damage');
         CRUD::field('time');
         CRUD::field('reload');
 //        CRUD::field('currency');
+
+        $this->crud->addField([
+            'name' => 'image_init',
+            'label' => 'Image Init',
+            'type' => 'image_custom',
+            'upload' => true,
+        ]);
+
+        $this->crud->addField([
+            'name' => 'image_ready',
+            'type' => 'image_custom',
+            'upload' => true,
+        ]);
+
+        $this->crud->addField([
+            'name' => 'image_reload',
+            'type' => 'image_custom',
+            'upload' => true,
+        ]);
 
 
 

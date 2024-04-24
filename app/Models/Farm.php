@@ -23,9 +23,9 @@ class Farm extends Model
     protected $fillable = [
         'resource_id',
         'land_id',
-        'size',
         'posx',
         'posy',
+        'health',
         'is_public',
 
     ];
@@ -39,9 +39,9 @@ class Farm extends Model
         'id' => 'integer',
         'resource_id' => 'integer',
         'land_id' => 'integer',
-        'size' => 'integer',
         'posx' => 'integer',
         'posy' => 'integer',
+        'health' => 'integer',
         'is_public' => 'boolean',
 
     ];

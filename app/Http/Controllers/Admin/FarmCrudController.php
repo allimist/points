@@ -15,8 +15,8 @@ class FarmCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CloneOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CloneOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
@@ -44,9 +44,9 @@ class FarmCrudController extends CrudController
         CRUD::column('created_at');
         CRUD::column('resource');
         CRUD::column('land');
-        CRUD::column('size');
         CRUD::column('posx');
         CRUD::column('posy');
+        CRUD::column('health');
         CRUD::column('is_public');
 
 
@@ -69,9 +69,9 @@ class FarmCrudController extends CrudController
 
         CRUD::field('resource');
         CRUD::field('land');
-        CRUD::field('size');
-        CRUD::field('posx');
-        CRUD::field('posy');
+        CRUD::field('posx')->type('number');
+        CRUD::field('posy')->type('number');
+        CRUD::field('health')->type('number');
         CRUD::field('is_public');
 
         /**

@@ -41,7 +41,7 @@ class BalanceCrudController extends CrudController
     {
         CRUD::column('id');
         CRUD::column('created_at');
-        CRUD::column('currency_id');
+        CRUD::column('currency');
         CRUD::column('user_id');
         CRUD::column('value');
 

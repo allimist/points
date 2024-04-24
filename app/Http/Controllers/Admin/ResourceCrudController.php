@@ -50,6 +50,7 @@ class ResourceCrudController extends CrudController
         CRUD::column('image_hover')->type('image')->prefix('storage/');
 //        CRUD::column('skill_id');
         CRUD::column('skill');
+        CRUD::column('health');
 
 //        CRUD::column('image_hover')->type('image');
 //        $this->crud->addField([
@@ -69,13 +70,55 @@ class ResourceCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
+        $currencies = \App\Models\Currency::all();
+        $currencyOptions = [];
+        foreach($currencies as $currency){
+            $currencyOptions[$currency->id] = $currency->name;
+        }
+
         CRUD::setValidation(ResourceRequest::class);
 
         CRUD::field('name');
         CRUD::field('size')->type('number');
         CRUD::field('type');
-//        CRUD::field('skill_id')->type('number');
         CRUD::field('skill');
+        CRUD::field('health')->type('number');
+        CRUD::field('reload')->type('number');
+        $this->crud->addField([
+            'name' => 'revenue',
+            'type'  => 'repeatable',
+            'subfields' => [
+                [
+                    'name'    => 'resource',
+                    'type'    => 'select2_from_array',
+                    'options'    => $currencyOptions,
+                    'wrapper' => ['class' => 'form-group col-md-5'],
+                ],
+                [
+                    'label'   => 'value',
+                    'name'    => 'value',
+                    'type'    => 'number',
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+                [
+                    'name'    => 'percent',
+                    'type'    => 'number',
+//                    'options'    => $currencyOptions,
+                    'default' => 100,
+                    'wrapper' => ['class' => 'form-group col-md-2'],
+                ],
+                [
+                    'name'    => 'level',
+                    'type'    => 'number',
+//                    'options'    => $currencyOptions,
+                    'default' => 0,
+                    'wrapper' => ['class' => 'form-group col-md-3'],
+                ],
+            ],
+            'new_item_label'  => 'Add Group',
+            'init_rows' => 0,
+            'max_rows' => 5,
+        ]);
 
 //        CRUD::field('revenue');
 //        CRUD::field('reload');

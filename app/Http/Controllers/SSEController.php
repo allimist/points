@@ -32,13 +32,21 @@ class SSEController extends Controller
                     ];
                 }
 
+                //farms health
+                $farms = \DB::table('farms')
+                    ->select('id', 'health')
+                    ->where('land_id', \request('land_id'))
+                    ->where('health', '>=', 0)
+                    ->get();
 
 
 
                 $data = [
                     'time' => now()->toDateTimeString(),
                     'serverTime' => strtotime(now()),
+                    'farms' => $farms,
                     'usersArray' => $usersArray,
+
                 ];
 
                 // Encode the data array to JSON

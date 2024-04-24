@@ -39,6 +39,8 @@ class OrderCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        CRUD::column('id');
+        CRUD::column('created_at');
         CRUD::column('service');
         CRUD::column('user_id');
         CRUD::column('type');

@@ -27,9 +27,9 @@ class FarmRequest extends FormRequest
         return [
             'resource' => 'required|integer|exists:resources,id',
             'land' => 'required|integer|exists:lands,id',
-            'size' => 'required|integer',
             'posx' => 'required|integer',
             'posy' => 'required|integer',
+            'health' => 'required|integer|gt:-1',
             'is_public' => 'required|boolean',
         ];
     }

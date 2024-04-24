@@ -64,7 +64,11 @@ function land_go_select() {
         isPopupVisible = true;
         let html_form = 'Select land<form action="/land/go" method="get">';
         for (let i = 0; i < resp.length; i++) {
-            html_form += '#' + resp[i].id + '- <a href="/land/go?id=' + resp[i].id + '">' + resp[i].name + '</a><br>';
+            if(resp[i].id == land_id) {
+                html_form += '#' + resp[i].id + '- <a href="/land/go?id=' + resp[i].id + '"><b>' + resp[i].name + '</b></a><br>';
+            } else {
+                html_form += '#' + resp[i].id + '- <a href="/land/go?id=' + resp[i].id + '">' + resp[i].name + '</a><br>';
+            }
         }
         document.getElementById('popup-text').innerHTML = html_form;
         document.getElementById('popup').style.display = 'block';
@@ -105,7 +109,12 @@ function select_service(farm_id) {
                 if(resp.services[i].cost[1]){
                     html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
                     html += resp.services[i].cost[1].value+' '
-                    html += currencyArray[resp.services[i].cost[1].resource].name + '</span>';
+                    html += currencyArray[resp.services[i].cost[1].resource].name + '</span><br>';
+                }
+                if(resp.services[i].cost[2]){
+                    html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[2].resource].img + '" width="20" height="20"> ';
+                    html += resp.services[i].cost[2].value+' '
+                    html += currencyArray[resp.services[i].cost[2].resource].name + '</span><br>';
                 }
 
 
@@ -118,10 +127,20 @@ function select_service(farm_id) {
                 // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
                 console.log('amountable', resp.services[i]);
                 // console.log('resource_id', farmsArray[farm_id].resource_id);
-                html += '<div class="service_item" ' +
-                    // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
-                    ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
-                    '>';
+
+                if(farmsArray[farm_id].resource_id == 7){
+                    html += '<div class="service_item" ' +
+                        // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                        ' onclick = "select_order(' + farm_id + ',' + resp.services[i].id + ')"' +
+                        '>';
+
+                } else {
+                    html += '<div class="service_item" ' +
+                        // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                        ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
+                        '>';
+                }
+
                 html += 'x '+resp.services[i].revenue[0].value+'<br>'
                 html += currencyArray[resp.services[i].revenue[0].resource].name + ' ';
 
@@ -132,7 +151,12 @@ function select_service(farm_id) {
                 if(resp.services[i].cost[1]){
                     html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
                     html += resp.services[i].cost[1].value+' '
-                    html += currencyArray[resp.services[i].cost[1].resource].name + '</span>';
+                    html += currencyArray[resp.services[i].cost[1].resource].name + '</span><br>';
+                }
+                if(resp.services[i].cost[2]){
+                    html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[2].resource].img + '" width="20" height="20"> ';
+                    html += resp.services[i].cost[2].value+' '
+                    html += currencyArray[resp.services[i].cost[2].resource].name + '</span><br>';
                 }
                 // html += '- <span>' + resp.services[i].name + '</span>';
                 html +='</div>';
@@ -150,6 +174,7 @@ function select_service(farm_id) {
 
 
 }
+
 
 function select_amount(farm_id,service_id) {
 
@@ -220,8 +245,10 @@ function start_amount(farm_id,service_id) {
 
     let urlaction;
 
-    if(farmsArray[farm_id].resource_id == 6){
-        urlaction= "/api/service-use/sell?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#amount').val() + "&price=" + $('#price').val();
+    if(farmsArray[farm_id].resource_id == 6) {
+        urlaction = "/api/service-use/sell?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#amount').val() + "&price=" + $('#price').val();
+    // } else if(farmsArray[farm_id].resource_id == 7){
+    //     urlaction = "/api/service-use/buy?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#amount').val() + "&price=" + $('#price').val();
     } else {
         urlaction= "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#amount').val();
     }
@@ -334,6 +361,14 @@ function start(farm_id,service_id) {
             document.getElementById('balance').innerHTML = resp.balance;
         }
 
+        if(resp.user_health) {
+            // console.log('before',balanceArray[25]);
+            // // balanceArray[25] = Math.floor(resp.user_health);
+            // console.log('+',+resp.user_health);
+            balanceArray[25] = +resp.user_health;
+            // console.log('after',balanceArray[25]);
+        }
+
 
     });
 }
@@ -377,6 +412,10 @@ function claim(farm_id,service_id) {
 
         // if(resp.balance) {
             document.getElementById('balance').innerHTML = resp.balance;
+
+            // if(resp.user_health) {
+            //     balanceArray[25].value = resp.user_health;
+            // }
         // }
 
     });
@@ -432,6 +471,189 @@ function set_farm(clickPos) {
     // });
 
 
+}
+
+
+function select_order(farm_id,service_id) {
+
+    $.ajax({
+        url: "/api/service-use/orders?farm_id=" + farm_id + "&service_id=" + service_id,
+    }).done(function(resp) {
+        console.log("resp: ", resp);
+
+
+        let html = '';
+        html += '<h3>'+serviceArray[service_id].name+' Orders</h3>';
+
+        for (let i = 0; i < resp.orders.length; i++) {
+            // console.log("order: ", resp.orders[i]);
+            html += 'Price: '+resp.orders[i].price+' Amount:' + resp.orders[i].amount + ' ';
+            html += '<button onclick="select_order_amount(' + farm_id + ',' + service_id + ','+ resp.orders[i].id+','+ resp.orders[i].price+','+ resp.orders[i].amount+')">Select Order</button><br>';
+            // html += '<a href="/service-use/select-order?order_id='+ resp.orders[i].id +'">Select Order</a><br>';
+        }
+        //back
+        html += '<br><button onclick="select_service(' + farm_id + ')">Back</button>';
+        document.getElementById('popup-text').innerHTML = html;
+    });
+
+
+}
+function select_order_amount(farm_id,service_id,order_id,price,amount) {
+    let html = '';
+    html += '<h3>'+serviceArray[service_id].name+' Order</h3>';
+    html += 'Price: '+price+'<br>';
+    html += 'Amount<input type="number" id="order_amount" name="amount" value="1" min="1" max="'+amount+'"> (max '+amount+' items)<br>';
+    html += '<button onclick="start_order_amount(' + farm_id + ',' + service_id + ',' + order_id + ')">Start</button>';
+    //back btn
+    html += '<br><button onclick="select_order(' + farm_id + ',' + service_id + ')">Back</button>';
+    document.getElementById('popup-text').innerHTML = html;
+}
+function start_order_amount(farm_id,service_id,order_id) {
+
+    console.log('selected amount:', $('#order_amount').val());
+    let urlaction = "/api/service-use/buy?farm_id=" + farm_id + "&service_id=" + service_id + "&amount=" + $('#order_amount').val() + "&order_id=" + order_id;
+
+    $.ajax({
+        url: urlaction
+    }).done(function(resp) {
+        console.log("resp: ", resp);
+
+        let html = '';
+
+        if(resp.extra){
+            html += '<br>' + resp.extra;
+        }
+
+        document.getElementById('popup-text').innerHTML = html;
+        setTimeout(() => {
+        //     // document.getElementById('popup').style.display = 'none';
+        //     // isPopupVisible = false;
+            select_order(farm_id,service_id);
+        },2000);
+        document.getElementById('balance').innerHTML = resp.balance;
+
+
+    });
+
+}
+
+
+function select_attack(farm_id) {
+
+    // console.log('services len', Object.values(farmsServiceArray[farm_id]).length);
+    // farmsServiceArray[farm_id].length);
+    // farmsServiceArrayLen = Object.values(farmsServiceArray[farm_id]).length;
+
+    $.ajax({
+        url: "/api/service-use/select?farm_id=" + farm_id,
+    }).done(function(resp) {
+        // console.log("resp: ", resp);
+        // console.log("resourceArray[farmsArray[farm_id].resource_id]: ", resourceArray[farmsArray[farm_id].resource_id]);
+        // console.log('serviceArray', resp.services);
+
+        let html = '';
+
+        for (let i = 0; i < resp.services.length; i++) {
+            // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
+            console.log('not amountable', resp.services[i]);
+            // console.log('resource_id', farmsArray[farm_id].resource_id);
+            html += '<div class="service_item" ' +
+                // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                ' onclick = "attack(' + farm_id + ',' + resp.services[i].id + ')"' +
+                '>';
+            html += 'x '+resp.services[i].revenue[0].value+'<br>'
+            html += currencyArray[resp.services[i].revenue[0].resource].name + ' ';
+
+            html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="70" height="70">';
+            html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="20" height="20"> ';
+            html += resp.services[i].cost[0].value+' '
+            html += currencyArray[resp.services[i].cost[0].resource].name + '</span><br>';
+            if(resp.services[i].cost[1]){
+                html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
+                html += resp.services[i].cost[1].value+' '
+                html += currencyArray[resp.services[i].cost[1].resource].name + '</span><br>';
+            }
+            if(resp.services[i].cost[2]){
+                html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[2].resource].img + '" width="20" height="20"> ';
+                html += resp.services[i].cost[2].value+' '
+                html += currencyArray[resp.services[i].cost[2].resource].name + '</span><br>';
+            }
+
+
+            // html += '- <span>' + resp.services[i].name + '</span>';
+            html +='</div>';
+            // html += '- <span onclick = "start(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
+        }
+
+        // console.log('html', html);
+
+        isPopupVisible = true;
+        document.getElementById('popup-text').innerHTML = html;
+        document.getElementById('popup').style.display = 'block';
+
+
+    });
+
+
+
+}
+
+function attack(farm_id,service_id) {
+    $.ajax({
+        url: "/api/farm/attack?farm_id=" + farm_id + "&service_id=" + service_id,
+    }).done(function(resp) {
+        console.log("resp: ", resp);
+
+        if(resp.status == 'success'){
+            // if(serviceArray[service_id].time>0){
+            //     farmsArray[farm_id].status = 'in_use';
+            //     farmsArray[farm_id].text = serviceArray[service_id].time;
+            //     isCooldownActive[farm_id] = true;
+            //     cooldownDuration[farm_id] = serviceArray[service_id].time;
+            //     cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
+            // }
+            if(serviceArray[service_id].reload>0){
+                farmsArray[farm_id].status = 'reload';
+                farmsArray[farm_id].text = serviceArray[service_id].reload;
+                isCooldownActive[farm_id] = true;
+                cooldownDuration[farm_id] = serviceArray[service_id].reload;
+                cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
+            }
+        } else {
+            //     html += 'Error';
+        }
+
+        let html = '';
+
+        if(resp.extra){
+            html += '<br>' + resp.extra;
+        }
+
+        if(resp.health){
+            farmsArray[farm_id].health = resp.health;
+        }
+
+        if(resp.user_health) {
+        //     balanceArray[25].value = resp.user_health;
+        //     console.log('user_health',resp.user_health);
+            balanceArray[25] = +resp.user_health;
+
+        }
+
+
+        document.getElementById('popup-text').innerHTML = html;
+        document.getElementById('popup').style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('popup').style.display = 'none';
+            isPopupVisible = false;
+        },2000);
+
+        if(resp.balance){
+            document.getElementById('balance').innerHTML = resp.balance;
+        }
+
+    });
 }
 
 
@@ -541,6 +763,10 @@ if (!!window.EventSource) {
         var data = JSON.parse(event.data);
         serverTime = data.serverTime;
         usersArray = data.usersArray;
+        for (let i = 0; i < data.farms.length; i++) {
+            farmsArray[data.farms[i].id].health = data.farms[i].health;
+        }
+
     };
 } else {
     console.log("Your browser does not support server-sent events.");

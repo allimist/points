@@ -183,11 +183,14 @@ class LandController extends Controller
             die;
         }
 
+        $resource = \App\Models\Resource::where('id', \request('resource_id'))->first();
+
         $farm = new \App\Models\Farm();
         $farm->resource_id = \request('resource_id');
         $farm->land_id = Auth::user()->land_id;
         $farm->posx = Auth::user()->posx;
         $farm->posy = Auth::user()->posy;
+        $farm->health = $resource->health;
         $farm->save();
 
         return Redirect::route('play');

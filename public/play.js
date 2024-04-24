@@ -33,10 +33,9 @@ let resourceObject = [];
 let resourceObjectHover = [];
 let resourceObjectSize = [];
 let farmsObjectPos = [];
-// let farmsObject = [];
-// let farmsObjectHover = [];
-// let farmsObjectSize  = [];
-// let farmsObjectStatus = [];
+let servicesObjectCraft = [];
+let servicesObjectReady = [];
+let servicesObjectReload = [];
 
 
 let cooldownDuration = [];
@@ -182,6 +181,29 @@ function preload() {
         // }
 
         resourceObjectSize[i] = resourceArray[i].size * 10;
+    });
+
+
+    Object.keys(serviceArray).forEach(i => {
+        if(serviceArray[i].image_init) {
+            // if(serviceArray[i].img.length){
+            servicesObjectCraft[i] = loadImage('storage/' + serviceArray[i].image_init);
+            // }
+        }
+        if(serviceArray[i].image_ready) {
+            // if(serviceArray[i].img.length){
+                servicesObjectReady[i] = loadImage('storage/' + serviceArray[i].image_ready);
+            // }
+        }
+
+        if(serviceArray[i].image_reload) {
+            // if(serviceArray[i].img.length){
+            servicesObjectReload[i] = loadImage('storage/' + serviceArray[i].image_reload);
+            // }
+        }
+
+
+
     });
 
     // hero = loadImage('img/hero.png');
@@ -360,6 +382,9 @@ function draw() {
 
             } else {
 
+                if(resourceArray[farmsArray[i].resource_id].type == 'bot' && farmsArray[i].health <= 0){
+
+                } else
                 if (
                     mouseX > farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2 &&
                     mouseX < farmsObjectPos[i].x - camX + resourceObjectSize[resourceId] / 2 &&
@@ -373,24 +398,58 @@ function draw() {
                     // } else {
                     //     image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
                     // }
-                    if(resourceObjectHover[resourceId]) {
-                        image(resourceObjectHover[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
-                    } else {
+
+                    //
+                    if(farmsArray[i].status == 'start' && servicesObjectCraft[farmsArray[i].service_id]){
                         image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else
+                    if(farmsArray[i].status == 'in_use' && servicesObjectCraft[farmsArray[i].service_id]){
+                        image(servicesObjectCraft[farmsArray[i].service_id], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else
+                    if(farmsArray[i].status == 'reload' && servicesObjectReload[farmsArray[i].service_id]) {
+                        image(servicesObjectReload[farmsArray[i].service_id], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else if(servicesObjectReady[farmsArray[i].service_id]) {
+                        image(servicesObjectReady[farmsArray[i].service_id], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else {
+
+                        if (resourceObjectHover[resourceId]) {
+                            image(resourceObjectHover[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                        } else {
+                            image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                        }
                     }
                     // if(resourceArray[farmsArray[i].resource_id].type != 'rug') {
                     if(farmsArray[i].service_id) {
                         isMouseOver = true;
                     }
                     // image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i]/2, farmsObjectPos[i].y - camY - farmsObjectSize[i]/2, farmsObjectSize[i], farmsObjectSize[i]);
-
+                    if(resourceArray[farmsArray[i].resource_id].type == 'bot'){
+                        drawHealthBar(farmsObjectPos[i].x - camX , farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, farmsArray[i].health, resourceArray[farmsArray[i].resource_id].health);
+                    }
                 } else {
-                    image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+
+                    if(farmsArray[i].status == 'start' && servicesObjectCraft[farmsArray[i].service_id]){
+                        image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else
+                    if(farmsArray[i].status == 'in_use' && servicesObjectCraft[farmsArray[i].service_id]){
+                        image(servicesObjectCraft[farmsArray[i].service_id], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else
+                    if(farmsArray[i].status == 'reload' && servicesObjectReload[farmsArray[i].service_id]) {
+                        image(servicesObjectReload[farmsArray[i].service_id], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else if(servicesObjectReady[farmsArray[i].service_id]) {
+                        image(servicesObjectReady[farmsArray[i].service_id], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    } else {
+                        image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
+                    }
+
+                    if(resourceArray[farmsArray[i].resource_id].type == 'bot'){
+                        drawHealthBar(farmsObjectPos[i].x - camX , farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, farmsArray[i].health, resourceArray[farmsArray[i].resource_id].health);
+                    }
                 }
 
                 if(edit_mode) {
                     noFill(); // Ensure the rectangle isn't filled
-                    if(resourceArray[farmsArray[i].resource_id].type == 'rug'){
+                    if(resourceArray[farmsArray[i].resource_id].type == 'rug' || resourceArray[farmsArray[i].resource_id].type == 'bot'){
                         stroke(255, 255, 0); // Color the stroke red for visibilitysasadasd
                     } else {
                         stroke(255, 0, 0); // Color the stroke red for visibility
@@ -399,11 +458,14 @@ function draw() {
                     rect(farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
                 }
 
+
+
             }
 
             // if(farmsArray[i].status == 'in_use'){
 
                 if (isCooldownActive[i]) {
+                    // console.log('farmsArray[i]', farmsArray[i]);
                     // timeRemaining[i] = cooldownDuration[i] - timeElapsed;
                     timeRemaining[i] = cooldownReady[i] - serverTime;
                     if (timeRemaining[i] > 0) {
@@ -460,6 +522,10 @@ function draw() {
         image(hero, heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
     }
 
+    // console,log('heroPos', balanceArray[25]);
+    drawHealthBar(heroPos.x - camX + 35, heroPos.y - camY - 10, balanceArray[25], 200);
+
+
     if(edit_mode) {
         noFill(); // Ensure the rectangle isn't filled
         stroke(255, 0, 0); // Color the stroke red for visibility
@@ -479,20 +545,25 @@ function draw() {
 
             if (typeof herosPos[i] !== 'undefined') {
             // return;
-            if (herosPos[i].x + speed < usersArray[i].posx) {
-                herosPos[i].x += speed;
-            }
-            if (herosPos[i].x - speed > usersArray[i].posx) {
-                herosPos[i].x -= speed;
-            }
-            if (herosPos[i].y + speed < usersArray[i].posy) {
-                herosPos[i].y += speed;
-            }
-            if (herosPos[i].y - speed > usersArray[i].posy) {
-                herosPos[i].y -= speed;
-            }
+                if (herosPos[i].x + speed < usersArray[i].posx) {
+                    herosPos[i].x += speed;
+                }
+                if (herosPos[i].x - speed > usersArray[i].posx) {
+                    herosPos[i].x -= speed;
+                }
+                if (herosPos[i].y + speed < usersArray[i].posy) {
+                    herosPos[i].y += speed;
+                }
+                if (herosPos[i].y - speed > usersArray[i].posy) {
+                    herosPos[i].y -= speed;
+                }
 
-            image(heros[usersArray[i].avatar_id], herosPos[i].x - camX, herosPos[i].y - camY, heroSize, heroSize);
+                if(i == user_id){
+                    image(heros[usersArray[i].avatar_id], herosPos[i].x - camX, herosPos[i].y - camY + 30, 40, 40);
+                } else {
+                    image(heros[usersArray[i].avatar_id], herosPos[i].x - camX, herosPos[i].y - camY, heroSize, heroSize);
+                }
+
             }
 
             // }
@@ -604,6 +675,7 @@ function isCollidingWithObjects(proposedPosition) {
         divi = resourceObjectSize[resourceId]/22 ;//10; //50;
         divi = divi*divi;
         if( resourceArray[resourceId].type != 'rug' &&
+            resourceArray[resourceId].type != 'bot' &&
 
             // proposedPosition.x > farmsObjectPos[i].x - resourceObjectSize[resourceId]/2  && //+ 20  &&
             farmsObjectPos[i].x - resourceObjectSize[resourceId] + divi < proposedPosition.x  &&
@@ -717,7 +789,7 @@ function mousePressed() {
 
                     if (heroPos.dist(farmsObjectPos[i]) <= interactionDistance) {
 
-                        // console.log('farmsArray[i]', farmsArray[i]);
+                        console.log('farmsArray[i]', farmsArray[i]);
                         if (currentlyDraggingResource) {
                             // freePos = false;
                             //start service
@@ -729,11 +801,14 @@ function mousePressed() {
                             //window.location.href = '/land/select?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
                             land_go_select();
                             //patch fot market sell to buy list
-                        } else if (i == 18) {
-                            window.location.href = '/service-use/orders?farm_id=18';
-
-                            //start service
-                        } else if (farmsArray[i].status == 'start' || farmsArray[i].status == 'take') {
+                        }
+                        // else if (i == 18) {
+                        //     select_service(farmsArray[i].id);
+                        //     // window.location.href = '/service-use/orders?farm_id=18';
+                        //
+                        //     //start service
+                        // }
+                        else if (farmsArray[i].status == 'start' || farmsArray[i].status == 'take') {
 
                             //if single service
                             if (farmsArray[i].single_service == true) {
@@ -743,15 +818,34 @@ function mousePressed() {
                                 //     // take(farmsArray[i].id, farmsArray[i].service_id);
                                 //     start(farmsArray[i].id, farmsArray[i].service_id);
                                 // } else {
-                                start(farmsArray[i].id, farmsArray[i].service_id);
-                                // }
+                                //if user attack resource and not in use
+                                if(resourceArray[farmsArray[i].resource_id].type == 'bot'){
+
+                                    if(farmsArray[i].health > 0){
+                                        attack(i,farmsArray[i].service_id);
+                                    }
+                                    // return;
+
+                                } else {
+                                    start(farmsArray[i].id, farmsArray[i].service_id);
+                                }
 
 
                             } else {
                                 // window.location.href = '/service-use/select?farm_id=' + farmsArray[i].id;
                                 // claim(farmsArray[i].id,farmsArray[i].service_id);
                                 // console.log('farmsServiceArray', farmsServiceArray[i]);
-                                select_service(farmsArray[i].id);
+
+                                if(resourceArray[farmsArray[i].resource_id].type == 'bot'){
+
+                                    if(farmsArray[i].health > 0){
+                                        select_attack(i);
+                                    }
+                                    // return;
+
+                                } else {
+                                    select_service(farmsArray[i].id);
+                                }
                             }
 
                         } else if (farmsArray[i].status == 'in_use') {
@@ -889,4 +983,18 @@ function drawGrid(camX, camY) {
             rect(j * cellSize - camX , i * cellSize - camY, cellSize, cellSize);
         }
     }
+}
+
+function drawHealthBar(x, y, health, maxHealth) {
+    let barWidth = 50;
+    let barHeight = 10;
+    let healthRatio = health / maxHealth;
+
+    // Draw health bar background
+    fill(255);
+    rect(x - 25, y, barWidth, barHeight);
+
+    // Draw health bar foreground
+    fill(255, 0, 0);
+    rect(x - 25, y, barWidth * healthRatio, barHeight);
 }

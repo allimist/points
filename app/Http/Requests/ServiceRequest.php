@@ -34,6 +34,9 @@ class ServiceRequest extends FormRequest
             'time' => 'nullable|integer',
             'reload' => 'nullable|integer',
 //            'currency' => 'required|integer|exists:currencies,id',
+            'image_init' => 'nullable|image',
+            'image_ready' => 'nullable|image',
+            'image_reload' => 'nullable|image',
         ];
     }
 

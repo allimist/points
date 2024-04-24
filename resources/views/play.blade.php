@@ -29,8 +29,8 @@ foreach ($avatars as $avatar) {
 
 $resource = \App\Models\Resource::get();
 foreach ($resource as $r) {
-    $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'type'=>$r->type, 'img'=>$r->image,'img_hover'=>$r->image_hover];
-    if($r->id == 3 || $r->id == 6){
+    $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'type'=>$r->type, 'img'=>$r->image,'img_hover'=>$r->image_hover,'health'=>$r->health];
+    if($r->id == 3 || $r->id == 6 || $r->id == 7){ //market , exchange buy , exchange sell
         $resourceArray[$r->id]['amountable'] = true;
     } else {
         $resourceArray[$r->id]['amountable'] = false;
@@ -40,7 +40,8 @@ foreach ($resource as $r) {
 $service = \App\Models\Service::get();
 $serviceArray = [];
 foreach ($service as $s) {
-    $serviceArray[$s->id] = ['name'=>$s->name, 'time'=>$s->time, 'reload'=>$s->reload , 'cost'=>$s->cost , 'revenue'=>$s->revenue];
+    //$serviceArray[$s->id] = ['name'=>$s->name, 'time'=>$s->time, 'reload'=>$s->reload , 'cost'=>$s->cost , 'revenue'=>$s->revenue];
+    $serviceArray[$s->id] = $s->getAttributes();
 }
 
 
@@ -121,35 +122,16 @@ foreach ($farms as $farm) {
     if($service_free){
 
         foreach ($services as $service) {
-//            $farmsServiceArray[$farm->id] = $service->getAttributes();
-//            $farmsServiceArray[$farm->id][$service->id] = $service->name;
-//                    echo $service->name.' - ['.$service->id.']';
-//                    echo ' <a href="/service-use/claim?farm_id='.$farm->id.'&service_id='.$service->id.'">';
-//                                    $farmsArray[$farm->id]['status'] = $service->name.' - ['.$service->id.']';
-//                                    $farmsArray[$farm->id]['status'] .=  ' <a href="/service-use/claim?farm_id='.$farm->id.'&service_id='.$service->id.'">';
-//                                    $farmsArray[$farm->id]['link_url'] .=  ' <a href="/service-use/claim?farm_id='.$farm->id.'&service_id='.$service->id.'">';
-//                                    $farmsArray[$farm->id]['link_text'] =  ' <a href="/service-use/claim?farm_id='.$farm->id.'&service_id='.$service->id.'">';
 
             $farmsArray[$farm->id]['service_id'] = $service->id;
 
-
-//                    if($service->time > 0) {
-//                        echo '(crafting time:'.$service->time.' sec)';
-//                    }
-//                    if($service->reload > 0) {
-//                        echo '[reload time: '.$service->reload.' sec]';
-//                    }
             if($service->time == 0) {
-//                        echo 'Claim</a>';
                 $farmsArray[$farm->id]['status'] = 'take';
                 $farmsArray[$farm->id]['text'] = 'ClaimGETTTTT';
-
             } else {
-//                        echo 'Start</a>';
                 $farmsArray[$farm->id]['status'] = 'start';
                 $farmsArray[$farm->id]['text'] = 'Start';
             }
-//                    echo '<br>';
         }
     }
 
@@ -201,11 +183,11 @@ foreach ($users as $u) {
             echo '<a class="btn" href="/admin">A</a> | ';
         }
         ?>
-
         <a class="btn" href="/dashboard">Q</a> |
         <a class="btn" href="/play">R</a> |
         <button class="btn" onclick="land_go_select()">T</button><br>
-        <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit on</button><br>
+
+        <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit on</button>
         <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit off</button><br>
         <div id="addResource">
             <span id="pickResource">(-Pick-)</span><br>
@@ -218,14 +200,22 @@ foreach ($users as $u) {
                             echo '<a href=/farm/add?resource_id=' . $key . ' class="btn addResource" >' . $value['name'] . '</a> | ';
                         }
                     }
+
+                    ?>
+                    <?php
+
                 }
             ?>
         </div>
-        <button id="grid_mode_on" class="btn" onclick="egrid_mode(true)">Grid on</button><br>
-        <button id="grid_mode_off" class="btn grid_mode" onclick="egrid_mode(false)">Grid off</button><br>
-        <button id="grid_mode_allno" class="btn grid_mode" onclick="egrid_all(0)">All no</button><br>
-        <button id="grid_mode_allyes" class="btn grid_mode" onclick="egrid_all(1)">All yes</button><br>
-        <button id="grid_mode_save" class="btn grid_mode" onclick="egrid_save()">Save</button><br>
+
+        <?php if($user_id == 1){ ?>
+        <button id="grid_mode_on" class="btn" onclick="egrid_mode(true)">Grid on</button>
+        <button id="grid_mode_off" class="btn grid_mode" onclick="egrid_mode(false)">Grid off</button>
+        <button id="grid_mode_allno" class="btn grid_mode" onclick="egrid_all(0)">All no</button>
+        <button id="grid_mode_allyes" class="btn grid_mode" onclick="egrid_all(1)">All yes</button>
+        <button id="grid_mode_save" class="btn grid_mode" onclick="egrid_save()">Save</button>
+        <?php } ?>
+
     </div>
 
 

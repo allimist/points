@@ -24,9 +24,38 @@ foreach ($balance as $b) {
 $heroland = \App\Models\Land::where('id', Auth::user()->land_id)->first();
 //dd($land->image);
 
+$skill = \App\Models\Skill::orderBy('name')->get();
+$skillLevel = \App\Models\SkillLevel::get();
+$skillLevelArray = [];
+foreach ($skillLevel as $sl) {
+    $skillLevelArray[$sl->level] = $sl->xp_required;
+}
+//dd($skillLevelArray);
+$skillUser = \App\Models\SkillUser::where('user_id', $user_id)->get();
+$skillUserArray = [];
+foreach ($skillUser as $su) {
+    $skillUserArray[$su->skill_id] = $su->getAttributes();
+}
+//dd($skill);
 ?>
 
+<style>
+    .skills th, .skills td {
+        padding: 5px;
+        text-align: center;
+        border: 1px solid black;
+        /*border-radius: 5px;*/
+        color: lemonchiffon;
+    }
+    .btn-info{
+        background-color: #17a2b8;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-decoration: none;
 
+    }
+</style>
 
 
 
@@ -50,16 +79,41 @@ $heroland = \App\Models\Land::where('id', Auth::user()->land_id)->first();
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("You're logged in!") }}
-                    date time now : {{ now() }}<br>
+{{--                    date time now : {{ now() }}<br>--}}
 
-                    hi, {{ Auth::user()->name }} - <a class="btn btn-info" href="/dashboard">Reload</a><br><br>
+                    hi, {{ Auth::user()->name }}<br><br>
+{{--                    - <a class="btn btn-info" href="/dashboard">Reload</a><br><br>--}}
                     Reputation : {{ Auth::user()->reputation }} |
                     Location : {{ Auth::user()->land_id }} |
                     posx : {{ Auth::user()->posx }} |
                     posy : {{ Auth::user()->posy }} |
                     active_at : {{ Auth::user()->active_at }} <br>
 
-                    <br><br>
+                    <br>
+
+                    <table class="skills">
+                        <tr>
+                            <th>Skill</th>
+                            <th>Level</th>
+                            <th>XP</th>
+                            <th>Next Level</th>
+                            <th>Missing</th>
+                        </tr>
+                        <?php
+                        foreach ($skill as $s) {
+                            if(!empty($skillUserArray[$s->id])) {
+                                echo '<tr>';
+                                echo '<td>'.$s->name.'</td>';
+                                echo '<td>'.$skillUserArray[$s->id]['level'].'</td>';
+                                echo '<td>'.$skillUserArray[$s->id]['xp'].'</td>';
+                                echo '<td>'.$skillLevelArray[$skillUserArray[$s->id]['level']+1].'</td>';
+                                echo '<td>'.($skillLevelArray[$skillUserArray[$s->id]['level']+1] - $skillUserArray[$s->id]['xp']).'</td>';
+                                echo '</tr>';
+                            }
+                        }
+                        ?>
+                    </table>
+                    <br>
 
                     <a class="btn btn-info" href="/play">Play</a><br>
 

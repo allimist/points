@@ -21,7 +21,7 @@
             @auth
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/dashboard') }}">Dashboard</a>
-                    <a class="nav-link" href="{{ url('/Play') }}">Play</a>
+                    <a class="nav-link" href="{{ url('/play') }}">Play</a>
                     <a class="nav-link" href="{{ url('/profile') }}">Profile</a>
                     <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                 </li>
