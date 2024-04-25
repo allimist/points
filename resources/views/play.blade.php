@@ -6,7 +6,7 @@ $currency = \App\Models\Currency::get();
 $currencyArray = [];
 $resourceCurrencyArray = [];
 foreach ($currency as $c) {
-    $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image , 'resource_id'=>$c->resource_id];
+    $currencyArray[$c->id] = ['name'=>$c->name, 'img'=>$c->image , 'resource_id'=>$c->resource_id, 'service_id'=>$c->service_id];
     if($c->resource_id){
         $resourceCurrencyArray[$c->resource_id] = $c->id;
     }
@@ -29,7 +29,7 @@ foreach ($avatars as $avatar) {
 
 $resource = \App\Models\Resource::get();
 foreach ($resource as $r) {
-    $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'type'=>$r->type, 'img'=>$r->image,'img_hover'=>$r->image_hover,'health'=>$r->health];
+    $resourceArray[$r->id] = ['name'=>$r->name, 'size'=>$r->size, 'type'=>$r->type, 'img'=>$r->image,'img_hover'=>$r->image_hover,'health'=>$r->health,'skill_id'=>$r->skill_id];
     if($r->id == 3 || $r->id == 6 || $r->id == 7){ //market , exchange buy , exchange sell
         $resourceArray[$r->id]['amountable'] = true;
     } else {
@@ -161,19 +161,17 @@ foreach ($users as $u) {
 
     <div id="balance" class="unselectable">
         <?php
-//        foreach ($currencyArray as $key => $value) {
-//            if(!empty($balanceArray[$key]) && $balanceArray[$key] > 0) {
-//                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.floor($balanceArray[$key]).' | ';
-//
-//            }
-//        }
-        foreach ($balanceArray as $key => $value) {
-            echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$currencyArray[$key]['img'].'"> '.floor($value).' | ';
-        }
+        //        foreach ($currencyArray as $key => $value) {
+        //            if(!empty($balanceArray[$key]) && $balanceArray[$key] > 0) {
+        //                echo '<img class="resources" data-id="'.$key.'" src= "/storage/'.$value['img'].'"> '.floor($balanceArray[$key]).' | ';
+        //
+        //            }
+        //        }
+        //        $balance_string = substr($balance_string, 0, -2);
+        //        echo $balance_string;
+        $serviceUseController = new \App\Http\Controllers\ServiceUseController();
+        echo $serviceUseController->Apibalance($currencyArray);
 
-
-//        $balance_string = substr($balance_string, 0, -2);
-//        echo $balance_string;
         ?>
     </div>
 
@@ -217,7 +215,6 @@ foreach ($users as $u) {
         <?php } ?>
 
     </div>
-
 
     <div id="popup" class="popup unselectable">
         <div class="popup-content">

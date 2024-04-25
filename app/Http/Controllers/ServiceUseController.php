@@ -47,7 +47,7 @@ class ServiceUseController extends Controller
 //            $balanceArray[$b->currency_id] = $b->value;
 //            $balance_string .= $b->value . ' ' . $currencyArray[$b->currency_id] . ' | ';
 //            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$balanceArray[$key].' | ';
-            $balance_string .= '<img class="resources" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> ';
+            $balance_string .= '<img class="resources" data-id="'.$b->currency_id.'" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> ';
             $balance_string .=  floor($b->value).' | ';
 
         }
@@ -290,6 +290,28 @@ class ServiceUseController extends Controller
         $service = \App\Models\Service::find($service_id);
         $resource = Resource::where('id',$service->resource_id)->first();
 
+        //check service level
+        if(!empty($service->level)){
+            if(!empty($resource->skill_id)){
+                $skillUser = \App\Models\SkillUser::where('skill_id',$resource->skill_id)->where('user_id', $user_id)->first();
+                if(empty($skillUser)){
+                    $data = [
+                        'status' => 'error',
+                        'message' => 'No skill user',
+                        'extra' => 'No skill user',
+                    ];
+                    return response()->json($data);
+                }
+                if($skillUser->level < $service->level){
+                    $data = [
+                        'status' => 'error',
+                        'message' => 'Level not enough',
+                        'extra' => 'Level not enough',
+                    ];
+                    return response()->json($data);
+                }
+            }
+        }
 
         //amount allow on market only
         if($service->resource_id != 3 ){

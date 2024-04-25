@@ -5,6 +5,8 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class Currency extends Model
 {
@@ -35,10 +37,15 @@ class Currency extends Model
         'service_id' => 'integer',
     ];
 
-//    public function service(): BelongsTo
-//    {
-//        return $this->belongsTo(Service::class);
-//    }
+    public function resource(): BelongsTo
+    {
+        return $this->belongsTo(Resource::class);
+    }
+
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
+    }
 
     public function setImageAttribute($value)
     {

@@ -43,8 +43,8 @@ class CurrencyCrudController extends CrudController
         CRUD::column('id');
         CRUD::column('created_at');
         CRUD::column('name');
-        CRUD::column('resource_id');
-        CRUD::column('service_id');
+        CRUD::column('resource');
+        CRUD::column('service');
         CRUD::column('image')->type('image')->prefix('storage/');
 
         /**
@@ -65,8 +65,8 @@ class CurrencyCrudController extends CrudController
         CRUD::setValidation(CurrencyRequest::class);
 
         CRUD::field('name');
-        CRUD::field('resource_id');
-        CRUD::field('service_id');
+        CRUD::field('resource');
+        CRUD::field('service');
 
         //image
         $this->crud->addField([

@@ -454,55 +454,50 @@ function draw() {
                     } else {
                         stroke(255, 0, 0); // Color the stroke red for visibility
                     }
-
                     rect(farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
                 }
-
-
-
             }
 
             // if(farmsArray[i].status == 'in_use'){
 
-                if (isCooldownActive[i]) {
-                    // console.log('farmsArray[i]', farmsArray[i]);
-                    // timeRemaining[i] = cooldownDuration[i] - timeElapsed;
-                    timeRemaining[i] = cooldownReady[i] - serverTime;
-                    if (timeRemaining[i] > 0) {
-                        // Display the remaining cooldown time in seconds
-                        let timeInSeconds = (timeRemaining[i]).toFixed(0); // Round to one decimal place
-                        let hours = Math.floor(timeInSeconds / 3600); // 3600 seconds in an hour
-                        let minutes = Math.floor((timeInSeconds % 3600) / 60); // Remaining minutes
-                        let seconds = timeInSeconds % 60; // Remaining seconds
-                        let formattedHours = hours.toString();//.padStart(2, '0');
-                        let formattedMinutes = minutes.toString().padStart(2, '0');
-                        let formattedSeconds = seconds.toString().padStart(2, '0');
+            if (isCooldownActive[i]) {
+                // console.log('farmsArray[i]', farmsArray[i]);
+                // timeRemaining[i] = cooldownDuration[i] - timeElapsed;
+                timeRemaining[i] = cooldownReady[i] - serverTime;
+                if (timeRemaining[i] > 0) {
+                    // Display the remaining cooldown time in seconds
+                    let timeInSeconds = (timeRemaining[i]).toFixed(0); // Round to one decimal place
+                    let hours = Math.floor(timeInSeconds / 3600); // 3600 seconds in an hour
+                    let minutes = Math.floor((timeInSeconds % 3600) / 60); // Remaining minutes
+                    let seconds = timeInSeconds % 60; // Remaining seconds
+                    let formattedHours = hours.toString();//.padStart(2, '0');
+                    let formattedMinutes = minutes.toString().padStart(2, '0');
+                    let formattedSeconds = seconds.toString().padStart(2, '0');
 
-                        if(farmsArray[i].status == 'in_use') {
-                            // timeString = `In use ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-                            timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-                        } else {
-                            // timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-                            timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-                        }
-                        fill(255);
-                        text(timeString, farmsObjectPos[i].x - camX - resourceObjectSize[resourceId]/2 + 10, farmsObjectPos[i].y - camY + resourceObjectSize[resourceId]/2 -10);
+                    if(farmsArray[i].status == 'in_use') {
+                        // timeString = `In use ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+                        timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                     } else {
-                        if(farmsArray[i].status == 'in_use') {
-                            farmsArray[i].status = 'claim';
-                            farmsArray[i].text = 'Claim';
-                        } else {
-                            farmsArray[i].status = 'start';
-                            farmsArray[i].text = 'Start';
-                        }
-                        // Cooldown complete
-                        text("Cooldown Complete!", farmsObjectPos[i].x - camX, farmsObjectPos[i].y - camY );
-
-                        isCooldownActive[i] = false; // Stop the cooldown
+                        // timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+                        timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                     }
+                    fill(255);
+                    text(timeString, farmsObjectPos[i].x - camX - resourceObjectSize[resourceId]/2 + 10, farmsObjectPos[i].y - camY + resourceObjectSize[resourceId]/2 -10);
                 } else {
-                    // text("Click to Start Cooldown", width / 2, height / 2);
+                    if(farmsArray[i].status == 'in_use') {
+                        farmsArray[i].status = 'claim';
+                        farmsArray[i].text = 'Claim';
+                    } else {
+                        farmsArray[i].status = 'start';
+                        farmsArray[i].text = 'Start';
+                    }
+                    // Cooldown complete
+                    text("Cooldown Complete!", farmsObjectPos[i].x - camX, farmsObjectPos[i].y - camY );
+                    isCooldownActive[i] = false; // Stop the cooldown
                 }
+            } else {
+                // text("Click to Start Cooldown", width / 2, height / 2);
+            }
 
             // }
 
@@ -747,6 +742,12 @@ function mousePressed() {
                     //     freePos = false;
                     //     // return;
                     // }
+
+                    //if resource have service id claim
+                    if(currentlyDraggingResource && currencyArray[currentlyDraggingResource].service_id){
+                        console.log('claim',currencyArray[currentlyDraggingResource].service_id);
+                        start(i, currencyArray[currentlyDraggingResource].service_id);
+                    }
                 }
             });
 
@@ -760,13 +761,19 @@ function mousePressed() {
                 }
             }
 
-            if(currentlyDraggingResource){
-                if(freePos) {
-                    console.log('currentlyDraggingResource set farm', currentlyDraggingResource);
-                    //set farm
-                    set_farm(clickPos);
-                } else {
-                    console.log('set_farm - pos not free');
+            //if dragging resource and the resource has resource id
+            if(currentlyDraggingResource ){
+                if(resourceArray[currentlyDraggingResource].resource_id) {
+                    if (freePos) {
+                        console.log('currentlyDraggingResource set farm', currentlyDraggingResource);
+                        //set farm
+                        set_farm(clickPos);
+                    } else {
+                        console.log('set_farm - pos not free');
+                    }
+                }
+                else {
+                    console.log('set_farm - no resource id');
                 }
             }
 

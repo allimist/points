@@ -93,7 +93,10 @@ function select_service(farm_id) {
         if(!resourceArray[farmsArray[farm_id].resource_id].amountable){
             for (let i = 0; i < resp.services.length; i++) {
                 // Object.keys(farmsServiceArray[farm_id]).forEach(i => {
-                console.log('not amountable', resp.services[i]);
+                // console.log('not amountable', resp.services[i]);
+                console.log('service level', resp.services[i].level);
+                console.log('resource skill id', resourceArray[farmsArray[farm_id].resource_id].skill_id);
+
                 // console.log('resource_id', farmsArray[farm_id].resource_id);
                 html += '<div class="service_item" ' +
                     // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
@@ -308,69 +311,86 @@ function start_amount(farm_id,service_id) {
 }
 
 function start(farm_id,service_id) {
-    // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
-    $.ajax({
-        url: "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id,
-    }).done(function(resp) {
-        console.log("resp: ", resp);
 
-        let html = '';
-        if(resp.status == 'success'){
-            //     html += 'Success';
-            //     delete farmsServiceArray[farm_id];
-            //reload page
-            // window.location.reload();
-            if(serviceArray[service_id].time>0){
-                farmsArray[farm_id].status = 'in_use';
-                farmsArray[farm_id].text = serviceArray[service_id].time;
-                isCooldownActive[farm_id] = true;
-                cooldownDuration[farm_id] = serviceArray[service_id].time;
-                cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
-            }
-            if(serviceArray[service_id].reload>0){
-                farmsArray[farm_id].status = 'reload';
-                farmsArray[farm_id].text = serviceArray[service_id].reload;
-                isCooldownActive[farm_id] = true;
-                cooldownDuration[farm_id] = serviceArray[service_id].reload;
-                cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
-            }
-        } else {
-            //     html += 'Error';
-        }
-
-        // if(resp.message){
-        //     html += '<br>' + resp.message;
-        // }
-
-        // if(resp.extra){
-            html += '<br>' + resp.extra;
-        // }
-
+    //check if farm ready
+    if(farmsArray[farm_id].status != 'start'){
         isPopupVisible = true;
-
-        document.getElementById('popup-text').innerHTML = html;
+        document.getElementById('popup-text').innerHTML = 'Service busy';
         document.getElementById('popup').style.display = 'block';
-
         setTimeout(() => {
             document.getElementById('popup').style.display = 'none';
             isPopupVisible = false;
         },2000);
 
-        //not enoth balance not return balance
-        if(resp.balance){
-            document.getElementById('balance').innerHTML = resp.balance;
-        }
+    } else {
 
-        if(resp.user_health) {
-            // console.log('before',balanceArray[25]);
-            // // balanceArray[25] = Math.floor(resp.user_health);
-            // console.log('+',+resp.user_health);
-            balanceArray[25] = +resp.user_health;
-            // console.log('after',balanceArray[25]);
-        }
+        // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+        $.ajax({
+            url: "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id,
+        }).done(function (resp) {
+            console.log("resp: ", resp);
+
+            let html = '';
+            if (resp.status == 'success') {
+                //     html += 'Success';
+                //     delete farmsServiceArray[farm_id];
+                //reload page
+                // window.location.reload();
+                if (serviceArray[service_id].time > 0) {
+                    farmsArray[farm_id].service_id = service_id;
+                    farmsArray[farm_id].status = 'in_use';
+                    farmsArray[farm_id].text = serviceArray[service_id].time;
+                    isCooldownActive[farm_id] = true;
+                    cooldownDuration[farm_id] = serviceArray[service_id].time;
+                    cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
+                }
+                if (serviceArray[service_id].reload > 0) {
+                    farmsArray[farm_id].status = 'reload';
+                    farmsArray[farm_id].text = serviceArray[service_id].reload;
+                    isCooldownActive[farm_id] = true;
+                    cooldownDuration[farm_id] = serviceArray[service_id].reload;
+                    cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
+                }
+            } else {
+                //     html += 'Error';
+            }
+
+            //not enoth balance not return balance
+            if (resp.balance) {
+                document.getElementById('balance').innerHTML = resp.balance;
+            }
+
+            if (resp.user_health) {
+                // console.log('before',balanceArray[25]);
+                // // balanceArray[25] = Math.floor(resp.user_health);
+                // console.log('+',+resp.user_health);
+                balanceArray[25] = +resp.user_health;
+                // console.log('after',balanceArray[25]);
+            }
+
+            // if(resp.message){
+            //     html += '<br>' + resp.message;
+            // }
+
+            // if(resp.extra){
+            html += '<br>' + resp.extra;
+            // }
+
+            isPopupVisible = true;
+
+            document.getElementById('popup-text').innerHTML = html;
+            document.getElementById('popup').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('popup').style.display = 'none';
+                isPopupVisible = false;
+            }, 2000);
 
 
-    });
+
+
+        });
+    }
 }
 
 function start_with(farm_id,currency_id) {
@@ -725,13 +745,14 @@ document.getElementsByClassName('closeBtn')[0].onclick = function() {
 
 document.getElementById('balance').style.display = 'block';
 
+// $('.resources').click(function(){
+// $('#balance').on( "click", ".resources", function() {
 
-if(land_owner){
-    document.getElementById('editor_mode_on').style.display = 'inline';
+$(document).ready(function(){
+    // $('.resources').on('click',function(){
+    $('#balance').on( "click", ".resources", function() {
 
-    $('.resources').click(function(){
-
-        if(!currentlyDraggingResource) {
+        if (!currentlyDraggingResource) {
             console.log($(this).data('id'));
             currentlyDraggingResource = $(this).data('id');
         } else {
@@ -739,6 +760,14 @@ if(land_owner){
         }
 
     });
+});
+
+
+
+if(land_owner){
+    document.getElementById('editor_mode_on').style.display = 'inline';
+
+
 
     $('#pickResource').click(function(){
 

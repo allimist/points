@@ -45,7 +45,12 @@ foreach ($skillUser as $su) {
         text-align: center;
         border: 1px solid black;
         /*border-radius: 5px;*/
-        color: lemonchiffon;
+        color: #e5e7eb;
+        background-color: #0d251e;
+    }
+    .skills td img{
+        background-color: whitesmoke;
+        margin: 0 auto;
     }
     .btn-info{
         background-color: #17a2b8;
@@ -101,9 +106,12 @@ foreach ($skillUser as $su) {
                         </tr>
                         <?php
                         foreach ($skill as $s) {
+//                            dd($s);
                             if(!empty($skillUserArray[$s->id])) {
                                 echo '<tr>';
-                                echo '<td>'.$s->name.'</td>';
+                                echo '<td>';
+                                echo '<img src="/storage/'.$s->image.'" style="width: 50px; height: 50px;">';
+                                echo $s->name.'</td>';
                                 echo '<td>'.$skillUserArray[$s->id]['level'].'</td>';
                                 echo '<td>'.$skillUserArray[$s->id]['xp'].'</td>';
                                 echo '<td>'.$skillLevelArray[$skillUserArray[$s->id]['level']+1].'</td>';
