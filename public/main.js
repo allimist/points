@@ -312,10 +312,12 @@ function start_amount(farm_id,service_id) {
 
 function start(farm_id,service_id) {
 
+    isPopupVisible = true;
+
     //check if farm ready
-    if(farmsArray[farm_id].status != 'start'){
-        isPopupVisible = true;
-        document.getElementById('popup-text').innerHTML = 'Service busy';
+    if(farmsArray[farm_id].status == 'in_use' || farmsArray[farm_id].status == 'reload'){
+        // isPopupVisible = true;
+        document.getElementById('popup-text').innerHTML = 'Service busy '+farmsArray[farm_id].status;
         document.getElementById('popup').style.display = 'block';
         setTimeout(() => {
             document.getElementById('popup').style.display = 'none';
@@ -324,35 +326,46 @@ function start(farm_id,service_id) {
 
     } else {
 
-        // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+        // isPopupVisible = true;
         $.ajax({
             url: "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id,
         }).done(function (resp) {
-            console.log("resp: ", resp);
 
+            console.log("resp: ", resp);
             let html = '';
             if (resp.status == 'success') {
-                //     html += 'Success';
-                //     delete farmsServiceArray[farm_id];
-                //reload page
-                // window.location.reload();
-                if (serviceArray[service_id].time > 0) {
-                    farmsArray[farm_id].service_id = service_id;
-                    farmsArray[farm_id].status = 'in_use';
-                    farmsArray[farm_id].text = serviceArray[service_id].time;
-                    isCooldownActive[farm_id] = true;
-                    cooldownDuration[farm_id] = serviceArray[service_id].time;
-                    cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
-                }
-                if (serviceArray[service_id].reload > 0) {
-                    farmsArray[farm_id].status = 'reload';
-                    farmsArray[farm_id].text = serviceArray[service_id].reload;
-                    isCooldownActive[farm_id] = true;
-                    cooldownDuration[farm_id] = serviceArray[service_id].reload;
-                    cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
+                if(farmsArray[farm_id].status == 'start'){
+                    if (serviceArray[service_id].time > 0) {
+                        farmsArray[farm_id].service_id = service_id;
+                        farmsArray[farm_id].status = 'in_use';
+                        farmsArray[farm_id].text = serviceArray[service_id].time;
+                        isCooldownActive[farm_id] = true;
+                        cooldownDuration[farm_id] = serviceArray[service_id].time;
+                        cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
+                    }
+                } else
+                if(farmsArray[farm_id].status == 'claim'){
+                    if(serviceArray[service_id].reload>0){
+                        farmsArray[farm_id].status = 'reload';
+                        farmsArray[farm_id].text = serviceArray[service_id].reload;
+                        isCooldownActive[farm_id] = true;
+                        cooldownDuration[farm_id] = farmsArray[farm_id].text;
+                    } else {
+                        farmsArray[farm_id].status = 'start';
+                        farmsArray[farm_id].text = 'Start';
+                    }
+                } else
+                if(farmsArray[farm_id].status == 'take'){
+                    if (serviceArray[service_id].reload > 0) {
+                        farmsArray[farm_id].status = 'reload';
+                        farmsArray[farm_id].text = serviceArray[service_id].reload;
+                        isCooldownActive[farm_id] = true;
+                        cooldownDuration[farm_id] = serviceArray[service_id].reload;
+                        cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
+                    }
                 }
             } else {
-                //     html += 'Error';
+                html += 'Error';
             }
 
             //not enoth balance not return balance
@@ -367,24 +380,17 @@ function start(farm_id,service_id) {
                 balanceArray[25] = +resp.user_health;
                 // console.log('after',balanceArray[25]);
             }
-
-            // if(resp.message){
-            //     html += '<br>' + resp.message;
-            // }
-
             // if(resp.extra){
             html += '<br>' + resp.extra;
             // }
 
-            isPopupVisible = true;
-
+            // isPopupVisible = true;
             document.getElementById('popup-text').innerHTML = html;
             document.getElementById('popup').style.display = 'block';
-
             setTimeout(() => {
                 document.getElementById('popup').style.display = 'none';
                 isPopupVisible = false;
-            }, 2000);
+            }, 1000);
 
 
 
@@ -399,7 +405,7 @@ function start_with(farm_id,currency_id) {
     console.log(farm_id);
     console.log(currency_id);
 }
-
+/*
 function claim(farm_id,service_id) {
     // window.location.href = '/service-use/claim?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
     $.ajax({
@@ -440,7 +446,7 @@ function claim(farm_id,service_id) {
 
     });
 }
-
+*/
 function move_farm(clickPos) {
     //save new position
     // console.log('new position', clickPos);

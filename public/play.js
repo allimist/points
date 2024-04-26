@@ -880,7 +880,8 @@ function mousePressed() {
 
                             //claim service
                         } else if (farmsArray[i].status == 'claim') {
-                            claim(farmsArray[i].id, farmsArray[i].service_id);
+                            // claim(farmsArray[i].id, farmsArray[i].service_id);
+                            start(farmsArray[i].id, farmsArray[i].service_id);
                         }
 
 
