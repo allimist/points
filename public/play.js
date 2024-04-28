@@ -487,9 +487,14 @@ function draw() {
                     if(farmsArray[i].status == 'in_use') {
                         farmsArray[i].status = 'claim';
                         farmsArray[i].text = 'Claim';
-                    } else {
-                        farmsArray[i].status = 'start';
-                        farmsArray[i].text = 'Start';
+                    } else {//reload
+                        if(serviceArray[farmsArray[i].service_id].time  > 0){
+                            farmsArray[i].status = 'start';
+                            farmsArray[i].text = 'Start';
+                        } else {
+                            farmsArray[i].status = 'take';
+                            farmsArray[i].text = 'Take';
+                        }
                     }
                     // Cooldown complete
                     text("Cooldown Complete!", farmsObjectPos[i].x - camX, farmsObjectPos[i].y - camY );
@@ -763,7 +768,7 @@ function mousePressed() {
 
             //if dragging resource and the resource has resource id
             if(currentlyDraggingResource ){
-                if(resourceArray[currentlyDraggingResource].resource_id) {
+                if(currencyArray[currentlyDraggingResource].resource_id) {
                     if (freePos) {
                         console.log('currentlyDraggingResource set farm', currentlyDraggingResource);
                         //set farm

@@ -145,3 +145,8 @@ button:hover {
 .popup-content span img{
     display: inline-block;
 }
+
+.popup-content div.service_level_limit{
+    background-color: grey;
+    cursor: default;
+}

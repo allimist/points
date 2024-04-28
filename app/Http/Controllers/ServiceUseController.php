@@ -779,8 +779,12 @@ class ServiceUseController extends Controller
             $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
         }
 
+        $resource = \App\Models\Resource::find($farm->resource_id);
+        $level = \App\Models\SkillUser::where('user_id', Auth::id())->where('skill_id', $resource->skill_id)->first()?->level;
+
         $data = [
-            'services' => $services
+            'services' => $services,
+            'level' => $level
         ];
 
         return response()->json($data);
@@ -1498,6 +1502,12 @@ class ServiceUseController extends Controller
                     if($farm->health < 0){
                         $farm->health=0;
                     }
+
+//                    if($farm->health > 0 && !$farm->state){
+//                        $farm->state = 'attack';
+//                        $farm->target_id = $user_id;
+//                    }
+
                     $farm->save();
                     //get big price
                     if($farm->health <= 0){
