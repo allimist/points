@@ -11,7 +11,7 @@ class bot extends Command
      *
      * @var string
      */
-    protected $signature = 'zapp:bots';
+    protected $signature = 'zapp:bot';
 
     /**
      * The console command description.

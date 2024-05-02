@@ -23,6 +23,7 @@ class Farm extends Model
     protected $fillable = [
         'resource_id',
         'land_id',
+        'user_id',
         'posx',
         'posy',
         'health',

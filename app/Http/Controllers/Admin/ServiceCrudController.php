@@ -17,7 +17,7 @@ class ServiceCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CloneOperation;
+//    use \Backpack\CRUD\app\Http\Controllers\Operations\CloneOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
@@ -46,6 +46,7 @@ class ServiceCrudController extends CrudController
 //        CRUD::column('created_at');
         CRUD::column('name');
         CRUD::column('resource');
+        CRUD::column('skill');
         CRUD::column('level');
         CRUD::column('cost')->type('string');
         CRUD::column('revenue')->type('string');
@@ -75,6 +76,7 @@ class ServiceCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('resource');
+        CRUD::field('skill');
         CRUD::field('level');
 
 //        $resources = Resource::all();

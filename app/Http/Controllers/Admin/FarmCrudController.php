@@ -44,9 +44,11 @@ class FarmCrudController extends CrudController
         CRUD::column('created_at');
         CRUD::column('resource');
         CRUD::column('land');
+        CRUD::column('user_id')->type('number');
         CRUD::column('posx');
         CRUD::column('posy');
         CRUD::column('health');
+
         CRUD::column('is_public');
 
 
@@ -74,7 +76,7 @@ class FarmCrudController extends CrudController
         CRUD::field('health')->type('number');
         CRUD::field('state');
         CRUD::field('target_id')->type('number');
-        CRUD::field('owner_id')->type('number');
+        CRUD::field('user_id')->type('number');
 
         CRUD::field('is_public');
 

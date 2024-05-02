@@ -21,6 +21,7 @@ class LandType extends Model
         'size',
         'farms',
         'image',
+        'grid',
 
     ];
 
@@ -34,6 +35,7 @@ class LandType extends Model
         'size' => 'integer',
         'farms' => 'array',
         'image' => 'string',
+//        'grid' => 'array',
     ];
 
     public function setImageAttribute($value)

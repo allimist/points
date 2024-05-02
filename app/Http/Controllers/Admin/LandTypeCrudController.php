@@ -118,6 +118,7 @@ class LandTypeCrudController extends CrudController
 //            'disk' => 'public',
 //            'rules' => 'required|image|max:5000'
         ]);
+        CRUD::field('grid')->type('text')   ;
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

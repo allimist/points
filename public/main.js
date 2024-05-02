@@ -88,8 +88,8 @@ function select_service(farm_id) {
         // console.log("resourceArray[farmsArray[farm_id].resource_id]: ", resourceArray[farmsArray[farm_id].resource_id]);
         // console.log('serviceArray', resp.services);
 
-        let html = '<b>'+resourceArray[farmsArray[farm_id].resource_id].name+'</b>';
-        html += '(Skill Level '+resp.level+')<br>';
+        let html = '<b>'+resourceArray[farmsArray[farm_id].resource_id].name+'</b><br>';
+        // html += '(Skill Level '+resp.level+')<br>';
 
         if(!resourceArray[farmsArray[farm_id].resource_id].amountable){
             for (let i = 0; i < resp.services.length; i++) {
@@ -98,7 +98,9 @@ function select_service(farm_id) {
                 console.log('service level', resp.services[i].level);
                 console.log('resource skill id', resourceArray[farmsArray[farm_id].resource_id].skill_id);
 
-                if(resp.level >= resp.services[i].level){
+
+
+                if(resp.level[resp.services[i].skill_id] >= resp.services[i].level){
                     html += '<div class="service_item" ' +
                         // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
                         ' onclick = "start(' + farm_id + ',' + resp.services[i].id + ')"' +
@@ -111,14 +113,14 @@ function select_service(farm_id) {
                 // console.log('resource_id', farmsArray[farm_id].resource_id);
 
                 //level
-                html += 'Level: '+resp.services[i].level+'<br>';
                 html += 'x '+resp.services[i].revenue[0].value+'<br>'
                 html += currencyArray[resp.services[i].revenue[0].resource].name + ' ';
 
                 html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="70" height="70">';
                 html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="20" height="20"> ';
                 html += resp.services[i].cost[0].value+' '
-                html += currencyArray[resp.services[i].cost[0].resource].name + '</span><br>';
+                html += currencyArray[resp.services[i].cost[0].resource].name + '<br>';
+
                 if(resp.services[i].cost[1]){
                     html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
                     html += resp.services[i].cost[1].value+' '
@@ -130,7 +132,8 @@ function select_service(farm_id) {
                     html += currencyArray[resp.services[i].cost[2].resource].name + '</span><br>';
                 }
 
-
+                html += 'Skill id: '+resp.services[i].skill_id+ '<br>';
+                html += 'Level: '+resp.services[i].level+ '<br>';
                 // html += '- <span>' + resp.services[i].name + '</span>';
                 html +='</div>';
                 // html += '- <span onclick = "start(' + farm_id + ',' + resp.services[i].id + ')">' + resp.services[i].name + '</span><br>';
@@ -141,6 +144,11 @@ function select_service(farm_id) {
                 console.log('amountable', resp.services[i]);
                 // console.log('resource_id', farmsArray[farm_id].resource_id);
 
+                console.log('service skill_id', resp.services[i].skill_id);
+                console.log('service level', resp.level[resp.services[i].skill_id]);
+
+
+
                 if(farmsArray[farm_id].resource_id == 7){
                     html += '<div class="service_item" ' +
                         // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
@@ -148,10 +156,17 @@ function select_service(farm_id) {
                         '>';
 
                 } else {
-                    html += '<div class="service_item" ' +
-                        // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
-                        ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
-                        '>';
+
+                    if(resp.level[resp.services[i].skill_id] && resp.level[resp.services[i].skill_id] >= resp.services[i].level) {
+                        html += '<div class="service_item" ' +
+                            // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                            ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
+                            '>';
+                    } else {
+                        html += '<div class="service_item service_level_limit" ' +
+                            // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
+                            '>';
+                    }
                 }
 
                 html += 'x '+resp.services[i].revenue[0].value+'<br>'
@@ -160,7 +175,9 @@ function select_service(farm_id) {
                 html += '<img src="/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + '" width="70" height="70">';
                 html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[0].resource].img + '" width="20" height="20"> ';
                 html += resp.services[i].cost[0].value+' '
-                html += currencyArray[resp.services[i].cost[0].resource].name + '</span><br>';
+                html += currencyArray[resp.services[i].cost[0].resource].name + '<br>';
+
+
                 if(resp.services[i].cost[1]){
                     html += '<span><img src="/storage/' + currencyArray[resp.services[i].cost[1].resource].img + '" width="20" height="20"> ';
                     html += resp.services[i].cost[1].value+' '
@@ -171,6 +188,8 @@ function select_service(farm_id) {
                     html += resp.services[i].cost[2].value+' '
                     html += currencyArray[resp.services[i].cost[2].resource].name + '</span><br>';
                 }
+                html += 'Skill id: '+resp.services[i].skill_id+ '<br>';
+                html += 'Level: '+resp.services[i].level + '<br>';
                 // html += '- <span>' + resp.services[i].name + '</span>';
                 html +='</div>';
             }

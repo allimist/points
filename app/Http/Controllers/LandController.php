@@ -191,6 +191,7 @@ class LandController extends Controller
         $farm->posx = Auth::user()->posx;
         $farm->posy = Auth::user()->posy;
         $farm->health = $resource->health;
+//        $farm->user_id = $user_id;
         $farm->save();
 
         return Redirect::route('play');
@@ -238,6 +239,7 @@ class LandController extends Controller
         $farm = new \App\Models\Farm();
         $farm->resource_id = $currency->resource_id;
         $farm->land_id = Auth::user()->land_id;
+        $farm->user_id = $user_id;
         $farm->posx = \request('x');
         $farm->posy = \request('y');
         $farm->save();
@@ -276,6 +278,11 @@ class LandController extends Controller
         echo 'Currency: '.$currency->name;
 
         $farm->delete();
+
+
+        if(!empty($farm->user_id)){
+            $user_id = $farm->user_id;
+        }
 
         //add balance
         $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $currency->id)->first();

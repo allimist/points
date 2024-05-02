@@ -20,6 +20,7 @@ class Service extends Model
     protected $fillable = [
         'name',
         'resource_id',
+        'skill_id',
         'level',
         'cost',
         'revenue',
@@ -40,6 +41,7 @@ class Service extends Model
     protected $casts = [
         'id' => 'integer',
         'resource_id' => 'integer',
+        'skill_id' => 'integer',
         'level' => 'integer',
         'cost' => 'array',
         'revenue' => 'array',
@@ -55,6 +57,11 @@ class Service extends Model
     public function resource(): BelongsTo
     {
         return $this->belongsTo(Resource::class);
+    }
+
+    public function skill(): BelongsTo
+    {
+        return $this->belongsTo(Skill::class);
     }
 
 //    public function currency(): BelongsTo

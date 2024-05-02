@@ -57,212 +57,6 @@ class ServiceUseController extends Controller
 
     }
 
-    /*
-    public function claim()
-    {
-
-        $land_owner_percentage = 0.01;
-
-        $user_id = Auth::id();
-        if(empty($user_id)){
-            echo 'User not logged in';
-            die;
-        }
-
-        $farm_id = \request('farm_id');
-        $service_id = \request('service_id');
-
-        echo 'user id: '. $user_id.'<br>';
-        echo 'farm id: '.$farm_id.'<br>';
-        echo 'service id: '. $service_id.'<br>';
-
-        $currencies = \App\Models\Currency::all();
-        foreach ($currencies as $currency){
-            $currencyArray[$currency->id] = $currency->name;
-        }
-        $service = \App\Models\Service::find($service_id);
-
-
-        //VALIDATE IF USER can use service
-        $claim = false;
-        $service_use = \App\Models\ServiceUse::where('user_id', $user_id)->where('farm_id', $farm_id)->where('service_id', $service_id)
-            ->orderBy('id','desc')->first();
-        if(!empty($service_use)){
-
-            //check if not claimed
-            if($service_use->claimed_at == null){
-
-                //if time to claim is 0, claim it
-                if(strtotime($service_use->created_at->addSeconds($service->time)) -strtotime(now()) > 0 ){
-//                    $service_use->claimed_at = now();
-//                    $service_use->save();
-//                    echo 'Service claimed';
-//                    die;
-                    echo 'item not ready';
-                    die;
-                } else {
-                    $claim = true;
-                    echo 'item ready';
-                }
-
-//                $diff=strtotime($service_use->created_at->addSeconds($service->time))-strtotime(now());
-//                echo $diff;
-//                echo 'created time: '.$service_use->created_at.'<br>';
-//                echo 'work time: '.$service->time.'<br>';
-//                echo 'sum :'.$service_use->created_at->addSeconds($service->time).'<br>';
-//                echo 'now: '.now().'<br>';
-
-
-
-
-            }
-
-            //check if $service_use claimed_at + service reload < now tell not ready with time
-
-//            $date1=$service_use->claimed_at->addSeconds($service->reload)
-//            $date2=date_create("2013-12-12");
-//            dd($service->reload);
-//            if(empty($service->reload)){
-//                $service->reload = 0;
-//            }
-            if($service->reload == 0){
-                $claimed_at = $service_use->claimed_at;
-            } else {
-                $claimed_at = $service_use->claimed_at->addSeconds($service->reload);
-            }
-            $diff=strtotime($claimed_at)-strtotime(now());
-            echo $diff;
-            echo 'claim time: '.$service_use->claimed_at.'<br>';
-            echo 'reload time: '.$service->reload.'<br>';
-            echo 'sum :'.$claimed_at.'<br>';
-            echo 'now: '.now().'<br>';
-//            die;
-//            echo $diff->format("%R%a days");
-
-
-
-//            if($service_use->claimed_at->addSeconds($service->reload) < now()){
-
-            if(strtotime($claimed_at)-strtotime(now()) > 0){
-                echo 'claim time: '.$service_use->claimed_at.'<br>';
-                echo 'reload time: '.$service->reload.'<br>';
-                echo 'sum :'.$service_use->claimed_at->addSeconds($service->reload).'<br>';
-                echo 'now: '.now().'<br>';
-                echo 'Service not ready';
-                die;
-            }
-
-
-
-
-
-//            echo 'Service already used';
-//            die;
-        }
-
-        //VALIDATE IF USER HAS ENOUGH BALANCE
-        $validBalance = true;
-        $balance = \App\Models\Balance::where('user_id', $user_id)->get();
-        foreach ($balance as $b){
-            $balanceArray[$b->currency_id] = $b->value;
-        }
-        if(!$claim){
-            foreach ($service->cost as $cost){
-
-                if(empty($balanceArray[$cost['resource']])){
-                    $balanceArray[$cost['resource']] = 0;
-                }
-
-                echo $currencyArray[$cost['resource']].' Cost: '.$cost['value'].' have: '.$balanceArray[$cost['resource']].'<br>';
-                if($balanceArray[$cost['resource']] < $cost['value']){
-                    echo 'Not enough '.$currencyArray[$cost['resource']].' balance';
-                    $validBalance = false;
-                    die;
-                }
-            }
-            echo 'Enough balance<br>';
-
-            //subtract balance
-            foreach ($service->cost as $cost){
-                $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $cost['resource'])->first();
-                $balance->value = $balance->value - $cost['value'];
-                $balance->save();
-            }
-        }
-
-
-        //if time == 0 add balance or claim = true
-        if($service->time == 0 || $claim){
-
-            //land owner
-            $land_owner_id = 0;
-            $farm = \App\Models\Farm::find($farm_id);
-//            dd($farm->land_id);
-            $land = \App\Models\Land::find($farm->land_id);
-            if($land->owner_id){
-                $land_owner_id = $land->owner_id;
-            }
-
-            foreach ($service->revenue as $revenue){
-                $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $revenue['resource'])->first();
-                if(empty($balance)){
-                    $balance = new \App\Models\Balance();
-                    $balance->user_id = $user_id;
-                    $balance->currency_id = $revenue['resource'];
-                    $balance->value = $revenue['value'];
-                    $balance->save();
-                } else {
-                    $balance->value = $balance->value + $revenue['value'];
-                    $balance->save();
-                }
-
-                if($land_owner_id){
-                    $balance = \App\Models\Balance::where('user_id', $land_owner_id)->where('currency_id', $revenue['resource'])->first();
-                    if(empty($balance)){
-                        $balance = new \App\Models\Balance();
-                        $balance->user_id = $land_owner_id;
-                        $balance->currency_id = $revenue['resource'];
-                        $balance->value = ($revenue['value'] * $land_owner_percentage);
-                        $balance->save();
-                    } else {
-//                        dd($balance->value + ($revenue['value'] * $land_owner_percentage));
-                        $balance->value = $balance->value + ($revenue['value'] * $land_owner_percentage);
-//                        dd($balance->value);
-                        $balance->save();
-                    }
-                }
-
-
-            }
-        }
-
-        if(!$claim){
-            //add service use
-            $service_use = new \App\Models\ServiceUse();
-            $service_use->user_id = $user_id;
-            $service_use->farm_id = $farm_id;
-            $service_use->service_id = $service_id;
-            $service_use->amount = 1;
-            if($service->time == 0) {
-                $service_use->claimed_at = now();
-                echo 'Service claimed<br>';
-            } else {
-                echo 'Service started<br>';
-            }
-            $service_use->save();
-        } else {
-            $service_use->claimed_at = now();
-            $service_use->save();
-            echo 'Service claimed<br>';
-//            die;
-        }
-
-
-
-        return Redirect::route('dashboard')->with('status', 'balance-updated');
-    }
-    */
-
     public function ApiClaim()
     {
 
@@ -654,7 +448,7 @@ class ServiceUseController extends Controller
     }
 
 
-
+    /*
     public function select()
     {
 
@@ -732,30 +526,41 @@ class ServiceUseController extends Controller
         die;
 //        return view('service-use.select', ['services' => $services]);
     }
+    */
 
     public function ApiSelect()
     {
 
+        $user_id = Auth::id();
+        if (empty($user_id)) {
+            echo 'User not logged in';
+            die;
+        }
+
         $farm = \App\Models\Farm::find(\request('farm_id'));
         if($farm->resource_id == 5) {
             $open_tasks = 6;
-            $user_id = Auth::id();
-            if (empty($user_id)) {
-                echo 'User not logged in';
-                die;
-            }
+
             $task_ids = [];
             if (!empty(Auth::user()->task_ids)) {
                 $task_ids = json_decode(Auth::user()->task_ids);
             }
             if (sizeof($task_ids) < $open_tasks) {
 
-                $services = \App\Models\Service::where('resource_id', 5)->get();
+//                $services = \App\Models\Service::where('resource_id', 5)->get();
 
                 $tasks = [];
                 for ($i = sizeof($task_ids); $i < $open_tasks; $i++) {
-                    $random = rand(0, sizeof($services) - 1);
-                    $task_ids[] = $services[$random]->id;
+
+                    $userSkill = \App\Models\SkillUser::where('user_id', $user_id)->inRandomOrder()->first()->getAttributes();
+                    $service = \App\Models\Service::where('resource_id', 5)->where('skill_id', $userSkill['skill_id'])->where('level', '<=' ,$userSkill['level'])->inRandomOrder()->first();
+//                    dd($userSkills);
+//                    dd($service);
+
+
+//                    $random = rand(0, sizeof($services) - 1);
+//                    $task_ids[] = $services[$random]->id;
+                    $task_ids[] = $service->id;
 //                    break;
                 }
                 Auth::user()->task_ids = $task_ids;
@@ -779,12 +584,16 @@ class ServiceUseController extends Controller
             $services = \App\Models\Service::where('resource_id', $farm->resource_id)->get();
         }
 
-        $resource = \App\Models\Resource::find($farm->resource_id);
-        $level = \App\Models\SkillUser::where('user_id', Auth::id())->where('skill_id', $resource->skill_id)->first()?->level;
+//        $resource = \App\Models\Resource::find($farm->resource_id);
+
+        $level = \App\Models\SkillUser::select('skill_id','level')->where('user_id', Auth::id())->get();
+        foreach ($level as $l){
+            $levelArray[$l->skill_id] = $l->level;
+        }
 
         $data = [
             'services' => $services,
-            'level' => $level
+            'level' => $levelArray
         ];
 
         return response()->json($data);
@@ -793,6 +602,7 @@ class ServiceUseController extends Controller
 
 
     //sell
+    /*
     public function sell()
     {
 
@@ -850,6 +660,8 @@ class ServiceUseController extends Controller
 
 
     }
+    */
+
     public function ApiSell()
     {
 
@@ -927,6 +739,7 @@ class ServiceUseController extends Controller
 
     }
 
+    /*
     public function orders()
     {
 
@@ -980,6 +793,7 @@ class ServiceUseController extends Controller
         die;
 //        return view('service-use.select', ['services' => $services]);
     }
+    */
 
     public function apiOrders()
     {
@@ -995,6 +809,7 @@ class ServiceUseController extends Controller
         return response()->json($data);
     }
 
+    /*
     public function selectOrder()
     {
 
@@ -1022,6 +837,8 @@ class ServiceUseController extends Controller
         die;
 //        return view('service-use.select', ['services' => $services]);
     }
+    */
+
     public function ApiSelectOrder()
     {
 
@@ -1050,6 +867,7 @@ class ServiceUseController extends Controller
 //        return view('service-use.select', ['services' => $services]);
     }
 
+    /*
     public function buy()
     {
 
@@ -1146,6 +964,7 @@ class ServiceUseController extends Controller
 
 
     }
+    */
 
     public function apiBuy()
     {
