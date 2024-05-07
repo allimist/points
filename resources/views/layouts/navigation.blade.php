@@ -28,6 +28,11 @@
                         {{ __('Avatar') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('wallet')" :active="request()->routeIs('wallet')">
+                        {{ __('Wallet') }}
+                    </x-nav-link>
+                </div>
 
             </div>
 
@@ -106,6 +111,13 @@
                     {{ __('Play') }}
                 </x-responsive-nav-link>
 
+                <x-responsive-nav-link :href="route('avatar')">
+                    {{ __('Avatar') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('wallet')">
+                    {{ __('Wallet') }}
+                </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}

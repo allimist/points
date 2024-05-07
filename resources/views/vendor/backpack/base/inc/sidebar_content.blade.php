@@ -33,3 +33,7 @@
 
 
 
+
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('wallet') }}"><i class="nav-icon la la-question"></i> Wallets</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('withdraw') }}"><i class="nav-icon la la-question"></i> Withdraws</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('deposit') }}"><i class="nav-icon la la-question"></i> Deposits</a></li>

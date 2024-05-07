@@ -22,7 +22,6 @@ class LandType extends Model
         'farms',
         'image',
         'grid',
-
     ];
 
     /**

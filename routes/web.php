@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandController;
 //use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ServiceUseController;
+use App\Http\Controllers\WalletController;
 
 use App\Http\Controllers\SSEController;
 
@@ -40,6 +41,8 @@ Route::get('/dashboard', function () {
 Route::get('/avatar', function () {
     return view('avatar');
 })->middleware(['auth', 'verified'])->name('avatar');
+
+
 
 
 
@@ -89,6 +92,24 @@ Route::get('/farm/add',          [LandController::class,  'addFarm']);
 //for player decrease balance
 Route::get('/farm/set',          [LandController::class,  'setFarm']);
 Route::get('/farm/pick',         [LandController::class,  'pickFarm']);
+
+
+
+
+Route::get('/wallet', function () {
+    return view('wallet');
+})->middleware(['auth', 'verified'])->name('wallet');
+
+Route::post('/api/wallet/add', [WalletController::class,  'add']);
+Route::post('/wallet/withdraw', [WalletController::class,  'withdraw']);
+Route::post('/wallet/deposit', [WalletController::class,  'deposit']);
+
+//Route::get('/transactions', function () {
+//    return view('transactions');
+//})->middleware(['auth', 'verified'])->name('transactions');
+
+
+
 
 Route::crud('admin/setting', 'App\Http\Controllers\Admin\SettingCrudController');
 

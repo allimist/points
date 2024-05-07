@@ -14,5 +14,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         //
         '/api/land/grid/save',
+        '/api/wallet/add',
     ];
 }
