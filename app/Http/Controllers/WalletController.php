@@ -15,16 +15,28 @@ class WalletController extends Controller
 
     public function add()
     {
+
         $user_id = Auth::id();
         if(empty($user_id)){
-            echo 'User not logged in';
-            die;
+            return json_encode(['error' => 'User not logged in']);
         }
+
+        $address = \request()->address;
+        if(empty($address)){
+            return json_encode(['error' => 'Address is required']);
+        }
+
+        $wallet = \App\Models\Wallet::where('address', $address)->first();
+        if(!empty($wallet)){
+            return json_encode(['error' => 'Address already in use if another account']);
+        }
+
+
         $wallet = new \App\Models\Wallet();
         $wallet->user_id = $user_id;
         $wallet->address = \request()->address;
         $wallet->save();
-        die;
+        return json_encode(['success' => 'Wallet added successfully']);
     }
 
     public function withdraw()

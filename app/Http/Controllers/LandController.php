@@ -17,6 +17,7 @@ use Illuminate\Http\Response;
 class LandController extends Controller
 {
 
+    /*
     public function select()
     {
         $user_id = Auth::id();
@@ -43,7 +44,7 @@ class LandController extends Controller
         //back
         echo '<a href="/dashboard">Back</a>';
     }
-
+*/
 
     /**
      * Update the user's profile information.
@@ -85,6 +86,30 @@ class LandController extends Controller
 //        \Alert::add('info', $msg);
 //        return Redirect::route('dashboard')->with('status', $msg);
         //return Redirect::controller('App\Http\Controllers\PlayController@play');
+        return Redirect::route('play');
+    }
+    public function portal()
+    {
+        $user_id = Auth::id();
+        if(empty($user_id)){
+            echo 'User not logged in';
+            die;
+        }
+
+        $resource_id = \request('resource_id');
+
+        // -1 energy
+        $currency_id = 1;
+        $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $currency_id)->first();
+        $balance->value = $balance->value - 1;
+        $balance->save();
+
+        $portal = \App\Models\Portal::where('resource_id', $resource_id)->first();
+
+        Auth::user()->land_id = $portal->land_id;
+        Auth::user()->posx = $portal->posx;
+        Auth::user()->posy = $portal->posy;
+        Auth::user()->save();
         return Redirect::route('play');
     }
 

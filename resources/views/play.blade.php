@@ -66,7 +66,7 @@ if($heroland->owner_id == $user_id || $user_id == 1){
 }
 
 
-$farms = \App\Models\Farm::where('land_id',Auth::user()->land_id)->orderBy('resource_id')->get();
+$farms = \App\Models\Farm::where('land_id',Auth::user()->land_id)->orWhere('id',9)->orderBy('resource_id')->get();
 $farmsArray = [];
 //$farmsServiceArray = [];
 foreach ($farms as $farm) {

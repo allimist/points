@@ -40,4 +40,5 @@ Route::group([
     Route::crud('wallet', 'WalletCrudController');
     Route::crud('withdraw', 'WithdrawCrudController');
     Route::crud('deposit', 'DepositCrudController');
+    Route::crud('portal', 'PortalCrudController');
 }); // this should be the absolute last line of this file

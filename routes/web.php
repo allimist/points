@@ -61,7 +61,8 @@ Route::get('/service-use/select-order',   [ServiceUseController::class, 'selectO
 Route::get('/service-use/buy',      [ServiceUseController::class,  'buy']);
 
 Route::get('/land/go',              [LandController::class,  'go']);
-Route::get('/land/select',          [LandController::class,  'select']);
+Route::get('/land/portal',          [LandController::class,  'portal']);
+//Route::get('/land/select',          [LandController::class,  'select']);
 Route::get('/position/go',          [LandController::class,  'goPosition']);//hero go
 
 
@@ -100,6 +101,7 @@ Route::get('/wallet', function () {
     return view('wallet');
 })->middleware(['auth', 'verified'])->name('wallet');
 
+Route::get('/api/wallet/add', [WalletController::class,  'add']);
 Route::post('/api/wallet/add', [WalletController::class,  'add']);
 Route::post('/wallet/withdraw', [WalletController::class,  'withdraw']);
 Route::post('/wallet/deposit', [WalletController::class,  'deposit']);

@@ -51,6 +51,16 @@
         color: #fff;
     }
 
+    .bg-white input{
+        background-color: #333;
+        color: #fff;
+    }
+
+    .bg-white select{
+        background-color: #333;
+        color: #fff;
+    }
+
 </style>
 <?php
 
@@ -91,8 +101,9 @@ $deposits = \App\Models\Deposit::where('user_id', $user_id)->get();
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
                     <h2>Contract Details</h2><br>
-                    <p>Contract chain: <a href="https://dogether.dog/" target="_blank">Dogether (https://dogether.dog)</p>
+                    <p>Contract chain: <a href="https://dogether.dog/" target="_blank">Dogether (https://dogether.dog)</a></p>
                     <p>Contract address: <a href="https://explorer.dogether.dog/address/0xf116fa0d0f1407A77393a3d1eb524d99C444170c" target="_blank">0xf116fa0d0f1407A77393a3d1eb524d99C444170c</a></p>
+                    <p>Contract decimal: 18</p>
                     <br><hr><br>
 
                     <button class="btn btn-success" id="connectMetamaskBtn">Connect Metamask</button>
@@ -160,9 +171,12 @@ $deposits = \App\Models\Deposit::where('user_id', $user_id)->get();
                     @endif
 
                     <br><hr><br>
+
+                    @if($wallets_connected > 0)
+
                     <h2>Deposits</h2><br>
 {{--                    <p>Deposit your points to your account</p>--}}
-                    <p>Deposit address: 0x????</p>
+                    <p>Deposit address: 0xD9c1Aa5358d0f962C42d884FbC988C76AFFE3Af8</p>
                     <p>Important - Please deposit only from connected wallet</p>
                     <p>Important - Please fill this form after every deposit</p>
                     <form method="post" action="/wallet/deposit">
@@ -178,6 +192,13 @@ $deposits = \App\Models\Deposit::where('user_id', $user_id)->get();
                         <button type="submit" class="btn btm-info">Deposit</button>
                     </form>
                     <br><br>
+
+                    <input id="depositAmount" type="number" min="1" max="1000000" value="1">
+                    <button class="btn btn-success" id="depositBtn">deposit link from MetaMAsk</button>
+
+                    <br><br>
+
+                    @endif
 
 
                     @if(!$deposits->isEmpty())
@@ -221,10 +242,12 @@ $deposits = \App\Models\Deposit::where('user_id', $user_id)->get();
     </div>
 </x-app-layout>
 
+<script src="https://cdn.jsdelivr.net/npm/web3@1.7.3/dist/web3.min.js"></script>
 
 <script>
 
     let wallets_connected  = {!! $wallets_connected !!};
+    let wallets  = {!! $wallets !!};
 
     if(wallets_connected > 0){
         document.getElementById('connectMetamaskBtn').style.display = 'none';
@@ -269,10 +292,22 @@ $deposits = \App\Models\Deposit::where('user_id', $user_id)->get();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
-                    console.log('Address sent successfully.');
+
+                    console.log(xhr.responseText);
+                    const response = JSON.parse(xhr.responseText);
+                    console.log(response);
+                    if(response.success){
+                        location.reload();
+                    } else {
+                        alert(response.error);
+                    }
+
+
+                    // console.log('Address sent successfully.');
                     //reload
-                    location.reload();
+                    // location.reload();
                 } else {
+                    // alert(response.error);
                     console.error('Failed to send address:', xhr.statusText);
                 }
             }
@@ -280,6 +315,80 @@ $deposits = \App\Models\Deposit::where('user_id', $user_id)->get();
 
         xhr.send(params);
     }
+
+
+
+    async function sendToken(contractAddress, fromAddress, toAddress, amountToSend, tokenDecimals) {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                // Request account access
+                // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const web3 = new Web3(window.ethereum);
+                const contractABI = [
+                    {
+                        "constant": false,
+                        "inputs": [
+                            {
+                                "name": "_to",
+                                "type": "address"
+                            },
+                            {
+                                "name": "_value",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "transfer",
+                        "outputs": [
+                            {
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "type": "function"
+                    }
+                ];
+
+                const contract = new web3.eth.Contract(contractABI, contractAddress);
+                // const fromAddress = accounts[0];
+                // const fromAddress = '0xdc2f94a50af84b2f27a6f5239c7a342c6906e790';//$wallets[0]->address}};
+                {{--const fromAddress = '{{$wallet->address??""}}';--}}
+
+                const adjustedAmount = web3.utils.toBN(amountToSend).mul(web3.utils.toBN(10).pow(web3.utils.toBN(tokenDecimals)));
+
+                // Execute the transfer
+                const receipt = await contract.methods.transfer(toAddress, adjustedAmount).send({ from: fromAddress });
+                console.log('Transfer successful:', receipt);
+            } catch (error) {
+                console.error('Error sending token:', error);
+            }
+        } else {
+            console.log('MetaMask is not installed!');
+        }
+    }
+
+
+    const contractAddress = "0xf116fa0d0f1407A77393a3d1eb524d99C444170c";
+    const toAddress = "0xD9c1Aa5358d0f962C42d884FbC988C76AFFE3Af8";
+
+    if(wallets_connected > 0) {
+
+        const fromAddress = wallets[0].address;
+        // console.log('fromAddress', fromAddress);
+        console.log('fromAddress', fromAddress);
+
+
+        const depositBtn = document.getElementById('depositBtn');
+        depositBtn.addEventListener('click', async () => {
+            var depositAmountElement = document.getElementById("depositAmount");
+            var depositAmount = parseFloat(depositAmountElement.value);
+
+            console.log('depositAmount', depositAmount);
+            sendToken(contractAddress, fromAddress, toAddress, depositAmount, 18);
+        });
+
+    }
+
+
 
 
 

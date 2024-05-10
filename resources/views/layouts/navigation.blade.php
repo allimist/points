@@ -34,6 +34,15 @@
                     </x-nav-link>
                 </div>
 
+                <!-- Admin -->
+                @if(Auth::user()->id == 1)
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="'/admin/dashboard'">
+                            {{ __('Admin') }}
+                        </x-nav-link>
+                    </div>
+                @endif
+
             </div>
 
             <!-- Settings Dropdown -->
@@ -103,9 +112,6 @@
             </div>
 
             <div class="mt-3 space-y-1">
-
-
-
 
                 <x-responsive-nav-link :href="route('play')">
                     {{ __('Play') }}

@@ -85,9 +85,9 @@ class ServiceUseController extends Controller
         $resource = Resource::where('id',$service->resource_id)->first();
 
         //check service level
-        if(!empty($service->level)){
-            if(!empty($resource->skill_id)){
-                $skillUser = \App\Models\SkillUser::where('skill_id',$resource->skill_id)->where('user_id', $user_id)->first();
+        if(!empty($service->skill_id)){
+//            if(!empty($resource->skill_id)){
+                $skillUser = \App\Models\SkillUser::where('skill_id',$service->skill_id)->where('user_id', $user_id)->first();
                 if(empty($skillUser)){
                     $data = [
                         'status' => 'error',
@@ -104,7 +104,7 @@ class ServiceUseController extends Controller
                     ];
                     return response()->json($data);
                 }
-            }
+//            }
         }
 
         //amount allow on market only

@@ -687,6 +687,17 @@ function isCollidingWithObjects(proposedPosition) {
 
         ){
             collision = true;
+
+            // console.log('resource_id and type', farmsArray[i].resource_id, resourceArray[resourceId].type);
+            if(resourceArray[resourceId].type == 'portal'){
+                console.log('portal');
+                isPopupVisible = true;
+                window.location.href = '/land/portal?resource_id=' + resourceId;
+                return;
+            }
+
+
+
             //return;
         }
         if(collision){
@@ -780,6 +791,28 @@ function mousePressed() {
                 else {
                     console.log('set_farm - no resource id');
                 }
+
+                //if click on hero posision
+                // console.log(currencyArray[currentlyDraggingResource].service_id);
+                // console.log('clickPosX', heroPos.x - heroSize / 2 , clickPos.x, heroPos.x + heroSize / 2);
+                // console.log('clickPosX', heroPos.x , clickPos.x, heroPos.x + heroSize);
+                // console.log('clickPosY', heroPos.y - heroSize / 2 , clickPos.y, heroPos.y + heroSize / 2);
+                console.log('clickPosY', heroPos.y, clickPos.y, heroPos.y + heroSize);
+
+                if(currencyArray[currentlyDraggingResource].service_id &&
+                    // clickPos.x >= heroPos.x - heroSize / 2 &&
+                    // clickPos.x <= heroPos.x + heroSize / 2 &&
+                    clickPos.x >= heroPos.x &&
+                    clickPos.x <= heroPos.x + heroSize &&
+                    clickPos.y >= heroPos.y &&
+                    clickPos.y <= heroPos.y + heroSize) {
+
+                    console.log('click on hero(9) with service id', currencyArray[currentlyDraggingResource].service_id);
+                    //if dragging resource and the resource has service id
+                    // console.log('claim', currencyArray[currentlyDraggingResource].service_id);
+                    start(9, currencyArray[currentlyDraggingResource].service_id);
+                }
+
             }
 
 
@@ -983,20 +1016,6 @@ function drawJoystick() {
     circle(joystick.stickX, joystick.stickY, joystick.stickSize);
 }
 
-function drawGrid(camX, camY) {
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-            if (grid[i][j] == 1) {
-                fill(255, 0, 0);
-            } else {
-                // fill(0,255,0,0.6);
-                noFill();
-            }
-            stroke(0);
-            rect(j * cellSize - camX , i * cellSize - camY, cellSize, cellSize);
-        }
-    }
-}
 
 function drawHealthBar(x, y, health, maxHealth) {
     let barWidth = 50;
@@ -1010,4 +1029,20 @@ function drawHealthBar(x, y, health, maxHealth) {
     // Draw health bar foreground
     fill(255, 0, 0);
     rect(x - 25, y, barWidth * healthRatio, barHeight);
+}
+
+
+function drawGrid(camX, camY) {
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (grid[i][j] == 1) {
+                fill(255, 0, 0);
+            } else {
+                // fill(0,255,0,0.6);
+                noFill();
+            }
+            stroke(0);
+            rect(j * cellSize - camX , i * cellSize - camY, cellSize, cellSize);
+        }
+    }
 }
