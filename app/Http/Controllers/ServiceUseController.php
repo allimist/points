@@ -89,12 +89,18 @@ class ServiceUseController extends Controller
 //            if(!empty($resource->skill_id)){
                 $skillUser = \App\Models\SkillUser::where('skill_id',$service->skill_id)->where('user_id', $user_id)->first();
                 if(empty($skillUser)){
-                    $data = [
-                        'status' => 'error',
-                        'message' => 'No skill user',
-                        'extra' => 'No skill user',
-                    ];
-                    return response()->json($data);
+//                    $data = [
+//                        'status' => 'error',
+//                        'message' => 'No skill user',
+//                        'extra' => 'No skill user',
+//                    ];
+//                    return response()->json($data);
+                    $skillUser = new \App\Models\SkillUser();
+                    $skillUser->skill_id = $service->skill_id;
+                    $skillUser->user_id = $user_id;
+                    $skillUser->level = 0;
+                    $skillUser->xp = 0;
+                    $skillUser->save();
                 }
                 if($skillUser->level < $service->level){
                     $data = [
@@ -222,6 +228,9 @@ class ServiceUseController extends Controller
 //            die;
         }
 
+
+
+
         //VALIDATE IF USER HAS ENOUGH BALANCE
         $validBalance = true;
         $balance = \App\Models\Balance::where('user_id', $user_id)->get();
@@ -229,6 +238,57 @@ class ServiceUseController extends Controller
             $balanceArray[$b->currency_id] = $b->value;
         }
         if(!$claim){
+
+
+            //if farm is_public = false, check if another user use or reload it
+            $farm = \App\Models\Farm::find($farm_id);
+            if(!$farm->is_public) {
+                $service_use_farm = \App\Models\ServiceUse::where('farm_id', $farm_id)//->where('claimed_at', null)
+                ->orderBy('id', 'desc')->first();
+                if($service_use_farm){
+                    $service = \App\Models\Service::find($service_use_farm->service_id);
+
+                    if($service_use_farm->claimed_at == null) {
+                        $diff = strtotime($service_use_farm->created_at->addSeconds($service->time)) - strtotime(now());
+                        if ($diff > 0) {
+                            $data = [
+                                'status' => 'error',
+                                'message' => 'Farm is busy',
+                                'extra' => 'Farm is busy by user (in use)' . $service_use_farm->user_id,
+                                'farm_service_id'=> $service_use_farm->service_id,
+                                'farm_status' => 'in_use',
+                                'farm_text' => $diff,
+                                'farm_ready' => strtotime(now())+$diff,
+                                'farm_use_by'=> $service_use_farm->user_id,
+                            ];
+                            return response()->json($data);
+                        }
+                    } else {
+                        $diff = strtotime($service_use_farm->claimed_at->addSeconds($service->reload)) -strtotime(now());
+//                        if($service->reload > 0 && $service_use_farm->created_at->addSeconds($service->reload) > now()){
+                        if($diff > 0){
+                            $data = [
+                                'status' => 'error',
+                                'message' => 'Farm is busy',
+                                'extra' => 'Farm is busy by user (reload)' . $service_use_farm->user_id,
+                                'farm_service_id'=> $service_use_farm->service_id,
+                                'farm_status' => 'reload',
+                                'farm_text' => $diff,
+                                'farm_ready' => strtotime(now())+$diff,
+                                'farm_use_by'=> $service_use_farm->user_id,
+                            ];
+                            return response()->json($data);
+                        }
+                    }
+                }
+
+//                if(!empty($service_use)){
+//                    $data = [
+//                        'status' => 'error',
+//                        'message' => 'Farm is busy',
+//                        'extra' => 'Farm is busy',
+
+            }
             foreach ($service->cost as $cost){
 
                 if(empty($balanceArray[$cost['resource']])){

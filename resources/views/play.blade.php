@@ -66,7 +66,7 @@ if($heroland->owner_id == $user_id || $user_id == 1){
 }
 
 
-$farms = \App\Models\Farm::where('land_id',Auth::user()->land_id)->orWhere('id',9)->orderBy('resource_id')->get();
+$farms = \App\Models\Farm::where('land_id',Auth::user()->land_id)->orderBy('resource_id')->get();
 $farmsArray = [];
 //$farmsServiceArray = [];
 foreach ($farms as $farm) {
@@ -79,14 +79,13 @@ foreach ($farms as $farm) {
         $farmsArray[$farm->id]['single_service'] = false;
     }
 
+
     $service_use = \App\Models\ServiceUse::where('user_id', $user_id)
         ->where('farm_id', $farm->id)
         ->orderBy('id', 'desc')
         ->first();
 
     $service_free = true;
-
-
     if(!empty($service_use)) {
         $service = \App\Models\Service::where('id', $service_use->service_id)->first();
         if($service_use->claimed_at == null) {
@@ -101,6 +100,8 @@ foreach ($farms as $farm) {
                 $farmsArray[$farm->id]['service_id'] = $service->id;
                 $farmsArray[$farm->id]['status'] = 'claim';
                 $farmsArray[$farm->id]['text'] = 'Claim';
+//                $farmsArray[$farm->id]['status'] = 'ready';
+//                $farmsArray[$farm->id]['text'] = 'Ready';
             }
         } else {
             $diff = strtotime($service_use->claimed_at->addSeconds($service->reload)) -strtotime(now());
@@ -110,11 +111,43 @@ foreach ($farms as $farm) {
                 $farmsArray[$farm->id]['status'] = 'reload';
                 $farmsArray[$farm->id]['text'] = $diff;
                 $farmsArray[$farm->id]['ready'] = strtotime(now())+$diff;
-
             } else {
 
             }
             //echo '<br>';
+        }
+    }
+
+
+    if(!$farm->is_public){
+        $service_use = \App\Models\ServiceUse::where('farm_id', $farm->id)
+            ->orderBy('id', 'desc')
+            ->first();
+        if(!empty($service_use)) {
+            $service = \App\Models\Service::where('id', $service_use->service_id)->first();
+            if($service_use->claimed_at == null) {
+                $diff = strtotime($service_use->created_at->addSeconds($service->time)) - strtotime(now());
+                if ($diff > 0) {
+                    $service_free = false;
+                    $farmsArray[$farm->id]['service_id'] = $service->id;
+                    $farmsArray[$farm->id]['status'] = 'in_use';
+                    $farmsArray[$farm->id]['text'] = $diff;
+                    $farmsArray[$farm->id]['ready'] = strtotime(now())+$diff;
+                    $farmsArray[$farm->id]['use_by'] = $service_use->user_id;
+                }
+            } else {
+                $diff = strtotime($service_use->claimed_at->addSeconds($service->reload)) -strtotime(now());
+                if($diff > 0 ){
+                    $service_free = false;
+                    $farmsArray[$farm->id]['service_id'] = $service->id;
+                    $farmsArray[$farm->id]['status'] = 'reload';
+                    $farmsArray[$farm->id]['text'] = $diff;
+                    $farmsArray[$farm->id]['ready'] = strtotime(now())+$diff;
+                    $farmsArray[$farm->id]['use_by'] = $service_use->user_id;
+                }
+                //echo '<br>';
+            }
+
         }
     }
 

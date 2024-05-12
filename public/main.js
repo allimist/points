@@ -100,7 +100,7 @@ function select_service(farm_id) {
 
 
 
-                if(resp.level[resp.services[i].skill_id] >= resp.services[i].level){
+                if(resp.services[i].level == 0 ||(resp.level[resp.services[i].skill_id] >= resp.services[i].level)){
                     html += '<div class="service_item" ' +
                         // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
                         ' onclick = "start(' + farm_id + ',' + resp.services[i].id + ')"' +
@@ -157,7 +157,7 @@ function select_service(farm_id) {
 
                 } else {
 
-                    if(resp.level[resp.services[i].skill_id] && resp.level[resp.services[i].skill_id] >= resp.services[i].level) {
+                    if(resp.services[i].level == 0 ||(resp.level[resp.services[i].skill_id] && resp.level[resp.services[i].skill_id] >= resp.services[i].level)) {
                         html += '<div class="service_item" ' +
                             // 'style="background-image: url(/storage/' + currencyArray[resp.services[i].revenue[0].resource].img + ');" ' +
                             ' onclick = "select_amount(' + farm_id + ',' + resp.services[i].id + ')"' +
@@ -395,6 +395,30 @@ function start(farm_id,service_id) {
                 }
             } else {
                 html += 'Error';
+                if(resp.farm_service_id){
+                    // $farmsArray[$farm->id]['service_id'] = $service->id;
+                    // $farmsArray[$farm->id]['status'] = 'in_use';
+                    // $farmsArray[$farm->id]['text'] = $diff;
+                    // $farmsArray[$farm->id]['ready'] = strtotime(now())+$diff;
+                    // $farmsArray[$farm->id]['use_by'] = $service_use->user_id;
+                    farmsArray[farm_id].service_id = resp.farm_service_id;
+                    farmsArray[farm_id].status = resp.farm_status;
+                    farmsArray[farm_id].text = resp.farm_text;
+                    farmsArray[farm_id].ready = resp.farm_ready;
+                    farmsArray[farm_id].use_by = resp.farm_use_by;
+                    isCooldownActive[farm_id] = true;
+                    cooldownDuration[farm_id] = resp.farm_status;
+                    cooldownReady[farm_id] = resp.farm_ready;
+                }
+
+                // farmsArray[i].use_by
+                // if(farmsArray[i].status == 'in_use' || farmsArray[i].status == 'reload'){
+                //     isCooldownActive[i] = true;
+                //     cooldownDuration[i] = farmsArray[i].text;
+                //     cooldownReady[i] = farmsArray[i].ready;
+                // }
+
+
             }
 
             //not enoth balance not return balance
@@ -834,7 +858,9 @@ if (!!window.EventSource) {
         serverTime = data.serverTime;
         usersArray = data.usersArray;
         for (let i = 0; i < data.farms.length; i++) {
-            farmsArray[data.farms[i].id].health = data.farms[i].health;
+            if(data.farms[i].health){
+                farmsArray[data.farms[i].id].health = data.farms[i].health;
+            }
         }
 
     };

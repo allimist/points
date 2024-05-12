@@ -69,34 +69,14 @@ let joystick = {
 };
 
 let grid_mode = false;
-
-// if(!grid){
-//     grid = [
-//         [0, 1, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 1, 0, 1, 0 ,0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 1, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 1, 1, 1, 0, 0, 0, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 1, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 1, 0, 1, 0 ,0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 1, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 1, 1, 1, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-//         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ,0, 1, 0, 0, 0, 0, 1, 0, 0, 0]
-//     ];
-// }
 let cols = grid[0].length;
 let rows = grid.length;
 let cellSize = mapWidth / cols;
 
-function preload() {
+function preload()
+
+
+{
     // console.log('preload');
 
     mapBackground = loadImage('storage/'+map);
@@ -390,16 +370,7 @@ function draw() {
                     mouseX < farmsObjectPos[i].x - camX + resourceObjectSize[resourceId] / 2 &&
                     mouseY > farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2 &&
                     mouseY < farmsObjectPos[i].y - camY + resourceObjectSize[resourceId] / 2) {
-                    // fill('red');
 
-                    // farmsObjectHover
-                    // if(farmsObjectHover[i]) {
-                    //     image(farmsObjectHover[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
-                    // } else {
-                    //     image(farmsObject[i], farmsObjectPos[i].x - camX - farmsObjectSize[i] / 2, farmsObjectPos[i].y - camY - farmsObjectSize[i] / 2, farmsObjectSize[i], farmsObjectSize[i]);
-                    // }
-
-                    //
                     if(farmsArray[i].status == 'start' && servicesObjectCraft[farmsArray[i].service_id]){
                         image(resourceObject[resourceId], farmsObjectPos[i].x - camX - resourceObjectSize[resourceId] / 2, farmsObjectPos[i].y - camY - resourceObjectSize[resourceId] / 2, resourceObjectSize[resourceId], resourceObjectSize[resourceId]);
                     } else
@@ -481,12 +452,21 @@ function draw() {
                         // timeString = `Reload ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                         timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
                     }
+                    if(farmsArray[i].use_by){
+                        timeString = timeString + ' by ' + farmsArray[i].use_by;
+                    }
                     fill(255);
                     text(timeString, farmsObjectPos[i].x - camX - resourceObjectSize[resourceId]/2 + 10, farmsObjectPos[i].y - camY + resourceObjectSize[resourceId]/2 -10);
                 } else {
                     if(farmsArray[i].status == 'in_use') {
-                        farmsArray[i].status = 'claim';
-                        farmsArray[i].text = 'Claim';
+                        if(farmsArray[i].use_by){
+                            farmsArray[i].use_by = null;
+                            farmsArray[i].status = 'start';
+                            farmsArray[i].text = 'Start';
+                        } else {
+                            farmsArray[i].status = 'claim';
+                            farmsArray[i].text = 'Claim';
+                        }
                     } else {//reload
                         if(serviceArray[farmsArray[i].service_id].time  > 0){
                             farmsArray[i].status = 'start';
@@ -494,6 +474,9 @@ function draw() {
                         } else {
                             farmsArray[i].status = 'take';
                             farmsArray[i].text = 'Take';
+                        }
+                        if(farmsArray[i].use_by){
+                            farmsArray[i].use_by = null;
                         }
                     }
                     // Cooldown complete
@@ -692,6 +675,8 @@ function isCollidingWithObjects(proposedPosition) {
             if(resourceArray[resourceId].type == 'portal'){
                 console.log('portal');
                 isPopupVisible = true;
+                document.getElementById('popup-text').innerHTML = 'Loading ...';
+                document.getElementById('popup').style.display = 'block';
                 window.location.href = '/land/portal?resource_id=' + resourceId;
                 return;
             }
@@ -759,7 +744,7 @@ function mousePressed() {
                     //     // return;
                     // }
 
-                    //if resource have service id claim
+                    //if resource have service id start service
                     if(currentlyDraggingResource && currencyArray[currentlyDraggingResource].service_id){
                         console.log('claim',currencyArray[currentlyDraggingResource].service_id);
                         start(i, currencyArray[currentlyDraggingResource].service_id);

@@ -42,7 +42,7 @@ class ServiceUseCrudController extends CrudController
         CRUD::column('id');
         CRUD::column('created_at');
         CRUD::column('user_id');
-        CRUD::column('farm');
+        CRUD::column('farm_id');
         CRUD::column('service');
         CRUD::column('amount');
         CRUD::column('claimed_at');

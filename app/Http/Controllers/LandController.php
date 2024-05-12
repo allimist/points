@@ -236,6 +236,7 @@ class LandController extends Controller
             echo 'You are not the owner of this land';
             die;
         }
+
         //if currency is buildable
         $currency_id = \request('currency_id');
         $currency = Currency::where('id', $currency_id)->first();
@@ -243,6 +244,31 @@ class LandController extends Controller
             echo 'Currency not buildable';
             die;
         }
+
+        //check if not reach the limit
+        $landType = \App\Models\LandType::where('id', $land->type_id)->first();
+        $limit = 0;
+        foreach ($landType->farms as $farm) {
+            if($farm['resource'] == $currency->resource_id){
+                $limit = $farm['value'];
+                break;
+            }
+        }
+
+        if($limit == 0){
+            echo 'You cant build this resource on this land';
+            die;
+        }
+        //check how much exist on this land
+        $farms_amount = \App\Models\Farm::where('land_id', Auth::user()->land_id)->where('resource_id', $currency->resource_id)->count();
+
+        echo 'Limit: '.$farms_amount.'/'.$limit.'<br>';
+
+        if($farms_amount >= $limit){
+            echo 'You reach the limit of this resource on this land';
+            die;
+        }
+//        die;
 
         //if has this currency in balance decrease balance
         $balance = \App\Models\Balance::where('user_id', $user_id)->where('currency_id', $currency_id)->first();
@@ -257,9 +283,7 @@ class LandController extends Controller
         $balance->value = $balance->value - 1;
         $balance->save();
 
-
 //        dd($currency->getAttributes());
-
 
         $farm = new \App\Models\Farm();
         $farm->resource_id = $currency->resource_id;
@@ -267,6 +291,8 @@ class LandController extends Controller
         $farm->user_id = $user_id;
         $farm->posx = \request('x');
         $farm->posy = \request('y');
+        $farm->is_public = false;
+        $farm->health = ($currency->health)??0;
         $farm->save();
 
         return Redirect::route('play');
