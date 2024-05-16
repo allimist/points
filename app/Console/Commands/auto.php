@@ -27,7 +27,7 @@ class auto extends Command
     public function handle()
     {
 
-        for($i = 0; $i < 10; $i++) {
+        for($i = 0; $i < 25; $i++) {
             echo 'loop i: ' . $i . "\n";
 
 
@@ -51,7 +51,7 @@ class auto extends Command
                     echo '+next_state_on: ' . $autoplayer->next_state_on . ' now: ' . \Carbon\Carbon::now() . "\n";
                     continue;
                 }
-                echo '-next_state_on: ' . $autoplayer->next_state_on . ' now: ' . \Carbon\Carbon::now() . "\n";
+//                echo '-next_state_on: ' . $autoplayer->next_state_on . ' now: ' . \Carbon\Carbon::now() . "\n";
 
 
                 switch ($tasks[$step]->type) {
@@ -90,7 +90,7 @@ class auto extends Command
 
             }
 
-            sleep(3);
+            sleep(2);
         }
 
 
