@@ -41,3 +41,4 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('deposit') }}"><i class="nav-icon la la-question"></i> Deposits</a></li>
 
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('portal') }}"><i class="nav-icon la la-question"></i> Portals</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('auto-player') }}"><i class="nav-icon la la-question"></i> Auto players</a></li>

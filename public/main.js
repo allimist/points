@@ -75,6 +75,31 @@ function land_go_select() {
     });
 }
 
+function select_land() {
+    //ajax call to /api/land/list
+    $.ajax({
+        url: "/api/land/select",
+    }).done(function(resp) {
+        // console.log("resp: ", resp);
+        isPopupVisible = true;
+        let html_form = '<b>Teleport, Select land</b><br>';
+        for (let i = 0; i < resp.length; i++) {
+
+            // if(resp[i].owner_id) {
+            //
+            // }
+
+            if(resp[i].id == land_id) {
+                html_form += '#' + resp[i].id + '- <a href="/land/go?id=' + resp[i].id + '"><b>' + resp[i].name + '('+resp[i].owner_id+')</b></a><br>';
+            } else {
+                html_form += '#' + resp[i].id + '- <a href="/land/go?id=' + resp[i].id + '">' + resp[i].name + '('+resp[i].owner_id+')</a><br>';
+            }
+        }
+        document.getElementById('popup-text').innerHTML = html_form;
+        document.getElementById('popup').style.display = 'block';
+    });
+}
+
 function select_service(farm_id) {
 
     // console.log('services len', Object.values(farmsServiceArray[farm_id]).length);
@@ -869,21 +894,17 @@ if (!!window.EventSource) {
 }
 
 
-
+function sendHeroPos() {
+    $.ajax({
+        url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
+        // context: document.body
+    });
+}
 
 setInterval(function() {
+//     if(!isPopupVisible){
 
-
-    if(!isPopupVisible){
-        $.ajax({
-            url: "/position/go?x=" + heroPos.x + "&y=" + heroPos.y,
-            // context: document.body
-        });
-    }
-
-
-        // .done(function(resp) {
-        //     // $( this ).addClass( "done" );
-        //     console.log("resp: ", resp);
-        // });
+        // sendHeroPos();
+    // }
+    sendHeroPosNow = true;
 }, 5000);

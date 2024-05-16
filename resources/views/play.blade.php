@@ -215,8 +215,7 @@ foreach ($users as $u) {
         }
         ?>
         <a class="btn" href="/dashboard">Q</a> |
-        <a class="btn" href="/play">R</a> |
-        <button class="btn" onclick="land_go_select()">T</button><br>
+        <button class="btn" onclick="select_land()">T</button><br>
 
         <button id="editor_mode_on" class="btn" onclick="editor_mode(true)">Edit on</button>
         <button id="editor_mode_off" class="btn" onclick="editor_mode(false)">Edit off</button><br>
@@ -225,16 +224,10 @@ foreach ($users as $u) {
             <?php
                 if($user_id == 1){
                     foreach ($resourceArray as $key => $value) {
-
                         if(empty($resourceCurrencyArray[$key])) {
-//                    echo '<button class="btn addResource" onclick="addResource('.$key.')">'.$value['name'].'</button> | ';
                             echo '<a href=/farm/add?resource_id=' . $key . ' class="btn addResource" >' . $value['name'] . '</a> | ';
                         }
                     }
-
-                    ?>
-                    <?php
-
                 }
             ?>
         </div>

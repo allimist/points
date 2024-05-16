@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>p5.js Hero Movement</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body { padding: 0; margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script>
+    let hero;
+    let bot;
+
+    function setup() {
+        createCanvas(800, 600);
+        hero = new Hero(width / 2, height / 2);
+        bot = new Bot(hero);
+    }
+
+    function draw() {
+        background(220);
+        bot.update();
+        hero.display();
+    }
+
+    class Hero {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = 50;
+        }
+
+        display() {
+            fill(0, 0, 255);
+            ellipse(this.x, this.y, this.size);
+        }
+
+        moveTowards(targetX, targetY, speed) {
+            let dx = targetX - this.x;
+            let dy = targetY - this.y;
+            let angle = atan2(dy, dx);
+            this.x += cos(angle) * speed;
+            this.y += sin(angle) * speed;
+        }
+    }
+
+    class Bot {
+        constructor(hero) {
+            this.hero = hero;
+            this.positions = [
+                {x: 100, y: 100},
+                {x: 200, y: 300},
+                {x: 400, y: 500},
+                {x: 600, y: 200},
+                {x: 700, y: 400}
+            ];
+            this.target = this.randomPosition();
+            this.speed = 2; // Speed at which hero moves
+        }
+
+        update() {
+            if (dist(this.hero.x, this.hero.y, this.target.x, this.target.y) < this.speed) {
+                this.target = this.randomPosition();
+            }
+            this.hero.moveTowards(this.target.x, this.target.y, this.speed);
+        }
+
+        randomPosition() {
+            return random(this.positions);
+        }
+    }
+</script>
+</body>
+</html>

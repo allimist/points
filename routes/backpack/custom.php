@@ -41,4 +41,5 @@ Route::group([
     Route::crud('withdraw', 'WithdrawCrudController');
     Route::crud('deposit', 'DepositCrudController');
     Route::crud('portal', 'PortalCrudController');
+    Route::crud('auto-player', 'AutoPlayerCrudController');
 }); // this should be the absolute last line of this file

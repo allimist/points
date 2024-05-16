@@ -2,7 +2,7 @@ let mousePressedTime = 0;
 const moveThreshold = 200;
 
 
-let speed = 2;
+let speed = 3;
 //patch for vip
 if(balanceArray[13] >0){
     speed = 4;
@@ -13,8 +13,11 @@ let mapWidth = 2000;
 let mapHeight = 1000;
 
 let hero;
+let heroMove;
+let sendHeroPosNow = false;
 let heroFlipped; // Variable to store the flipped version of the image
 let heroMoveRight = false;
+
 
 let mapBackground;
 let heroPos;
@@ -610,6 +613,7 @@ function updateHeroPosition() {
             proposedNewPosition.y += sin(angle) * speed;
     }
 
+    heroMove = false;
     if(heroPos.x != proposedNewPosition.x || heroPos.y != proposedNewPosition.y ){
 
         gx= Math.floor((proposedNewPosition.x + heroSize /2 ) / cellSize );
@@ -629,6 +633,17 @@ function updateHeroPosition() {
                 }
                 heroPos.x = proposedNewPosition.x;
                 heroPos.y = proposedNewPosition.y;
+                heroMove = true;
+                // console.log('hero move');
+                if(sendHeroPosNow){
+                    sendHeroPosNow = false;
+                    sendHeroPos();
+                }
+
+                if(edit_mode){
+                    console.log('edit_mode', heroPos.x, heroPos.y);
+                }
+
             }
         }
 
@@ -832,6 +847,11 @@ function mousePressed() {
                             land_go_select();
                             //patch fot market sell to buy list
                         }
+                        else if (farmsArray[i].resource_id == 37) {
+                            //window.location.href = '/land/select?farm_id=' + farmsArray[i].id + '&service_id=' + farmsArray[i].service_id;
+                            select_land();
+                            //patch fot market sell to buy list
+                        }
                         // else if (i == 18) {
                         //     select_service(farmsArray[i].id);
                         //     // window.location.href = '/service-use/orders?farm_id=18';
@@ -981,7 +1001,7 @@ function touchMoved() {
         // }
 
     }
-    return false;
+    // return false;
 }
 
 function touchEnded() {

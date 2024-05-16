@@ -74,6 +74,7 @@ Route::get('/play', function () {
 //Route::get('/land/list', 'LandController@list');
 //Route::get('/api/play/load', [PlayController::class,  'apiLoad']);
 Route::get('/api/land/list', [LandController::class,  'apiList']);
+Route::get('/api/land/select', [LandController::class,  'apiSelectLand']);
 Route::post('/api/land/grid/save', [LandController::class,  'apiGridSave']);
 
 Route::get('/api/service-use/select',    [ServiceUseController::class,  'ApiSelect']);

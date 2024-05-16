@@ -142,7 +142,15 @@ class LandController extends Controller
     {
         $lands = \App\Models\Land::select('id','name')->get();
         foreach ($lands as $land) {
-//            $landArray[$land->id] = $land->name;
+            $landArray[] = $land->getAttributes();
+        }
+        return response()->json($landArray);
+    }
+
+    public function apiSelectLand()
+    {
+        $lands = \App\Models\Land::select('id','name','type_id','owner_id')->whereNotNull('nft')->orWhere('id', 1)->get();
+        foreach ($lands as $land) {
             $landArray[] = $land->getAttributes();
         }
         return response()->json($landArray);
