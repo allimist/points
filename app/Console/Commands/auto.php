@@ -55,16 +55,42 @@ class auto extends Command
 
 
                 switch ($tasks[$step]->type) {
-                    case 0:
+                    case 0://move
                         echo 'move user: ' . $user_id . ' to x: ' . $tasks[$step]->posX . ' y: ' . $tasks[$step]->posY . "\n";
+
+                        if($tasks[$step]->posX == 0)
+                            $posX = rand(50, 1950);
+                        else
+                            $posX = $tasks[$step]->posX;
+
+                        if($tasks[$step]->posY == 0)
+                            $posY = rand(50, 950);
+                        else
+                            $posY = $tasks[$step]->posY;
+
 
 //                        dd($tasks[$step]);
                         \DB::table('users')->where('id', $user_id)
                             ->update([
-                                'posx' => $tasks[$step]->posX,
-                                'posy' => $tasks[$step]->posY,
+                                'posx' => $posX,
+                                'posy' => $posY,
                                 'active_at' => \Carbon\Carbon::now()
                             ]);
+                        break;
+
+                    case 1://teleport go land
+
+                        if($tasks[$step]->posX == 0) {
+                            $land_id = \DB::table('lands')->inRandomOrder()->first()->id;
+                        } else {
+                            $land_id = $tasks[$step]->posX;
+                        }
+                        \DB::table('users')->where('id', $user_id)->update([
+                            'land_id' => $land_id,
+                            'active_at' => \Carbon\Carbon::now()
+                        ]);
+
+                        echo 'teleport user: ' . $user_id . ' to land: ' . $tasks[$step]->posX . "\n";
                         break;
 
 

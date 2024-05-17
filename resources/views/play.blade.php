@@ -251,9 +251,11 @@ foreach ($users as $u) {
 </x-app-layout>
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>--}}
+<script src="jquery.min.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>--}}
+<script src="p5.js"></script>
 
 <script>
     let serverTime = {{ strtotime(now()) }};

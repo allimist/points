@@ -76,18 +76,22 @@ class AutoPlayerCrudController extends CrudController
                 [
                     'name'    => 'type',
                     'type'    => 'select2_from_array',
-                    'options'    => ['move','use','wait'],
+                    'options'    => ['move','teleport','wait'],
                     'wrapper' => ['class' => 'form-group col-md-2'],
                 ],
                 [
                     'name'    => 'posX',
+                    'label'    => 'posX / Land ID (0=Random)',
                     'type'    => 'number',
+                    'default' => 0,
                     'wrapper' => ['class' => 'form-group col-md-2'],
                 ],
                 [
                     'name'    => 'posY',
+                    'label'    => 'posY (0=Random)',
+
 //                    'options'    => $currencyOptions,
-                    'default' => 100,
+                    'default' => 0,
                     'wrapper' => ['class' => 'form-group col-md-2'],
                 ],
                 [
@@ -105,7 +109,7 @@ class AutoPlayerCrudController extends CrudController
             ],
             'new_item_label'  => 'Add Group',
             'init_rows' => 0,
-            'max_rows' => 5,
+            'max_rows' => 10,
         ]);
 
         CRUD::field('step');
