@@ -238,9 +238,10 @@ class LandController extends Controller
             echo 'User not logged in';
             die;
         }
+
         //if owner of the land
-        $land = \App\Models\Land::where('owner_id', $user_id)->where('id', Auth::user()->land_id)->first();
-        if(empty($land || $user_id == 1)){
+        $land = \App\Models\Land::where('id', Auth::user()->land_id)->first();
+        if(empty($land || $user_id == 1 || $land->owner_id != $user_id)){
             echo 'You are not the owner of this land';
             die;
         }
@@ -254,6 +255,7 @@ class LandController extends Controller
         }
 
         //check if not reach the limit
+//        dd($land);
         $landType = \App\Models\LandType::where('id', $land->type_id)->first();
         $limit = 0;
         foreach ($landType->farms as $farm) {

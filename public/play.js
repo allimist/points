@@ -76,10 +76,14 @@ let cols = grid[0].length;
 let rows = grid.length;
 let cellSize = mapWidth / cols;
 
-function preload()
+// let frames = [];
+// let totalFrames = 10; // Adjust to the number of frames you have
+// let currentFrame = 0;
+// import { WebpMachine } from 'https://unpkg.com/webp-hero@0.0.3/dist/webp-hero.esm.js';
 
+let webpMachine;
 
-{
+function preload() {
     // console.log('preload');
 
     mapBackground = loadImage('storage/'+map);
@@ -93,6 +97,15 @@ function preload()
     } else {
         hero = loadImage(avatarsArray[avatar_id].img);
     }
+
+    console.log('avatarsArray[avatar_id].img', avatarsArray[avatar_id].img);
+    //remove extention
+    let img = 'storage/' + avatarsArray[avatar_id].img.split('.')[0];
+    console.log('img', img);
+
+    // for (let i = 0; i < totalFrames; i++) {
+    //     frames[i] = loadImage(img+`${nf(i, 3)}.webp`); // Adjust the file path as necessary
+    // }
 
 
     // if(avatar_id == 1){
@@ -202,7 +215,13 @@ function preload()
 
 function setup() {
 
+    // webpMachine = new webpHero.WebpMachine();
 
+
+
+
+    // frameRate(30);
+    // loop();
 
     // console.log('setup');
 
@@ -242,6 +261,9 @@ function setup() {
         e.preventDefault();
     });
 
+    // frameRate(24); // Set the desired frame rate
+
+
     // Button setup
     // let btn_dashboard = createButton('Back');
     // btn_dashboard.position(10, height - 50);
@@ -250,15 +272,18 @@ function setup() {
     // let btn_edit = createButton('Edit');
     // btn_edit.position(10, height - 80);
     // btn_edit.mousePressed(
-
-
     // createCanvas(windowWidth, 500);
+
+
+
     heroFlipped = createGraphics(hero.width, hero.height);
     heroFlipped.scale(-1, 1); // Flip the image horizontally
     heroFlipped.image(hero, -hero.width, 0);
 
     heroPos = createVector(posx, posy);
     proposedNewPosition = createVector(posx, posy);
+
+
 
     startTime = millis();
 
@@ -307,7 +332,7 @@ function setup() {
     Object.keys(usersArray).forEach(i => {
         herosPos[i] = createVector(usersArray[i].posx, usersArray[i].posy);
         // herosPos[i] = createVector(posx, posy);
-        if(i >10){
+        if(i >20){
             return;
         }
 
@@ -507,6 +532,9 @@ function draw() {
     } else {
         image(hero, heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
     }
+    // image(frames[currentFrame], heroPos.x - camX, heroPos.y - camY, heroSize, heroSize);
+
+    // currentFrame = (currentFrame + 1) % totalFrames;
 
     // console,log('heroPos', balanceArray[25]);
     drawHealthBar(heroPos.x - camX + 35, heroPos.y - camY - 10, balanceArray[25], 200);
@@ -554,7 +582,7 @@ function draw() {
 
             // }
 
-            if (i > 10) {
+            if (i > 20) {
                 return;
             }
 

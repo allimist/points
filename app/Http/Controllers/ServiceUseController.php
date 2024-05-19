@@ -44,14 +44,15 @@ class ServiceUseController extends Controller
         $balance = \App\Models\Balance::where('user_id', $user_id)->where('value', '>' , 0)->orderBy('currency_id')->get();
         $balance_string = '';
         foreach ($balance as $b) {
-//            $balanceArray[$b->currency_id] = $b->value;
-//            $balance_string .= $b->value . ' ' . $currencyArray[$b->currency_id] . ' | ';
-//            echo '<img class="resources" src= "/storage/'.$value['img'].'"> '.$balanceArray[$key].' | ';
-            $balance_string .= '<img class="resources" data-id="'.$b->currency_id.'" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> ';
-            $balance_string .=  floor($b->value).' | ';
+
+//            $balance_string .= '<img class="resources" data-id="'.$b->currency_id.'" src= "/storage/'.$currencyArray[$b->currency_id]['img'].'"> ';
+//            $balance_string .=  floor($b->value).' | ';
+
+            $balance_string .= '<span class="resources" data-id="'.$b->currency_id.'" style="background-image:url(/storage/'.$currencyArray[$b->currency_id]['img'].')"> ';
+            $balance_string .=  '<p>'.floor($b->value).'</p></span>';
 
         }
-        $balance_string = substr($balance_string, 0, -2);
+//        $balance_string = substr($balance_string, 0, -2);
 //        return $balanceArray;
         return $balance_string;
 
@@ -620,6 +621,10 @@ class ServiceUseController extends Controller
 
 //                    $random = rand(0, sizeof($services) - 1);
 //                    $task_ids[] = $services[$random]->id;
+                    if(empty($service)){
+                        $i--;
+                        continue;
+                    }
                     $task_ids[] = $service->id;
 //                    break;
                 }

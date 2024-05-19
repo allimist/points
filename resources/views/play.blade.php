@@ -178,7 +178,8 @@ $users = \App\Models\User::where('land_id', Auth::user()->land_id)
     ->select('id','name','avatar_id','posx','posy')
 //                            ->where('id', '!=', Auth::user()->id)
 //                            ->whereDate('active_at', '>=', now()->subMinutes(10))
-    ->where('active_at', '>=', now()->subMinutes(15))
+    ->where('active_at', '>=', now()->subMinutes(10))
+    ->limit(20)
     ->get();
 $usersArray = [];
 foreach ($users as $u) {
@@ -209,6 +210,8 @@ foreach ($users as $u) {
     </div>
 
     <div id="menu" class="unselectable">
+        <!-- Mute button -->
+        <button id="mute-button">Play Music</button>
         <?php
         if($user_id == 1){
             echo '<a class="btn" href="/admin">A</a> | ';
@@ -248,6 +251,12 @@ foreach ($users as $u) {
             <p id="popup-text">Loading ...</p>
         </div>
     </div>
+
+    <!-- Audio element -->
+    <audio id="background-music" loop>
+        <source src="/music.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
 </x-app-layout>
 
 
@@ -256,6 +265,9 @@ foreach ($users as $u) {
 
 {{--<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>--}}
 <script src="p5.js"></script>
+
+{{--<script src="https://unpkg.com/webp-hero/dist/webp-hero.bundle.js"></script>--}}
+
 
 <script>
     let serverTime = {{ strtotime(now()) }};
@@ -285,6 +297,51 @@ foreach ($users as $u) {
     //     document.getElementById('editor_mode_off').style.display = 'block';
     //     document.getElementById('editor_mode_on').style.display = 'none';
     // }
+
+    // Get the audio element and mute button
+    const audio = document.getElementById('background-music');
+    audio.volume = 0.5; // Set volume to 70%
+
+    const muteButton = document.getElementById('mute-button');
+
+    function playAudio() {
+        audio.play().then(() => {
+            muteButton.style.display = 'block';
+            muteButton.textContent = 'Mute';
+        }).catch(error => {
+            console.error('Error playing audio:', error);
+        });
+
+        // Remove event listeners after first interaction
+        window.removeEventListener('scroll', playAudio);
+        window.removeEventListener('click', playAudio);
+    }
+
+    // Add event listeners for scroll and click if no mute in local storage
+    if (!localStorage.getItem('mute')) {
+        window.addEventListener('scroll', playAudio);
+        window.addEventListener('click', playAudio);
+    }
+
+    muteButton.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.volume = 0.7; // Set volume to 70%
+            audio.play().then(() => {
+                muteButton.textContent = 'Mute';
+                //remove mute from local storage
+                localStorage.removeItem('mute');
+            }).catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        } else {
+            audio.pause();
+            muteButton.textContent = 'Unmute';
+            //save mute to local storage
+            localStorage.setItem('mute', 1);
+        }
+    });
+
+
 </script>
 
 {{--@push('after_scripts')--}}

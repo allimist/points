@@ -42,7 +42,7 @@
 
 <div class="container mt-4">
     <div class="jumbotron">
-        <h1 class="display-4">Welcome to Points!</h1>
+        <h1 class="display-4">Welcome to Points! (Pre access)</h1>
         <p class="lead">
             Embark on an adventurous journey in an old world filled with diverse scenarios like deserts, forests, snow-covered landscapes, mountains, and more. Discover, craft, and trade your way to success!
         </p>
