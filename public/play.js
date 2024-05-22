@@ -242,8 +242,8 @@ function setup() {
 
     // contextReadFrequently = createCanvas(800, 600).elt.getContext('2d', { willReadFrequently: true });
     // cnv.parent('canvasContainer'); // This div will hold the canvas
-    joystick.baseX =joystick.stickX = windowWidth - 100;
-    joystick.baseY = joystick.stickY = windowHeight - 100;
+    joystick.baseX =joystick.stickX = windowWidth - 50;
+    joystick.baseY = joystick.stickY = windowHeight - 50;
 
     // }
     // cnv.elt.setAttribute('willReadFrequently', true);

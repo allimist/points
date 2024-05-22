@@ -22,6 +22,8 @@ class Land extends Model
         'nft',
         'owner_id',
         'type_id',
+        'posx',
+        'posy',
 //        'size',
 //        'image',
     ];

@@ -42,7 +42,9 @@ Route::get('/avatar', function () {
     return view('avatar');
 })->middleware(['auth', 'verified'])->name('avatar');
 
-
+Route::get('/map', function () {
+    return view('map');
+})->middleware(['auth', 'verified'])->name('map');
 
 
 
@@ -59,6 +61,7 @@ Route::get('/service-use/sell',     [ServiceUseController::class,  'sell']);
 Route::get('/service-use/orders',   [ServiceUseController::class, 'orders']);
 Route::get('/service-use/select-order',   [ServiceUseController::class, 'selectOrder']);
 Route::get('/service-use/buy',      [ServiceUseController::class,  'buy']);
+
 
 Route::get('/land/go',              [LandController::class,  'go']);
 Route::get('/land/portal',          [LandController::class,  'portal']);

@@ -13,9 +13,9 @@ foreach ($currency as $c) {
 }
 
 //$balance = \App\Models\Balance::where('user_id', $user_id)->get();
-$balance = \App\Models\Balance::where('user_id', $user_id)->where('value', '>' , 0)->orderBy('currency_id')->get();
+$balance = \App\Models\Balance::where('user_id', $user_id)->where('value', '>' , 1)->orderBy('currency_id')->get();
 foreach ($balance as $b) {
-    $balanceArray[$b->currency_id] = $b->value;
+    $balanceArray[$b->currency_id] = round($b->value);
 }
 
 
@@ -193,6 +193,24 @@ foreach ($users as $u) {
 
 <x-app-layout class="unselectable">
 
+    <div id="balance_top">
+    <?php
+//        $currency_id_energy = 1;
+//        $currency_id_health = 25;
+//        $currency_id_coins = 2;
+//        $currency_id_points = 3;
+//        $balance_string = '<span class="resources" style="background-image:url(/storage/'.$currencyArray[$currency_id_energy]['img'].')"> ';
+//        $balance_string .=  '<p>'.floor($balanceArray[$currency_id_energy]).'</p></span>';
+//        $balance_string .= '<span class="resources" style="background-image:url(/storage/'.$currencyArray[$currency_id_health]['img'].')"> ';
+//        $balance_string .=  '<p>'.floor($balanceArray[$currency_id_health]).'</p></span>';
+//        $balance_string .= '<span class="resources" style="background-image:url(/storage/'.$currencyArray[$currency_id_coins]['img'].')"> ';
+//        $balance_string .=  '<p>'.floor($balanceArray[$currency_id_coins]).'</p></span>';
+//        $balance_string .= '<span class="resources" style="background-image:url(/storage/'.$currencyArray[$currency_id_points]['img'].')"> ';
+//        $balance_string .=  '<p>'.floor($balanceArray[$currency_id_points]).'</p></span>';
+//        echo $balance_string;
+    ?>
+    </div>
+
     <div id="balance" class="unselectable">
         <?php
         //        foreach ($currencyArray as $key => $value) {
@@ -203,8 +221,8 @@ foreach ($users as $u) {
         //        }
         //        $balance_string = substr($balance_string, 0, -2);
         //        echo $balance_string;
-        $serviceUseController = new \App\Http\Controllers\ServiceUseController();
-        echo $serviceUseController->Apibalance($currencyArray);
+//        $serviceUseController = new \App\Http\Controllers\ServiceUseController();
+//        echo $serviceUseController->Apibalance($currencyArray);
 
         ?>
     </div>

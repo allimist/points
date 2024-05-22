@@ -47,6 +47,8 @@ class LandCrudController extends CrudController
         CRUD::column('nft');
         CRUD::column('owner_id');
         CRUD::column('type');
+        CRUD::column('posx');
+        CRUD::column('posy');
 //        CRUD::column('size');
 //        CRUD::column('image')->type('image')->prefix('storage/');
 //        CRUD::column('image')->type('upload');
@@ -72,6 +74,9 @@ class LandCrudController extends CrudController
         CRUD::field('nft');
         CRUD::field('owner_id');
         CRUD::field('type');
+        CRUD::field('posx');
+        CRUD::field('posy');
+
 //        CRUD::field('size');
 
         /**

@@ -71,11 +71,21 @@ class AvatarCrudController extends CrudController
 //            'crop' => true, // set to true to allow cropping, false to disable
 //            'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
 //        ]);
+
+//        $this->crud->addField([
+//            'name' => 'image',
+//            'type' => 'image_custom',
+////            'type' => 'image',
+////            'prefix' => 'storage/',
+//            'upload' => true,
+//        ]);
+
         $this->crud->addField([
-            'name' => 'image',
-            'type' => 'image_custom',
-            'upload' => true,
+            'name' => 'image', // The db column name where the image path is stored
+            'type' => 'upload',
+            'upload' => true
         ]);
+
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');

@@ -38,6 +38,7 @@ class Avatar extends Model
         $disk = "public";
         $destination_path = "avatars";
 
+//        $_FILES = $value;
         $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName = null);
 
         // return $this->attributes[{$attribute_name}]; // uncomment if this is a translatable field

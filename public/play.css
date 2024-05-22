@@ -51,7 +51,25 @@ button:hover {
     overflow: auto;
     background-color: rgb(0,0,0,0.6);
     color: lightskyblue;
+
+    height: 90px;
+
 }
+#balance_top {
+    /*display: none;*/
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    overflow: auto;
+    background-color: rgb(0,0,0,0.6);
+    color: lightskyblue;
+}
+/*@media only screen and (max-width: 600px) {*/
+/*    #balance {*/
+/*        width: 80%;*/
+/*    }*/
+/*}*/
 .resources {
     width: 40px;
     height: 40px;

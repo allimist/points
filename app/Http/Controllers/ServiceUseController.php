@@ -20,8 +20,8 @@ class ServiceUseController extends Controller
      */
 
 
+    /*
     public function balance($currencyArray){
-
         $user_id = Auth::user()->id;
         $balance = \App\Models\Balance::where('user_id', $user_id)->get();
         foreach ($balance as $b) {
@@ -33,11 +33,11 @@ class ServiceUseController extends Controller
             }
         }
         echo '<br>';
-
-
     }
+    */
 
 
+    /*
     public function Apibalance($currencyArray){
 
         $user_id = Auth::user()->id;
@@ -55,6 +55,24 @@ class ServiceUseController extends Controller
 //        $balance_string = substr($balance_string, 0, -2);
 //        return $balanceArray;
         return $balance_string;
+
+    }
+    */
+    public function ApibalanceArray(){
+
+        $user_id = Auth::user()->id;
+        $balance = \App\Models\Balance::where('user_id', $user_id)
+            ->select('currency_id', 'value')
+            ->where('value', '>' , 1)
+            ->orderBy('currency_id')->get();
+        //->keyBy('currency_id');
+//        return $balance;
+
+        $balanceArray = [];
+        foreach ($balance as $b) {
+            $balanceArray[$b->currency_id] = round($b->value);
+        }
+        return $balanceArray;
 
     }
 
@@ -493,15 +511,16 @@ class ServiceUseController extends Controller
 //            $user->save();
         }
 
-        $balanceArrayHtml = $this->Apibalance($currencyArray);
+//        $balanceArrayHtml = $this->Apibalance($currencyArray);
 
 
         $data = [
             'status' => 'success',
             'message' => $msg,
             'extra' => $msg_balance,
-            'balance' => $balanceArrayHtml,
-            'user_health' => Balance::where('user_id', $user_id)->where('currency_id', 25)->first()->value,
+//            'balance' => $balanceArrayHtml,
+//            'user_health' => Balance::where('user_id', $user_id)->where('currency_id', 25)->first()->value,
+            'balanceArray' => $this->ApibalanceArray(),
         ];
 
 //        return Redirect::route('dashboard')->with('status', 'balance-updated');
@@ -1448,7 +1467,7 @@ class ServiceUseController extends Controller
 
 
 
-        $balanceArrayHtml = $this->Apibalance($currencyArray);
+//        $balanceArrayHtml = $this->Apibalance($currencyArray);
 
 
         $data = [
@@ -1456,8 +1475,10 @@ class ServiceUseController extends Controller
             'message' => $msg,
             'extra' => $msg_balance,
             'health' => $health,
-            'balance' => $balanceArrayHtml,
-            'user_health' => Balance::where('user_id', $user_id)->where('currency_id', 25)->first()->value,
+//            'balance' => $balanceArrayHtml,
+//            'user_health' => Balance::where('user_id', $user_id)->where('currency_id', 25)->first()->value,
+            'balanceArray' => $this->ApibalanceArray(),
+
         ];
 
 //        return Redirect::route('dashboard')->with('status', 'balance-updated');

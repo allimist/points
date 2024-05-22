@@ -225,7 +225,6 @@ function select_service(farm_id) {
         document.getElementById('popup-text').innerHTML = html;
         document.getElementById('popup').style.display = 'block';
 
-
     });
 
 
@@ -317,48 +316,23 @@ function start_amount(farm_id,service_id) {
         console.log("resp: ", resp);
 
         let html = '';
-        // if(resp.status == 'success'){
-        //     if(serviceArray[service_id].time>0){
-        //         farmsArray[farm_id].status = 'in_use';
-        //         farmsArray[farm_id].text = serviceArray[service_id].time;
-        //         isCooldownActive[farm_id] = true;
-        //         cooldownDuration[farm_id] = serviceArray[service_id].time;
-        //         cooldownReady[farm_id] = serverTime + serviceArray[service_id].time;
-        //     }
-        //     if(serviceArray[service_id].reload>0){
-        //         farmsArray[farm_id].status = 'reload';
-        //         farmsArray[farm_id].text = serviceArray[service_id].reload;
-        //         isCooldownActive[farm_id] = true;
-        //         cooldownDuration[farm_id] = serviceArray[service_id].reload;
-        //         cooldownReady[farm_id] = serverTime + serviceArray[service_id].reload;
-        //     }
-        // } else {
-        //     //     html += 'Error';
-        // }
-
-        // if(resp.message){
-        //     html += '<br>' + resp.message;
-        // }
 
         if(resp.extra){
             html += '<br>' + resp.extra;
         }
-
-        // isPopupVisible = true;
-
         document.getElementById('popup-text').innerHTML = html;
-        // document.getElementById('popup').style.display = 'block';
+        // document.getElementById('balance').innerHTML = resp.balance;
 
-        // console.log('serviceArray', serviceArray[service_id]);
-        //
+        if(resp.balanceArray){
+            balanceArray = resp.balanceArray;
+            refreshBalance();
+        }
+
         setTimeout(() => {
             // document.getElementById('popup').style.display = 'none';
             // isPopupVisible = false;
             select_service(farm_id);
-
         },2000);
-        document.getElementById('balance').innerHTML = resp.balance;
-
 
     });
 
@@ -380,7 +354,6 @@ function start(farm_id,service_id) {
 
     } else {
 
-        // isPopupVisible = true;
         $.ajax({
             url: "/api/service-use/claim?farm_id=" + farm_id + "&service_id=" + service_id,
         }).done(function (resp) {
@@ -435,29 +408,27 @@ function start(farm_id,service_id) {
                     cooldownDuration[farm_id] = resp.farm_status;
                     cooldownReady[farm_id] = resp.farm_ready;
                 }
-
                 // farmsArray[i].use_by
                 // if(farmsArray[i].status == 'in_use' || farmsArray[i].status == 'reload'){
                 //     isCooldownActive[i] = true;
                 //     cooldownDuration[i] = farmsArray[i].text;
                 //     cooldownReady[i] = farmsArray[i].ready;
                 // }
-
-
             }
 
             //not enoth balance not return balance
-            if (resp.balance) {
-                document.getElementById('balance').innerHTML = resp.balance;
+            // if (resp.balance) {
+            //     document.getElementById('balance').innerHTML = resp.balance;
+            // }
+            // if (resp.user_health) {
+            //     balanceArray[25] = +resp.user_health;
+            // }
+
+            if(resp.balanceArray){
+                balanceArray = resp.balanceArray;
+                refreshBalance();
             }
 
-            if (resp.user_health) {
-                // console.log('before',balanceArray[25]);
-                // // balanceArray[25] = Math.floor(resp.user_health);
-                // console.log('+',+resp.user_health);
-                balanceArray[25] = +resp.user_health;
-                // console.log('after',balanceArray[25]);
-            }
             // if(resp.extra){
             html += '<br>' + resp.extra;
             // }
@@ -627,14 +598,20 @@ function start_order_amount(farm_id,service_id,order_id) {
         if(resp.extra){
             html += '<br>' + resp.extra;
         }
-
         document.getElementById('popup-text').innerHTML = html;
+        // document.getElementById('balance').innerHTML = resp.balance;
+
+        if(resp.balanceArray){
+            balanceArray = resp.balanceArray;
+            refreshBalance();
+        }
+
+
         setTimeout(() => {
         //     // document.getElementById('popup').style.display = 'none';
         //     // isPopupVisible = false;
             select_order(farm_id,service_id);
         },2000);
-        document.getElementById('balance').innerHTML = resp.balance;
 
 
     });
@@ -709,10 +686,6 @@ function attack(farm_id,service_id) {
     $.ajax({
         url: "/api/farm/attack?farm_id=" + farm_id + "&service_id=" + service_id,
     }).done(function(resp) {
-
-        // isPopupVisible = true;
-
-        console.log("resp: ", resp);
         let html = '';
         if(resp.status == 'success'){
             // if(serviceArray[service_id].time>0){
@@ -733,39 +706,70 @@ function attack(farm_id,service_id) {
                 html += 'Error';
         }
 
-
-
         if(resp.extra){
             html += '<br>' + resp.extra;
         }
-
         if(resp.health){
             farmsArray[farm_id].health = resp.health;
         }
 
-        if(resp.user_health) {
-        //     balanceArray[25].value = resp.user_health;
-        //     console.log('user_health',resp.user_health);
-            balanceArray[25] = +resp.user_health;
+        // if(resp.user_health) {
+        // //     balanceArray[25].value = resp.user_health;
+        // //     console.log('user_health',resp.user_health);
+        //     balanceArray[25] = +resp.user_health;
+        //
+        // }
+        // if(resp.balance){
+        //     document.getElementById('balance').innerHTML = resp.balance;
+        // }
 
+        if(resp.balanceArray){
+            balanceArray = resp.balanceArray;
+            refreshBalance();
         }
-
 
         document.getElementById('popup-text').innerHTML = html;
         document.getElementById('popup').style.display = 'block';
-
         setTimeout(() => {
             document.getElementById('popup').style.display = 'none';
             isPopupVisible = false;
         },1000);
-
-        if(resp.balance){
-            document.getElementById('balance').innerHTML = resp.balance;
-        }
-
     });
 }
 
+function refreshBalance() {
+    const currency_id_energy = 1;
+    const currency_id_health = 25;
+    const currency_id_coins = 2;
+    const currency_id_points = 3;
+    let balance_top = '';
+    if(balanceArray[currency_id_energy]){
+        balance_top += '<span class="resources" data-id="' + currency_id_energy + '" style="background-image:url(/storage/' + currencyArray[currency_id_energy]['img'] + ')">';
+        balance_top += '<p>' + balanceArray[currency_id_energy] + '</p></span>';
+    }
+    if(balanceArray[currency_id_health]){
+        balance_top += '<span class="resources" data-id="' + currency_id_health + '" style="background-image:url(/storage/' + currencyArray[currency_id_health]['img'] + ')">';
+        balance_top += '<p>' + balanceArray[currency_id_health] + '</p></span>';
+    }
+    if (balanceArray[currency_id_coins]) {
+        balance_top += '<span class="resources" data-id="' + currency_id_coins + '" style="background-image:url(/storage/' + currencyArray[currency_id_coins]['img'] + ')">';
+        balance_top += '<p>' + balanceArray[currency_id_coins] + '</p></span>';
+    }
+    if (balanceArray[currency_id_points]) {
+        balance_top += '<span class="resources" data-id="' + currency_id_points + '" style="background-image:url(/storage/' + currencyArray[currency_id_points]['img'] + ')">';
+        balance_top += '<p>' + balanceArray[currency_id_points] + '</p></span>';
+    }
+    $('#balance_top').html(balance_top);
+
+    let balance = '';
+    Object.keys(balanceArray).forEach( i => {
+        if(currency_id_energy != i && currency_id_health != i && currency_id_coins != i && currency_id_points != i) {
+            balance += '<span class="resources" data-id="' + i + '" style="background-image:url(/storage/' + currencyArray[i]['img'] + ')">';
+            balance += '<p>' + balanceArray[i] + '</p></span>';
+        }
+    });
+    $('#balance').html(balance);
+}
 
 /*
 function pick_farm() {
@@ -839,7 +843,15 @@ document.getElementById('balance').style.display = 'block';
 // $('#balance').on( "click", ".resources", function() {
 
 $(document).ready(function(){
-    // $('.resources').on('click',function(){
+
+    let windowWidth_b = $(window).width();
+    if(windowWidth_b < 600) {
+        $('#balance').css('width', windowWidth_b - 100);
+    }
+
+    refreshBalance();
+    // windowHeight = $(window).height();
+
     $('#balance').on( "click", ".resources", function() {
 
         if (!currentlyDraggingResource) {
@@ -874,6 +886,8 @@ if(land_owner){
 if(user_id == 1){
     document.getElementById('grid_mode_on').style.display = 'inline';
 }
+
+
 
 
 if (!!window.EventSource) {
