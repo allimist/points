@@ -1,3 +1,34 @@
+<p align="center"><a href="https://points.wzc.mk" target="_blank"><img src="https://points.wzc.mk/img/logo.png" width="400" alt="Points Logo"></a></p>
+
+## About Points
+
+Embark on an adventurous journey in an old world filled with diverse scenarios like deserts, forests, snow-covered landscapes, mountains, and more. Discover, craft, and trade your way to success!
+
+
+
+<a href="/register" class="btn btn-primary mt-3">Register Now</a>
+
+or use test user for quick access
+
+user: test7@test.test
+password: testtest
+
+play link: <a class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 transition duration-150 ease-in-out" href="https://points.wzc.mk/play">
+    Play
+</a>
+# Game Features:
+<ul>
+            <li>Explore vast landscapes including forests, deserts, mountains, and more, each offering unique resources and items.</li>
+            <li>Engage in crafting and trading with the game's token, Points, to enhance your experience.</li>
+            <li>Utilize different modes of transport like horse carriages and boats to navigate through diverse scenarios.</li>
+            <li>Interact in a dynamic market to buy and sell items and resources. Open your market to other players or visit theirs for trade.</li>
+            <li>Embark on quests for rewards and climb the leaderboard to showcase your prowess.</li>
+            <li>Connect with other players through in-game chat for an enriched social experience.</li>
+            <li>Use Points for various in-game activities, including accessing special scenarios.</li>
+
+</ul>
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
